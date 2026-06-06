@@ -40,6 +40,8 @@ src/
   components/
     InputForm.tsx      # 주기 입력 (STEP 1)
     ResultCard.tsx     # 예측 결과 카드들
+    PhaseGuide.tsx     # 현재 시기별 케어 가이드
+  data/phaseGuides.ts  # 시기별 음식·영양제·파트너 팁·준비물
   store/cycleStore.ts  # Zustand 스토어
   utils/cycle.ts       # 주기 계산 로직
 ```

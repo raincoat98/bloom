@@ -1,4 +1,5 @@
 import InputForm from './components/InputForm';
+import PhaseGuide from './components/PhaseGuide';
 import ResultCard from './components/ResultCard';
 
 function BloomMark({ className = '' }: { className?: string }) {
@@ -64,6 +65,8 @@ function App() {
           <InputForm />
           <ResultCard />
         </div>
+
+        <PhaseGuide />
 
         <footer className="mt-14 flex flex-col items-center gap-1 text-center text-xs text-gray-400">
           <div className="flex items-center gap-1.5">
