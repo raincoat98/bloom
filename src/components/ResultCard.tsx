@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { differenceInCalendarDays } from 'date-fns';
 import { useCycleStore } from '../store/cycleStore';
 import { calculateCycle, formatDate, formatShortDate } from '../utils/cycle';
 
@@ -17,6 +18,14 @@ export default function ResultCard() {
     [lastPeriodDate, cycleLength, periodLength],
   );
 
+  const daysUntilUpcomingStart = useMemo(() => {
+    const today = new Date();
+    return differenceInCalendarDays(
+      new Date(lastPeriodDate),
+      new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+    );
+  }, [lastPeriodDate]);
+
   const daysLabel = (n: number) => {
     if (n === 0) return '오늘';
     if (n > 0) return `D-${n}`;
@@ -33,18 +42,29 @@ export default function ResultCard() {
           </span>
         </div>
         <div className="mt-1 flex items-end justify-between">
-          <div>
-            <p className="text-4xl font-bold">{prediction.cycleDay}일째</p>
-            <p className="mt-1 text-sm opacity-90">
-              주기 {cycleLength}일 중
-            </p>
-          </div>
+          {prediction.notStartedYet ? (
+            <div>
+              <p className="text-4xl font-bold">D-{daysUntilUpcomingStart}</p>
+              <p className="mt-1 text-sm opacity-90">
+                {formatShortDate(new Date(lastPeriodDate))} 시작 예정
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p className="text-4xl font-bold">{prediction.cycleDay}일째</p>
+              <p className="mt-1 text-sm opacity-90">
+                주기 {cycleLength}일 중
+              </p>
+            </div>
+          )}
           <span
             className={`rounded-full px-3 py-1 text-sm font-medium ${
-              phaseStyles[prediction.currentPhase]
+              prediction.notStartedYet
+                ? 'bg-white/20 text-white'
+                : phaseStyles[prediction.currentPhase]
             }`}
           >
-            {prediction.currentPhase}
+            {prediction.notStartedYet ? '시작 전' : prediction.currentPhase}
           </span>
         </div>
       </div>

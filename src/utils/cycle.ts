@@ -11,6 +11,7 @@ export interface CyclePrediction {
   daysUntilOvulation: number;
   currentPhase: '생리 중' | '여포기' | '배란기' | '황체기';
   cycleDay: number;
+  notStartedYet: boolean;
 }
 
 export function calculateCycle(
@@ -27,15 +28,35 @@ export function calculateCycle(
     todayDate.getDate(),
   );
 
-  let cycleDay = differenceInCalendarDays(today, lastPeriodDate) + 1;
-  let cyclesElapsed = 0;
-  while (cycleDay > cycleLength) {
-    cycleDay -= cycleLength;
-    cyclesElapsed += 1;
+  const daysSinceStart = differenceInCalendarDays(today, lastPeriodDate);
+  const notStartedYet = daysSinceStart < 0;
+
+  if (notStartedYet) {
+    const upcomingCycleStart = lastPeriodDate;
+    const nextPeriodStart = addDays(upcomingCycleStart, cycleLength);
+    const nextPeriodEnd = addDays(nextPeriodStart, periodLength - 1);
+    const ovulationDate = addDays(nextPeriodStart, -14);
+    const fertileWindowStart = addDays(ovulationDate, -5);
+    const fertileWindowEnd = addDays(ovulationDate, 1);
+    const daysUntilNextPeriod = differenceInCalendarDays(nextPeriodStart, today);
+    const daysUntilOvulation = differenceInCalendarDays(ovulationDate, today);
+
+    return {
+      nextPeriodStart,
+      nextPeriodEnd,
+      ovulationDate,
+      fertileWindowStart,
+      fertileWindowEnd,
+      daysUntilNextPeriod,
+      daysUntilOvulation,
+      currentPhase: '황체기',
+      cycleDay: 0,
+      notStartedYet: true,
+    };
   }
-  if (cycleDay < 1) {
-    cycleDay = 1;
-  }
+
+  const cyclesElapsed = Math.floor(daysSinceStart / cycleLength);
+  const cycleDay = daysSinceStart - cyclesElapsed * cycleLength + 1;
 
   const currentCycleStart = addDays(lastPeriodDate, cyclesElapsed * cycleLength);
   const nextPeriodStart = addDays(currentCycleStart, cycleLength);
@@ -68,6 +89,7 @@ export function calculateCycle(
     daysUntilOvulation,
     currentPhase,
     cycleDay,
+    notStartedYet: false,
   };
 }
 
