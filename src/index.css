@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'ss03', 'ss06';
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2b1a1a;
+}
