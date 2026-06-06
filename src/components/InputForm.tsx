@@ -1,4 +1,6 @@
+import type { CSSProperties } from 'react';
 import { useCycleStore } from '../store/cycleStore';
+import DatePopover from './DatePopover';
 
 export default function InputForm() {
   const {
@@ -12,7 +14,7 @@ export default function InputForm() {
   } = useCycleStore();
 
   return (
-    <section className="rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur">
+    <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="font-display text-lg font-semibold text-primary-700">
           나의 리듬 입력
@@ -27,16 +29,14 @@ export default function InputForm() {
           <span className="mb-1 block text-sm font-medium text-gray-700">
             마지막 생리 시작일
           </span>
-          <input
-            type="date"
+          <DatePopover
             value={lastPeriodDate}
-            onChange={(e) => setLastPeriodDate(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-gray-800 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200"
+            onChange={setLastPeriodDate}
           />
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-gray-700">
+          <span className="mb-2 block text-sm font-medium text-gray-700">
             평균 주기 길이:{' '}
             <span className="text-primary-600">{cycleLength}일</span>
           </span>
@@ -46,16 +46,21 @@ export default function InputForm() {
             max={40}
             value={cycleLength}
             onChange={(e) => setCycleLength(Number(e.target.value))}
-            className="w-full accent-primary-500"
+            className="bloom-slider"
+            style={
+              {
+                '--fill': `${((cycleLength - 21) / (40 - 21)) * 100}%`,
+              } as CSSProperties
+            }
           />
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="mt-2 flex justify-between text-xs text-gray-400">
             <span>21일</span>
             <span>40일</span>
           </div>
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-sm font-medium text-gray-700">
+          <span className="mb-2 block text-sm font-medium text-gray-700">
             평균 생리 기간:{' '}
             <span className="text-primary-600">{periodLength}일</span>
           </span>
@@ -65,9 +70,14 @@ export default function InputForm() {
             max={10}
             value={periodLength}
             onChange={(e) => setPeriodLength(Number(e.target.value))}
-            className="w-full accent-primary-500"
+            className="bloom-slider"
+            style={
+              {
+                '--fill': `${((periodLength - 2) / (10 - 2)) * 100}%`,
+              } as CSSProperties
+            }
           />
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="mt-2 flex justify-between text-xs text-gray-400">
             <span>2일</span>
             <span>10일</span>
           </div>

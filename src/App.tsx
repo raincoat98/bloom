@@ -1,3 +1,4 @@
+import CycleCalendar from './components/CycleCalendar';
 import InputForm from './components/InputForm';
 import PhaseGuide from './components/PhaseGuide';
 import ResultCard from './components/ResultCard';
@@ -65,6 +66,8 @@ function App() {
           <InputForm />
           <ResultCard />
         </div>
+
+        <CycleCalendar />
 
         <PhaseGuide />
 

@@ -1,6 +1,9 @@
+@import 'react-day-picker/style.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 html,
 body,
@@ -18,4 +21,225 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2b1a1a;
+}
+
+.bloom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    #fb7a6b 0%,
+    #f4584a var(--fill, 0%),
+    #ffe4e0 var(--fill, 0%),
+    #ffe4e0 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+
+.bloom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 3px solid #f4584a;
+  box-shadow:
+    0 2px 6px rgba(244, 88, 74, 0.3),
+    0 0 0 4px rgba(244, 88, 74, 0.08);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.bloom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 4px 12px rgba(244, 88, 74, 0.4),
+    0 0 0 6px rgba(244, 88, 74, 0.1);
+}
+
+.bloom-slider::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+}
+
+.bloom-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 3px solid #f4584a;
+  box-shadow:
+    0 2px 6px rgba(244, 88, 74, 0.3),
+    0 0 0 4px rgba(244, 88, 74, 0.08);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.bloom-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.bloom-slider::-moz-range-track {
+  background: transparent;
+  border: none;
+}
+
+.bloom-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 6px rgba(244, 88, 74, 0.18),
+    0 4px 12px rgba(244, 88, 74, 0.4);
+}
+
+.bloom-calendar {
+  --rdp-accent-color: #f4584a;
+  --rdp-accent-background-color: #fff5f3;
+  --rdp-day-height: 48px;
+  --rdp-day-width: 48px;
+  --rdp-day_button-width: 44px;
+  --rdp-day_button-height: 44px;
+  --rdp-day_button-border-radius: 9999px;
+  --rdp-selected-border: 2px solid #f4584a;
+  --rdp-today-color: #f4584a;
+  --rdp-font-family: inherit;
+  --rdp-weekday-padding: 10px 0;
+  --rdp-weekday-text-transform: none;
+  --rdp-weekday-opacity: 0.6;
+  --rdp-nav_button-width: 36px;
+  --rdp-nav_button-height: 36px;
+  margin: 0;
+}
+
+.bloom-calendar .rdp-month_caption {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #2b1a1a;
+  padding: 6px 0 12px;
+}
+
+.bloom-calendar .rdp-months {
+  gap: 16px;
+}
+
+.bloom-calendar .rdp-month_grid {
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: calc(var(--rdp-day-width) * 7);
+}
+
+.bloom-calendar .rdp-weekday {
+  width: var(--rdp-day-width);
+  min-width: var(--rdp-day-width);
+  padding: var(--rdp-weekday-padding);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.bloom-calendar .rdp-day {
+  width: var(--rdp-day-width);
+  height: var(--rdp-day-height);
+  text-align: center;
+  padding: 0;
+}
+
+.bloom-calendar .rdp-day_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+  border-radius: 9999px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #374151;
+  background: transparent;
+  border: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.bloom-calendar .rdp-day_button:hover:not([disabled]) {
+  background: #fff5f3;
+  color: #f4584a;
+}
+
+.bloom-calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
+  font-weight: 700;
+  color: #f4584a;
+  background: #ffe4e0;
+}
+
+.bloom-calendar .rdp-selected .rdp-day_button,
+.bloom-calendar .rdp-selected .rdp-day_button:hover:not([disabled]) {
+  background: #f4584a;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow:
+    0 6px 14px -4px rgba(244, 88, 74, 0.55),
+    0 0 0 4px rgba(244, 88, 74, 0.12);
+  transform: scale(1.02);
+}
+
+.bloom-calendar .rdp-outside .rdp-day_button {
+  color: #d1d5db;
+}
+
+.bloom-calendar .rdp-chevron {
+  fill: #f4584a;
+}
+
+.bloom-calendar .rdp-button_previous:hover,
+.bloom-calendar .rdp-button_next:hover {
+  background: #fff5f3;
+}
+
+.bloom-cycle-calendar .rdp-day_button {
+  position: relative;
+}
+
+.bloom-cycle-calendar .bloom-day-fertile .rdp-day_button {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.bloom-cycle-calendar .bloom-day-fertile .rdp-day_button:hover:not([disabled]) {
+  background: #a7f3d0;
+  color: #065f46;
+}
+
+.bloom-cycle-calendar .bloom-day-period .rdp-day_button {
+  background: #fecaca;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.bloom-cycle-calendar .bloom-day-period .rdp-day_button:hover:not([disabled]) {
+  background: #fca5a5;
+  color: #991b1b;
+}
+
+.bloom-cycle-calendar .bloom-day-ovulation .rdp-day_button {
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 10px -2px rgba(16, 185, 129, 0.45);
+}
+
+.bloom-cycle-calendar .bloom-day-ovulation .rdp-day_button:hover:not([disabled]) {
+  background: #059669;
+  color: #ffffff;
 }
