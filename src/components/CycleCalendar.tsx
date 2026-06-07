@@ -1,9 +1,33 @@
 import { useMemo } from 'react';
 import { DayPicker } from 'react-day-picker';
+import type { DayProps } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
 import { differenceInCalendarDays } from 'date-fns';
 import { useCycleStore } from '../store/cycleStore';
+const flowBadgeByModifier = {
+  period: {
+    text: '생리',
+    label: '생리 예정',
+    className: 'bloom-flow-badge-period',
+  },
+  fertile: {
+    text: '가임',
+    label: '가임기 예정',
+    className: 'bloom-flow-badge-fertile',
+  },
+  ovulation: {
+    text: '배란',
+    label: '배란 예정',
+    className: 'bloom-flow-badge-ovulation',
+  },
+} as const;
 
+function getFlowBadge(modifiers: DayProps['modifiers']) {
+  if (modifiers.ovulation) return flowBadgeByModifier.ovulation;
+  if (modifiers.period) return flowBadgeByModifier.period;
+  if (modifiers.fertile) return flowBadgeByModifier.fertile;
+  return null;
+}
 export default function CycleCalendar() {
   const { lastPeriodDate, cycleLength, periodLength } = useCycleStore();
 
@@ -45,6 +69,7 @@ export default function CycleCalendar() {
           showOutsideDays
           locale={ko}
           className="bloom-calendar bloom-cycle-calendar"
+          components={{ Day: CycleDay }}
           modifiers={{
             period: isPeriod,
             ovulation: isOvulation,
@@ -61,12 +86,43 @@ export default function CycleCalendar() {
   );
 }
 
+function CycleDay({
+  day,
+  modifiers,
+  className,
+  children,
+  ...dayProps
+}: DayProps) {
+  void day;
+  const badge = getFlowBadge(modifiers);
+  const ariaLabel =
+    badge && dayProps['aria-label']
+      ? `${dayProps['aria-label']}, ${badge.label}`
+      : dayProps['aria-label'];
+
+  return (
+    <td {...dayProps} aria-label={ariaLabel} className={className}>
+      <span className={`bloom-cycle-day${badge ? ' bloom-day-with-badge' : ''}`}>
+        <span className="bloom-day-number">{children}</span>
+        {badge ? (
+          <span
+            aria-hidden="true"
+            className={`bloom-flow-badge ${badge.className}`}
+          >
+            {badge.text}
+          </span>
+        ) : null}
+      </span>
+    </td>
+  );
+}
+
 function Legend() {
   return (
     <ul className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-gray-500">
       <LegendItem className="bg-red-300" label="생리" />
       <LegendItem className="bg-emerald-200" label="가임기" />
-      <LegendItem className="bg-emerald-500" label="배란" />
+      <LegendItem className="bg-violet-500" label="배란" />
     </ul>
   );
 }
