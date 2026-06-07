@@ -8,6 +8,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+      },
       includeAssets: ['favicon.svg', 'icons.svg'],
       manifest: {
         name: 'Bloom · 나의 주기 다이어리',
