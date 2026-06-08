@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useCycleStore } from '../store/cycleStore';
 import DatePopover from './DatePopover';
 
@@ -11,7 +11,15 @@ export default function InputForm() {
     setCycleLength,
     setPeriodLength,
     reset,
+    addToHistory,
   } = useCycleStore();
+  const [savedFlash, setSavedFlash] = useState(false);
+
+  const handleSave = () => {
+    addToHistory();
+    setSavedFlash(true);
+    window.setTimeout(() => setSavedFlash(false), 1800);
+  };
 
   return (
     <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur">
@@ -83,13 +91,27 @@ export default function InputForm() {
           </div>
         </label>
 
-        <button
-          type="button"
-          onClick={reset}
-          className="w-full rounded-xl border border-primary-200 px-4 py-2.5 text-sm font-medium text-primary-700 transition hover:bg-primary-50 active:scale-[0.99]"
-        >
-          기본값으로 다시 시작
-        </button>
+        <div className="space-y-2 pt-1">
+          <button
+            type="button"
+            onClick={handleSave}
+            className="w-full rounded-xl bg-gradient-to-br from-primary-500 to-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-petal transition hover:brightness-105 active:scale-[0.99]"
+          >
+            계산하기
+          </button>
+          {savedFlash && (
+            <p className="text-center text-xs text-primary-600">
+              이력에 저장되었어요
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={reset}
+            className="w-full rounded-xl border border-primary-200 px-4 py-2.5 text-sm font-medium text-primary-700 transition hover:bg-primary-50 active:scale-[0.99]"
+          >
+            기본값으로 다시 시작
+          </button>
+        </div>
       </div>
     </section>
   );

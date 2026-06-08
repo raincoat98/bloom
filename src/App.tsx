@@ -1,7 +1,6 @@
-import CycleCalendar from './components/CycleCalendar';
-import InputForm from './components/InputForm';
-import PhaseGuide from './components/PhaseGuide';
-import ResultCard from './components/ResultCard';
+import { Link, Route, Routes, useLocation } from 'react-router-dom';
+import HistoryPage from './pages/HistoryPage';
+import MainPage from './pages/MainPage';
 
 function BloomMark({ className = '' }: { className?: string }) {
   return (
@@ -38,6 +37,9 @@ function BloomMark({ className = '' }: { className?: string }) {
 }
 
 function App() {
+  const location = useLocation();
+  const isHistory = location.pathname.startsWith('/history');
+
   return (
     <div className="min-h-screen bg-sand-50 bg-bloom-radial">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:py-16">
@@ -46,12 +48,12 @@ function App() {
             <BloomMark className="h-4 w-4" />
             <span>나의 리듬을 부드럽게</span>
           </div>
-          <div className="flex items-center justify-center gap-3">
+          <Link to="/" className="inline-flex items-center justify-center gap-3">
             <BloomMark className="h-10 w-10 drop-shadow-sm" />
             <h1 className="font-display text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Bloom
             </h1>
-          </div>
+          </Link>
           <p className="mt-3 text-sm text-gray-600 sm:text-base">
             마지막 생리 시작일과 평균 주기만 알려주세요.
             <br className="sm:hidden" />
@@ -60,16 +62,34 @@ function App() {
               다음 일정과 컨디션 흐름을 살며시 짚어드릴게요.
             </span>
           </p>
+          <nav className="mt-5 inline-flex rounded-full bg-white/80 p-1 text-sm shadow-petal ring-1 ring-primary-100/70 backdrop-blur">
+            <Link
+              to="/"
+              className={`rounded-full px-4 py-1.5 font-medium transition ${
+                !isHistory
+                  ? 'bg-primary-500 text-white shadow-sm'
+                  : 'text-primary-700 hover:bg-primary-50'
+              }`}
+            >
+              오늘의 리듬
+            </Link>
+            <Link
+              to="/history"
+              className={`rounded-full px-4 py-1.5 font-medium transition ${
+                isHistory
+                  ? 'bg-primary-500 text-white shadow-sm'
+                  : 'text-primary-700 hover:bg-primary-50'
+              }`}
+            >
+              이력 관리
+            </Link>
+          </nav>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <InputForm />
-          <ResultCard />
-        </div>
-
-        <CycleCalendar />
-
-        <PhaseGuide />
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+        </Routes>
 
         <footer className="mt-14 flex flex-col items-center gap-1 text-center text-xs text-gray-400">
           <div className="flex items-center gap-1.5">
