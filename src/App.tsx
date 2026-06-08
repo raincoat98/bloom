@@ -48,7 +48,7 @@ function App() {
             <BloomMark className="h-4 w-4" />
             <span>나의 리듬을 부드럽게</span>
           </div>
-          <Link to="/" className="inline-flex items-center justify-center gap-3">
+          <Link to="/" className="flex items-center justify-center gap-3">
             <BloomMark className="h-10 w-10 drop-shadow-sm" />
             <h1 className="font-display text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Bloom

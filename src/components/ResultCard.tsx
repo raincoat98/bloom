@@ -69,7 +69,7 @@ export default function ResultCard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <InfoCard
           label="다음 생리 예정일"
           accent="text-red-600"
@@ -119,12 +119,16 @@ interface InfoCardProps {
 
 function InfoCard({ label, headline, sub, accent }: InfoCardProps) {
   return (
-    <div className="rounded-2xl bg-white/90 p-5 shadow-petal ring-1 ring-primary-100/50 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-bloom">
-      <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+    <div className="rounded-2xl bg-white/90 p-4 shadow-petal ring-1 ring-primary-100/50 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-bloom sm:p-5">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 sm:text-xs">
         {label}
       </p>
-      <p className={`mt-2 text-base font-semibold ${accent}`}>{headline}</p>
-      <p className="mt-1 text-xs text-gray-400">{sub}</p>
+      <p
+        className={`mt-1.5 text-sm font-semibold leading-snug sm:mt-2 sm:text-base ${accent}`}
+      >
+        {headline}
+      </p>
+      <p className="mt-1 text-[11px] text-gray-400 sm:text-xs">{sub}</p>
     </div>
   );
 }
