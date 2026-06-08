@@ -52,7 +52,7 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 origin-top rounded-2xl bg-white p-5 shadow-bloom ring-1 ring-primary-100">
+        <div className="absolute left-0 top-full z-50 mt-2 max-w-[calc(100vw-2.5rem)] origin-top overflow-x-auto rounded-2xl bg-white p-3 shadow-bloom ring-1 ring-primary-100 sm:p-5">
           <DayPicker
             mode="single"
             selected={selected}
