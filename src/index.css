@@ -269,10 +269,10 @@ body {
 .bloom-cycle-calendar .bloom-day-with-badge {
   flex-direction: column;
   gap: 2px;
-  width: 44px;
-  height: 44px;
-  border-radius: 18px;
-  font-size: 0.82rem;
+  width: calc(var(--rdp-day-width) - 8px);
+  height: calc(var(--rdp-day-width) - 8px);
+  border-radius: 9999px;
+  font-size: clamp(0.7rem, 2vw, 0.82rem);
   line-height: 1;
 }
 
