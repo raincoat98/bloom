@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 import { useCycleStore } from '../store/cycleStore';
 import { formatDate } from '../utils/cycle';
 
@@ -6,6 +7,7 @@ export default function HistoryPage() {
   const history = useCycleStore((state) => state.history);
   const loadFromHistory = useCycleStore((state) => state.loadFromHistory);
   const removeFromHistory = useCycleStore((state) => state.removeFromHistory);
+  const isLoggedIn = useAuthStore((state) => Boolean(state.user));
   const navigate = useNavigate();
 
   const handleLoad = (id: string) => {
@@ -23,6 +25,12 @@ export default function HistoryPage() {
           {history.length}건
         </span>
       </div>
+
+      {isLoggedIn && (
+        <p className="-mt-2 mb-3 text-[11px] text-gray-400">
+          로그인 상태라서 이 기록들은 서버에도 저장돼요.
+        </p>
+      )}
 
       {history.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-primary-200/70 bg-primary-50/40 p-8 text-center">

@@ -1,6 +1,10 @@
+import { useEffect } from 'react';
 import { Link, Route, Routes, useLocation } from 'react-router-dom';
+import AccountPanel from './components/AccountPanel';
 import HistoryPage from './pages/HistoryPage';
 import MainPage from './pages/MainPage';
+import { useAuthStore } from './store/authStore';
+import { syncAfterLogin, useCycleStore } from './store/cycleStore';
 
 function BloomMark({ className = '' }: { className?: string }) {
   return (
@@ -39,9 +43,25 @@ function BloomMark({ className = '' }: { className?: string }) {
 function App() {
   const location = useLocation();
   const isHistory = location.pathname.startsWith('/history');
+  const refresh = useAuthStore((state) => state.refresh);
+  const userId = useAuthStore((state) => state.user?.id);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  // 로그인 직후 로컬 기록과 서버 기록을 병합한다
+  useEffect(() => {
+    if (!userId) return;
+    useCycleStore.getState().setRemoteStatus('syncing');
+    syncAfterLogin().catch(() => useCycleStore.getState().setRemoteStatus('error'));
+  }, [userId]);
 
   return (
-    <div className="min-h-screen bg-sand-50 bg-bloom-radial">
+    <div className="relative min-h-screen bg-sand-50 bg-bloom-radial">
+      <div className="absolute right-4 top-4 z-40 sm:right-6 sm:top-6">
+        <AccountPanel />
+      </div>
       <div className="mx-auto max-w-3xl px-4 py-10 sm:py-16">
         <header className="mb-10 text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-xs font-medium text-primary-700 ring-1 ring-primary-100 backdrop-blur">

@@ -1,0 +1,44 @@
+name: bloom
+
+services:
+  backend:
+    build: ./bloom-svc
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      # 운영 배포 시 루트 .env 파일에서 긴 랜덤 시크릿으로 교체하세요
+      JWT_SECRET: ${JWT_SECRET:-bloom-dev-secret-change-me}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      DATA_DIR: /data
+    ports:
+      - "3000:3000"
+    volumes:
+      - bloom-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./bloom
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  bloom-data:
