@@ -96,7 +96,10 @@ services:
     restart: unless-stopped
     logging: *default-logging
     ports:
-      - "${BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-5173}:80"
+      # Cloudflare Tunnel 이 VM/컨테이너 안에서 돌면 인그레스가 호스트 LAN IP(:5173)로
+      # 들어오므로 loopback 바인딩으로는 닿지 않습니다 → PUBLIC_BIND_HOST=0.0.0.0.
+      # DB·백엔드는 BIND_HOST(loopback) 그대로라 LAN 에 열리지 않습니다.
+      - "${PUBLIC_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-5173}:80"
     depends_on:
       backend:
         condition: service_healthy
