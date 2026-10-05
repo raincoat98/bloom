@@ -2,21 +2,40 @@
   "name": "bloom-backend",
   "private": true,
   "version": "0.1.0",
-  "description": "Bloom 주기 기록 백엔드 (Express + SQLite)",
-  "type": "module",
-  "main": "src/index.js",
+  "description": "Bloom 주기 기록 백엔드 (NestJS + PostgreSQL)",
+  "main": "dist/main.js",
   "scripts": {
-    "dev": "node --env-file-if-exists=.env --watch src/index.js",
-    "start": "node --env-file-if-exists=.env src/index.js"
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "migrate:from-sqlite": "ts-node scripts/migrate-sqlite-to-postgres.ts"
   },
   "engines": {
     "node": ">=22.9"
   },
   "dependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "^11.0.0",
+    "@nestjs/platform-express": "^11.0.0",
     "bcryptjs": "^3.0.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "pg": "^8.13.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/schematics": "^11.0.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.10",
+    "@types/better-sqlite3": "^7.6.11",
     "better-sqlite3": "^13.0.3",
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.0"
   }
 }

@@ -1,20 +1,61 @@
-name: bloom
+# dev / prod 배포는 .env.dev / .env.prod 로 분리합니다 (README 의 "배포" 절 참고).
+# 프로젝트 이름이 다르면 컨테이너·볼륨·이미지가 모두 분리됩니다.
+name: ${COMPOSE_PROJECT_NAME:-bloom}
+
+# 로그가 디스크를 채우지 않도록 크기 상한을 둡니다 (dev/prod 공통).
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
 
 services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bloom}
+      POSTGRES_DB: ${POSTGRES_DB:-bloom}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD 를 .env.dev / .env.prod 에 설정하세요}
+    # 호스트 loopback 으로만 노출합니다. 외부 네트워크에는 열리지 않습니다.
+    ports:
+      - "${BIND_HOST:-127.0.0.1}:${DB_PORT:-5432}:5432"
+    volumes:
+      - bloom-db:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-bloom} -d ${POSTGRES_DB:-bloom}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   backend:
     build: ./bloom-svc
     restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: "3000"
-      # 운영 배포 시 루트 .env 파일에서 긴 랜덤 시크릿으로 교체하세요
-      JWT_SECRET: ${JWT_SECRET:-bloom-dev-secret-change-me}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
-      DATA_DIR: /data
+      # 운영 배포 시 반드시 긴 랜덤 문자열로 교체하세요 (openssl rand -hex 32).
+      # dev 와 prod 가 같은 시크릿을 쓰면 dev 토큰이 prod 에서 통합니다.
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET 을 .env.dev / .env.prod 에 설정하세요}
+      FRONTEND_URL: ${FRONTEND_URL:?FRONTEND_URL(CORS 허용 주소)을 설정하세요}
+      # 비밀번호를 중복 기재하지 않도록 libpq 표준 변수로 넘깁니다.
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-bloom}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD 를 설정하세요}
+      PGDATABASE: ${POSTGRES_DB:-bloom}
+      DATABASE_SSL: ${DATABASE_SSL:-false}
     ports:
-      - "3000:3000"
-    volumes:
-      - bloom-data:/data
+      - "${BIND_HOST:-127.0.0.1}:${BACKEND_PORT:-3000}:3000"
     healthcheck:
       test:
         [
@@ -28,17 +69,38 @@ services:
       retries: 3
       start_period: 10s
 
+  backup:
+    build: ./bloom-backup
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-bloom}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD 를 설정하세요}
+      PGDATABASE: ${POSTGRES_DB:-bloom}
+      BACKUP_DIR: /backups
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      BACKUP_KEEP: ${BACKUP_KEEP:-14}
+    volumes:
+      - bloom-backups:/backups
+
   frontend:
     build:
       context: ./bloom
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+        # 빌드 시점에 번들에 박히므로 dev/prod 값이 반드시 달라야 합니다.
+        VITE_API_URL: ${VITE_API_URL:?VITE_API_URL(브라우저가 호출할 API 주소)을 설정하세요}
     restart: unless-stopped
+    logging: *default-logging
     ports:
-      - "5173:80"
+      - "${BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-5173}:80"
     depends_on:
       backend:
         condition: service_healthy
 
 volumes:
-  bloom-data:
+  bloom-db:
+  bloom-backups:
