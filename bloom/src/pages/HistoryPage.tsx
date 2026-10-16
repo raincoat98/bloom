@@ -1,19 +1,38 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Trash2 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
-import { useCycleStore } from '../store/cycleStore';
+import { useCycleStore, type CycleHistoryEntry } from '../store/cycleStore';
 import { formatDate } from '../utils/cycle';
-
 export default function HistoryPage() {
   const history = useCycleStore((state) => state.history);
   const loadFromHistory = useCycleStore((state) => state.loadFromHistory);
   const removeFromHistory = useCycleStore((state) => state.removeFromHistory);
   const isLoggedIn = useAuthStore((state) => Boolean(state.user));
   const navigate = useNavigate();
+  const [deleteTarget, setDeleteTarget] = useState<CycleHistoryEntry | null>(null);
 
   const handleLoad = (id: string) => {
     loadFromHistory(id);
     navigate('/');
   };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    removeFromHistory(deleteTarget.id);
+    setDeleteTarget(null);
+  };
+
+  useEffect(() => {
+    if (!deleteTarget) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDeleteTarget(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [deleteTarget]);
 
   return (
     <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur">
@@ -76,15 +95,69 @@ export default function HistoryPage() {
               </button>
               <button
                 type="button"
-                onClick={() => removeFromHistory(entry.id)}
+                onClick={() => setDeleteTarget(entry)}
                 className="shrink-0 rounded-full border border-transparent px-3 py-1.5 text-xs font-medium text-gray-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
-                aria-label="이 기록 삭제"
+                aria-label={`${formatDate(new Date(entry.lastPeriodDate))} 주기 기록 삭제`}
               >
                 삭제
               </button>
             </li>
           ))}
         </ul>
+      )}
+      {deleteTarget && (
+        <div
+          role="presentation"
+          onClick={() => setDeleteTarget(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs transition-opacity"
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+            aria-describedby="delete-dialog-desc"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-bloom ring-1 ring-primary-100/70"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-500 ring-1 ring-rose-100">
+              <Trash2 size={22} strokeWidth={2.25} />
+            </div>
+
+            <h3
+              id="delete-dialog-title"
+              className="mt-4 font-display text-lg font-bold text-gray-900"
+            >
+              주기 기록을 삭제할까요?
+            </h3>
+
+            <p id="delete-dialog-desc" className="mt-2 text-sm text-gray-600 leading-relaxed">
+              <strong className="font-semibold text-gray-900">
+                {formatDate(new Date(deleteTarget.lastPeriodDate))}
+              </strong>{' '}
+              시작 기록(주기 {deleteTarget.cycleLength}일, 기간 {deleteTarget.periodLength}일)이 목록에서 완전히 삭제됩니다.
+            </p>
+            <p className="mt-1 text-xs text-rose-500">
+              삭제한 기록은 다시 복구할 수 없어요.
+            </p>
+
+            <div className="mt-6 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 active:scale-[0.98]"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="flex-1 rounded-xl bg-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-600 active:scale-[0.98]"
+              >
+                삭제하기
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );
