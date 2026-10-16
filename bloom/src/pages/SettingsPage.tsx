@@ -22,7 +22,7 @@ export default function SettingsPage() {
               <p className="mt-0.5 text-xs text-gray-600 sm:text-sm">
                 {user
                   ? user.email
-                  : '로그인하시면 주기 기록이 안전하게 보관되고 웹 푸시 알림을 받을 수 있어요.'}
+                  : '로그인하시면 주기 기록이 보관되고 맞춤 알림을 받을 수 있어요.'}
               </p>
             </div>
           </div>
