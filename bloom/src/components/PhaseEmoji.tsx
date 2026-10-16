@@ -1,14 +1,14 @@
 import type { FluentEmojiComponent } from '@fluentui-emoji/react';
 import CrescentMoon from '@fluentui-emoji/react/modern/crescent-moon';
 import DropOfBlood from '@fluentui-emoji/react/modern/drop-of-blood';
-import Egg from '@fluentui-emoji/react/modern/egg';
+import Blossom from '@fluentui-emoji/react/modern/blossom';
 import Seedling from '@fluentui-emoji/react/modern/seedling';
 import type { Phase } from '../data/phaseGuides';
 
 const ICON_BY_PHASE: Record<Phase, FluentEmojiComponent> = {
   '생리 중': DropOfBlood,
   여포기: Seedling,
-  배란기: Egg,
+  배란기: Blossom,
   황체기: CrescentMoon,
 };
 

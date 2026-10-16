@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { differenceInCalendarDays } from 'date-fns';
 import DropOfBlood from '@fluentui-emoji/react/modern/drop-of-blood';
-import Egg from '@fluentui-emoji/react/modern/egg';
+import Blossom from '@fluentui-emoji/react/modern/blossom';
 import Seedling from '@fluentui-emoji/react/modern/seedling';
 import Shield from '@fluentui-emoji/react/modern/shield';
 import { useCycleStore } from '../store/cycleStore';
@@ -88,10 +88,10 @@ export default function ResultCard() {
         />
         <InfoCard
           label="배란 예정일"
-          accent="text-green-600"
+          accent="text-purple-600"
           headline={formatDate(prediction.ovulationDate)}
           sub={daysLabel(prediction.daysUntilOvulation)}
-          icon={<Egg className="h-5 w-5" focusable="false" />}
+          icon={<Blossom className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
           label="가임기"
