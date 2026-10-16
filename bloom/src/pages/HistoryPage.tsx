@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useCycleStore } from '../store/cycleStore';
 import { formatDate } from '../utils/cycle';
@@ -31,7 +31,18 @@ export default function HistoryPage() {
           로그인 상태라서 이 기록들은 서버에도 저장돼요.
         </p>
       )}
-
+      {!isLoggedIn && history.length > 0 && (
+        <div className="-mt-2 mb-4 flex items-center justify-between rounded-2xl bg-primary-50/70 px-3.5 py-2.5 text-xs text-primary-900">
+          <span>기록을 잃어버리지 않게 서버에 동기화할 수 있어요.</span>
+          <Link
+            to="/login"
+            state={{ from: '/history' }}
+            className="font-semibold text-primary-700 underline underline-offset-2 hover:text-primary-800"
+          >
+            로그인하기
+          </Link>
+        </div>
+      )}
       {history.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-primary-200/70 bg-primary-50/40 p-8 text-center">
           <p className="text-sm font-medium text-primary-700">

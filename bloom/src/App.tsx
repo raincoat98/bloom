@@ -3,6 +3,7 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import AccountPanel from './components/AccountPanel';
 import HistoryPage from './pages/HistoryPage';
 import MainPage from './pages/MainPage';
+import LoginPage from './pages/LoginPage';
 import { useAuthStore } from './store/authStore';
 import { syncAfterLogin, useCycleStore } from './store/cycleStore';
 
@@ -43,6 +44,7 @@ function BloomMark({ className = '' }: { className?: string }) {
 function App() {
   const location = useLocation();
   const isHistory = location.pathname.startsWith('/history');
+  const isLogin = location.pathname.startsWith('/login');
   const refresh = useAuthStore((state) => state.refresh);
   const userId = useAuthStore((state) => state.user?.id);
 
@@ -86,7 +88,7 @@ function App() {
             <Link
               to="/"
               className={`rounded-full px-4 py-1.5 font-medium transition ${
-                !isHistory
+                !isHistory && !isLogin
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50'
               }`}
@@ -109,6 +111,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
 
         <footer className="mt-14 flex flex-col items-center gap-1 text-center text-xs text-gray-400">
