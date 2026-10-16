@@ -10,6 +10,7 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main.js",
     "typecheck": "tsc --noEmit",
+    "test": "node --test test/**/*.test.js",
     "migrate:from-sqlite": "ts-node scripts/migrate-sqlite-to-postgres.ts"
   },
   "engines": {
@@ -25,15 +26,17 @@
     "class-validator": "^0.14.1",
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
+    "@types/better-sqlite3": "^7.6.11",
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
     "@types/pg": "^8.11.10",
-    "@types/better-sqlite3": "^7.6.11",
+    "@types/web-push": "^3.6.4",
     "better-sqlite3": "^13.0.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.0"
