@@ -117,7 +117,7 @@ export const useNotificationStore = create<NotificationState>()(
         if (!isPushSupported()) {
           set({
             error:
-              '현재 브라우저에서는 웹 푸시를 지원하지 않아요. 모바일에서는 홈 화면에 추가 후 열어주세요.',
+              '현재 브라우저에서는 알림을 지원하지 않아요. 모바일에서는 홈 화면에 추가 후 열어주세요.',
           });
           return false;
         }

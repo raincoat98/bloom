@@ -71,7 +71,7 @@ export default function NotificationSettings() {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-display text-base font-bold text-gray-900 sm:text-lg">
-                PWA 웹 푸시 알림
+                주기 알림
               </h2>
               {isSubscribed ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
@@ -154,7 +154,7 @@ export default function NotificationSettings() {
           <p className="font-semibold">📱 모바일 Safari(iOS) 이용 팁</p>
           <p className="mt-1">
             iOS 16.4 이상에서는 Safari 하단 [공유] &gt; [홈 화면에 추가]로 앱을 설치한 후
-            실행하시면 PWA 푸시 알림을 받을 수 있어요.
+            실행하시면 알림을 받을 수 있어요.
           </p>
         </div>
       )}
