@@ -121,3 +121,72 @@ export const symptomApi = {
     await request<void>(`/api/symptoms/${encodeURIComponent(id)}`, { method: 'DELETE' });
   },
 };
+
+export interface PushSubscriptionKeys {
+  p256dh: string;
+  auth: string;
+}
+
+export interface PushPreferences {
+  periodBefore?: boolean;
+  fertileBefore?: boolean;
+  symptomReminder?: boolean;
+}
+
+export interface PushCycleInfo {
+  lastPeriodDate?: string;
+  cycleLength?: number;
+  periodLength?: number;
+}
+
+export interface PushSubscribePayload {
+  endpoint: string;
+  keys: PushSubscriptionKeys;
+  preferences?: PushPreferences;
+  cycleInfo?: PushCycleInfo;
+}
+
+export interface PushStatusResult {
+  subscribed: boolean;
+  preferences?: {
+    periodBefore: boolean;
+    fertileBefore: boolean;
+    symptomReminder: boolean;
+  };
+  cycleInfo?: PushCycleInfo;
+}
+
+export const pushApi = {
+  async getVapidPublicKey() {
+    return request<{ publicKey: string }>('/api/push/vapid-public-key');
+  },
+  async subscribe(payload: PushSubscribePayload) {
+    return request<{ ok: boolean; subscription: unknown }>('/api/push/subscribe', {
+      method: 'POST',
+      body: payload,
+    });
+  },
+  async unsubscribe(endpoint: string) {
+    return request<{ ok: boolean }>('/api/push/unsubscribe', {
+      method: 'POST',
+      body: { endpoint },
+    });
+  },
+  async getStatus(endpoint: string) {
+    return request<PushStatusResult>(
+      `/api/push/status?endpoint=${encodeURIComponent(endpoint)}`,
+    );
+  },
+  async sendTest(payload: {
+    endpoint: string;
+    type?: 'period' | 'fertile' | 'symptom' | 'custom';
+    title?: string;
+    body?: string;
+    url?: string;
+  }) {
+    return request<{ ok: boolean; message: string; payload: unknown }>('/api/push/test', {
+      method: 'POST',
+      body: payload,
+    });
+  },
+};

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, LogIn, LogOut, UserRound } from 'lucide-react';
+import { Bell, ChevronDown, LogIn, LogOut, UserRound } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useCycleStore, type RemoteStatus } from '../store/cycleStore';
-
+import { useNotificationStore } from '../store/notificationStore';
 const SYNC_LABEL: Record<RemoteStatus, string> = {
   local: '로컬에만 저장',
   syncing: '서버 동기화 중…',
@@ -22,8 +22,8 @@ export default function AccountPanel() {
   const location = useLocation();
   const { user, ready, logout } = useAuthStore();
   const remoteStatus = useCycleStore((state) => state.remoteStatus);
+  const isSubscribed = useNotificationStore((state) => state.isSubscribed);
   const [open, setOpen] = useState(false);
-
   if (!ready) return null;
 
   // 비로그인 상태일 때
@@ -95,6 +95,19 @@ export default function AccountPanel() {
                 <span>{SYNC_LABEL[remoteStatus]}</span>
               </div>
 
+              <div className="flex items-center justify-between rounded-xl bg-sand-50/80 px-2.5 py-2 text-xs text-gray-600">
+                <span className="flex items-center gap-1.5">
+                  <Bell className="h-3.5 w-3.5 text-primary-500" />
+                  <span>웹 푸시 알림</span>
+                </span>
+                <span
+                  className={`font-semibold ${
+                    isSubscribed ? 'text-emerald-600' : 'text-gray-400'
+                  }`}
+                >
+                  {isSubscribed ? '켜짐' : '꺼짐'}
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={handleLogout}

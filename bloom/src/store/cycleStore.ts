@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ApiError, cycleApi } from '../lib/api';
 import { getAuthToken } from '../lib/token';
-
+import { useNotificationStore } from './notificationStore';
 export interface CycleHistoryEntry {
   id: string;
   lastPeriodDate: string;
@@ -90,9 +90,21 @@ export const useCycleStore = create<CycleState>()(
       periodLength: 5,
       history: [],
       remoteStatus: 'local',
-      setLastPeriodDate: (date) => set({ lastPeriodDate: date }),
-      setCycleLength: (days) => set({ cycleLength: days }),
-      setPeriodLength: (days) => set({ periodLength: days }),
+      setLastPeriodDate: (date) => {
+        set({ lastPeriodDate: date });
+        const { cycleLength, periodLength } = get();
+        void useNotificationStore.getState().syncCycle({ lastPeriodDate: date, cycleLength, periodLength });
+      },
+      setCycleLength: (days) => {
+        set({ cycleLength: days });
+        const { lastPeriodDate, periodLength } = get();
+        void useNotificationStore.getState().syncCycle({ lastPeriodDate, cycleLength: days, periodLength });
+      },
+      setPeriodLength: (days) => {
+        set({ periodLength: days });
+        const { lastPeriodDate, cycleLength } = get();
+        void useNotificationStore.getState().syncCycle({ lastPeriodDate, cycleLength, periodLength: days });
+      },
       setRemoteStatus: (status) => set({ remoteStatus: status }),
       reset: () =>
         set({

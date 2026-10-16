@@ -13,7 +13,7 @@ import {
   syncSymptomsAfterLogin,
   useSymptomStore,
 } from './store/symptomStore';
-
+import { useNotificationStore } from './store/notificationStore';
 function BloomMark({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -61,8 +61,8 @@ function App() {
   useEffect(() => {
     migrateLegacyLocalSymptoms();
     void refresh();
+    void useNotificationStore.getState().init();
   }, [refresh]);
-
   // 로그인 직후 로컬 기록과 서버 기록을 병합한다
   useEffect(() => {
     if (!userId) return;
@@ -72,6 +72,8 @@ function App() {
       useCycleStore.getState().setRemoteStatus('error');
       useSymptomStore.getState().setRemoteStatus('error');
     });
+    const { lastPeriodDate, cycleLength, periodLength } = useCycleStore.getState();
+    void useNotificationStore.getState().syncCycle({ lastPeriodDate, cycleLength, periodLength });
   }, [userId]);
 
   return (
