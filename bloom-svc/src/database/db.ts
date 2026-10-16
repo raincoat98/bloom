@@ -98,6 +98,32 @@ export const migrations: Migration[] = [
       ALTER TABLE cycles DROP COLUMN symptoms;
     `,
   },
+  {
+    version: 4,
+    sql: `
+      CREATE TABLE push_subscriptions (
+        id text PRIMARY KEY,
+        user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+        endpoint text NOT NULL UNIQUE,
+        p256dh text NOT NULL,
+        auth text NOT NULL,
+        last_period_date date,
+        cycle_length integer,
+        period_length integer,
+        notify_period_before boolean NOT NULL DEFAULT true,
+        notify_fertile_before boolean NOT NULL DEFAULT true,
+        notify_symptom_reminder boolean NOT NULL DEFAULT true,
+        last_notified_period_date date,
+        last_notified_fertile_date date,
+        last_notified_symptom_date date,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        updated_at timestamptz NOT NULL DEFAULT now()
+      );
+
+      CREATE INDEX idx_push_subs_user ON push_subscriptions (user_id);
+      CREATE INDEX idx_push_subs_endpoint ON push_subscriptions (endpoint);
+    `,
+  },
 ];
 
 export async function migrate(pool: Pool): Promise<void> {

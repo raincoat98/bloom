@@ -7,10 +7,11 @@
 
 - **별도 증상 관리** — 전용 탭에서 MIT 라이선스의 [Microsoft Fluent UI Emoji](https://github.com/microsoft/fluentui-emoji)로
   복통·두통·피로 등 오늘의 증상을 여러 개 골라 기록합니다.
-- **계정 없이 사용** — 데이터는 브라우저(localStorage) 안에서만 다뤄집니다.
+- **PWA 웹 푸시 알림** — 생리 시작 2일 전, 가임기 시작 1일 전, 컨디션/증상 기록 리마인더를
+  브라우저 및 PWA 푸시 알림으로 전송하여 앱 재방문과 주기 관리를 돕습니다.
+- **계정 없이 사용** — 데이터는 브라우저(localStorage) 안에서만 다뤄지며, 비회원도 푸시 알림을 받을 수 있습니다.
 - **로그인하면 서버 저장** — 계정을 만들면 주기 기록이 백엔드(PostgreSQL)에도 저장되어
   어느 기기에서든 이어집니다.
-
 ## 저장소 구조
 
 ```
@@ -162,6 +163,9 @@ main 브랜치 push(또는 수동 실행) 시 self-hosted 러너가 `docker comp
 | `PUBLIC_BIND_HOST` | `127.0.0.1` | 터널 쓸 때 `0.0.0.0` | **프론트 nginx만** 호스트에 노출 |
 | `BACKUP_INTERVAL_SECONDS` | `86400` | `86400` | 백업 주기(초) |
 | `BACKUP_KEEP` | `14` | `30` | 보관 덤프 개수 |
+| `VAPID_PUBLIC_KEY` | (미지정 시 자동생성) | VAPID 공개키 | 웹 푸시 암호화 서명용 |
+| `VAPID_PRIVATE_KEY` | (미지정 시 자동생성) | VAPID 비밀키 | 웹 푸시 암호화 서명용 |
+| `VAPID_SUBJECT` | `mailto:...` | `mailto:...` | VAPID 발신자 연락처 |
 
 `bloom-svc/.env`는 백엔드를 호스트에서 직접(`npm run start:dev`) 돌릴 때만 씁니다.
 
@@ -254,6 +258,7 @@ bloom-svc/src/
   auth/                           # signup · login · me, JwtModule, AuthGuard, DTO
   cycles/                         # 주기 기록 CRUD, DTO 검증
   symptoms/                       # 일별 증상 기록 CRUD, DTO 검증
+  push/                           # PWA 웹 푸시 알림 (구독, VAPID, 즉시/스케줄 발송)
   health.controller.ts            # /health (DB 연결 확인)
 ```
 
@@ -270,7 +275,12 @@ bloom-svc/src/
 | `GET` | `/api/symptoms` | 내 일별 증상 기록 목록 |
 | `PUT` | `/api/symptoms/:id` | 증상 저장/갱신 (같은 기록일이면 덮어씀) |
 | `DELETE` | `/api/symptoms/:id` | 증상 기록 삭제 |
-
+| `GET` | `/api/push/vapid-public-key` | VAPID 공개키 조회 |
+| `POST` | `/api/push/subscribe` | 푸시 구독 등록/갱신 (`{endpoint, keys, preferences, cycleInfo}`) |
+| `POST` | `/api/push/unsubscribe` | 푸시 구독 해제 (`{endpoint}`) |
+| `GET` | `/api/push/status` | 푸시 구독 여부 및 설정 확인 (`?endpoint=...`) |
+| `POST` | `/api/push/test` | 테스트 알림 즉시 발송 (`{endpoint, type}`) |
+| `POST` | `/api/push/dispatch` | 주기 기반 알림 스케줄 발송 트리거 |
 보호된 API는 `Authorization: Bearer <token>` 헤더가 필요합니다.
 오류 응답은 항상 `{ error: string }` 형태입니다.
 

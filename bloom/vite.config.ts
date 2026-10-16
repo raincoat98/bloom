@@ -39,6 +39,7 @@ export default defineConfig({
         'robots.txt',
         'sitemap.xml',
         'og-image.png',
+        'sw-push.js',
       ],
       manifest: {
         name: 'Bloom: 나의 주기 다이어리',
@@ -74,6 +75,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        importScripts: ['sw-push.js'],
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: '/index.html',
         cleanupOutdatedCaches: true,

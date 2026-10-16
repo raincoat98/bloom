@@ -69,8 +69,7 @@ echo "db ready"
 echo "== 1. 마이그레이션 + 기동 =="
 start_backend
 check "health" "200" "$(status "http://localhost:$PORT/health")"
-grep -q 'applied migration 1' "$LOG" && grep -q 'applied migration 2' "$LOG" && grep -q 'applied migration 3' "$LOG" && echo "  ok   schema migrations applied" || { echo "  FAIL migration not applied"; FAILS=$((FAILS+1)); }
-
+grep -q 'applied migration 1' "$LOG" && grep -q 'applied migration 2' "$LOG" && grep -q 'applied migration 3' "$LOG" && grep -q 'applied migration 4' "$LOG" && echo "  ok   schema migrations applied" || { echo "  FAIL migration not applied"; FAILS=$((FAILS+1)); }
 AUTH=(-H 'content-type: application/json')
 BASE="http://localhost:$PORT"
 
@@ -119,14 +118,46 @@ check "최근 증상 먼저 정렬" "2026-09-04" "$(echo "$SYMPTOMS" | jget 'j.r
 check "빈 증상 400" "400" "$(status -X PUT "$BASE/api/symptoms/s9" "${AUTHZ[@]}" -d '{"logDate":"2026-09-05","symptoms":[]}')"
 check "지원하지 않는 증상 400" "400" "$(status -X PUT "$BASE/api/symptoms/s9" "${AUTHZ[@]}" -d '{"logDate":"2026-09-05","symptoms":["unknown"]}')"
 
-echo "== 5. 재기동 후 영속성 =="
+echo "== 5. 웹 푸시 알림 =="
+VAPID_RES=$(curl -s "$BASE/api/push/vapid-public-key")
+check "VAPID 공개키 조회" "true" "$(echo "$VAPID_RES" | jget 'Boolean(j.publicKey && j.publicKey.length > 20)')"
+
+SUB_GUEST=$(curl -s -X POST "$BASE/api/push/subscribe" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest","keys":{"p256dh":"dummy-p256dh","auth":"dummy-auth"},"cycleInfo":{"lastPeriodDate":"2026-10-01","cycleLength":28,"periodLength":5}}')
+check "비회원 푸시 구독 201" "201" "$(status -X POST "$BASE/api/push/subscribe" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest-2","keys":{"p256dh":"k1","auth":"k2"}}')"
+check "비회원 푸시 구독 endpoint" "mock://ep-guest" "$(echo "$SUB_GUEST" | jget 'j.subscription.endpoint')"
+
+STATUS_GUEST=$(curl -s "$BASE/api/push/status?endpoint=mock://ep-guest")
+check "구독 상태 확인" "true" "$(echo "$STATUS_GUEST" | jget 'j.subscribed')"
+check "구독 주기 정보 확인" "2026-10-01" "$(echo "$STATUS_GUEST" | jget 'j.cycleInfo.lastPeriodDate')"
+
+TEST_PUSH=$(curl -s -X POST "$BASE/api/push/test" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest","type":"period"}')
+check "테스트 알림 발송 200" "true" "$(echo "$TEST_PUSH" | jget 'j.ok')"
+check "테스트 알림 타이틀" "Bloom 🌸" "$(echo "$TEST_PUSH" | jget 'j.payload.title')"
+check "테스트 알림 본문" "생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸" "$(echo "$TEST_PUSH" | jget 'j.payload.body')"
+
+# 2026-10-27 은 2026-10-01 시작/28일 주기 기준 다음 예정일(10-29) 2일 전 시점
+DISPATCH_RES=$(curl -s -X POST "$BASE/api/push/dispatch" "${AUTH[@]}" -d '{"targetDate":"2026-10-27"}')
+check "스케줄 알림 발송 200" "true" "$(echo "$DISPATCH_RES" | jget 'j.ok')"
+check "2일 전 알림 발송 1건" "1" "$(echo "$DISPATCH_RES" | jget 'j.sent.period')"
+
+# 회원 푸시 구독
+SUB_USER=$(curl -s -X POST "$BASE/api/push/subscribe" "${AUTHZ[@]}" -d '{"endpoint":"mock://ep-user","keys":{"p256dh":"k3","auth":"k4"}}')
+check "회원 푸시 구독 성공" "mock://ep-user" "$(echo "$SUB_USER" | jget 'j.subscription.endpoint')"
+
+# 구독 해제
+UNSUB_RES=$(curl -s -X POST "$BASE/api/push/unsubscribe" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest"}')
+check "구독 해제 200" "true" "$(echo "$UNSUB_RES" | jget 'j.ok')"
+STATUS_UNSUB=$(curl -s "$BASE/api/push/status?endpoint=mock://ep-guest")
+check "해제 후 상태 false" "false" "$(echo "$STATUS_UNSUB" | jget 'j.subscribed')"
+
+echo "== 6. 재기동 후 영속성 =="
 stop_backend
 start_backend
 check "재기동 후 1건 유지" "1" "$(curl -s "$BASE/api/cycles" -H "authorization: Bearer $TOKEN" | jget 'j.records.length')"
 check "재기동 후 증상 2건 유지" "2" "$(curl -s "$BASE/api/symptoms" -H "authorization: Bearer $TOKEN" | jget 'j.records.length')"
 check "토큰 재사용 가능" "200" "$(status "$BASE/api/me" -H "authorization: Bearer $TOKEN")"
 
-echo "== 5. 백업 =="
+echo "== 7. 백업 =="
 $COMPOSE run --rm --no-deps -T -e BACKUP_RUN_ONCE=1 backup >/dev/null 2>&1
 $COMPOSE run --rm --no-deps -T -e BACKUP_RUN_ONCE=1 -e BACKUP_KEEP=1 backup >/dev/null 2>&1
 sleep 1
@@ -136,7 +167,7 @@ check "보관 개수 1로 정리" "1" "$DUMPS"
 DUMP=$($COMPOSE run --rm --no-deps -T --entrypoint sh backup -c 'ls -1t /backups/bloom-*.dump | head -1' | tr -d '[:space:]')
 echo "  덤프: $DUMP"
 
-echo "== 6. 복원 =="
+echo "== 8. 복원 =="
 $COMPOSE exec -T db psql -q -U bloom -d postgres -c 'DROP DATABASE IF EXISTS bloom_restore' >/dev/null
 $COMPOSE exec -T db psql -q -U bloom -d postgres -c 'CREATE DATABASE bloom_restore' >/dev/null
 $COMPOSE run --rm --no-deps -T --entrypoint pg_restore backup -U bloom -h db -d bloom_restore --no-owner "$DUMP" >/dev/null 2>&1
@@ -145,7 +176,7 @@ RESTORED=$($COMPOSE exec -T db psql -tA -U bloom -d bloom_restore -c "SELECT (SE
 check "원본 데이터 (users/cycles)" "2/1" "$LIVE"
 check "복원 데이터가 원본과 일치" "$LIVE" "$RESTORED"
 
-echo "== 7. SQLite → Postgres 이관 =="
+echo "== 9. SQLite → Postgres 이관 =="
 $COMPOSE exec -T db psql -q -U bloom -d postgres -c 'DROP DATABASE IF EXISTS bloom_migrate' >/dev/null
 $COMPOSE exec -T db psql -q -U bloom -d postgres -c 'CREATE DATABASE bloom_migrate' >/dev/null
 LEGACY=$(mktemp -d)
