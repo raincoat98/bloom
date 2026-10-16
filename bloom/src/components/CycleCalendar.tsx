@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import type { DayProps } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
@@ -30,6 +30,15 @@ function getFlowBadge(modifiers: DayProps['modifiers']) {
 }
 export default function CycleCalendar() {
   const { lastPeriodDate, cycleLength, periodLength } = useCycleStore();
+  const [month, setMonth] = useState<Date>(() => new Date());
+
+  const isCurrentMonth = useMemo(() => {
+    const today = new Date();
+    return (
+      month.getFullYear() === today.getFullYear() &&
+      month.getMonth() === today.getMonth()
+    );
+  }, [month]);
 
   const { isPeriod, isFertile, isOvulation } = useMemo(() => {
     const anchor = parseLocalDate(lastPeriodDate);
@@ -57,15 +66,32 @@ export default function CycleCalendar() {
           <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
             나의 리듬 캘린더
           </p>
-          <h2 className="font-display text-xl font-bold text-gray-900">
-            한 달 흐름 보기
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-display text-xl font-bold text-gray-900">
+              한 달 흐름 보기
+            </h2>
+            <button
+              type="button"
+              onClick={() => setMonth(new Date())}
+              disabled={isCurrentMonth}
+              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold transition active:scale-95 ${
+                isCurrentMonth
+                  ? 'border border-gray-200/80 bg-gray-50/50 text-gray-400 cursor-default'
+                  : 'bg-primary-50 text-primary-700 hover:bg-primary-100 ring-1 ring-primary-200/70 shadow-xs'
+              }`}
+              title="오늘이 속한 달로 이동"
+            >
+              오늘
+            </button>
+          </div>
         </div>
         <Legend />
       </header>
 
       <div className="flex justify-center">
         <DayPicker
+          month={month}
+          onMonthChange={setMonth}
           showOutsideDays
           locale={ko}
           className="bloom-calendar bloom-cycle-calendar"
