@@ -1,0 +1,25 @@
+# 개발 전용: 정적 nginx 대신 Vite HMR, 컴파일 산출물 대신 백엔드 watch 모드로 실행합니다.
+services:
+  backend:
+    build:
+      target: dev
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./bloom-svc/src:/app/src
+
+  frontend:
+    build:
+      target: dev
+    environment:
+      VITE_API_URL: ${VITE_API_URL:?VITE_API_URL 을 .env.dev 에 설정하세요}
+      CHOKIDAR_USEPOLLING: "true"
+    ports: !override
+      - "${PUBLIC_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./bloom/src:/app/src
+      - ./bloom/public:/app/public
+      - ./bloom/index.html:/app/index.html
+      - ./bloom/vite.config.ts:/app/vite.config.ts
+      - ./bloom/tailwind.config.js:/app/tailwind.config.js
+      - ./bloom/postcss.config.js:/app/postcss.config.js

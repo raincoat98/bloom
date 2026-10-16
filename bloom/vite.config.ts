@@ -5,11 +5,32 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    {
+      name: 'retire-production-service-worker-in-dev',
+      apply: 'serve',
+      configureServer(server) {
+        server.middlewares.use('/sw.js', (_request, response) => {
+          response.setHeader('Content-Type', 'text/javascript')
+          response.setHeader('Cache-Control', 'no-store')
+          response.end(`
+            self.addEventListener('install', () => self.skipWaiting());
+            self.addEventListener('activate', (event) => {
+              event.waitUntil(
+                self.registration.unregister().then(() =>
+                  self.clients.matchAll().then((clients) =>
+                    Promise.all(clients.map((client) => client.navigate(client.url))),
+                  ),
+                ),
+              );
+            });
+          `)
+        })
+      },
+    },
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
       includeAssets: ['favicon.svg', 'icons.svg'],
       manifest: {

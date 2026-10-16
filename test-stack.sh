@@ -69,7 +69,7 @@ echo "db ready"
 echo "== 1. 마이그레이션 + 기동 =="
 start_backend
 check "health" "200" "$(status "http://localhost:$PORT/health")"
-grep -q 'applied migration 1' "$LOG" && echo "  ok   schema migration applied" || { echo "  FAIL migration not applied"; FAILS=$((FAILS+1)); }
+grep -q 'applied migration 1' "$LOG" && grep -q 'applied migration 2' "$LOG" && grep -q 'applied migration 3' "$LOG" && echo "  ok   schema migrations applied" || { echo "  FAIL migration not applied"; FAILS=$((FAILS+1)); }
 
 AUTH=(-H 'content-type: application/json')
 BASE="http://localhost:$PORT"
@@ -108,10 +108,22 @@ check "삭제 204" "204" "$(status -X DELETE "$BASE/api/cycles/c2" "${AUTHZ[@]}"
 check "재삭제 404" "404" "$(status -X DELETE "$BASE/api/cycles/c2" "${AUTHZ[@]}")"
 check "삭제 후 1건" "1" "$(curl -s "$BASE/api/cycles" "${AUTHZ[@]}" | jget 'j.records.length')"
 
-echo "== 4. 재기동 후 영속성 =="
+echo "== 4. 일별 증상 기록 =="
+SYM1=$(curl -s -X PUT "$BASE/api/symptoms/s1" "${AUTHZ[@]}" -d '{"logDate":"2026-09-03","symptoms":["cramps","fatigue"],"savedAt":"2026-09-03T12:00:00.000Z"}')
+check "증상 기록일 문자열 유지" "2026-09-03" "$(echo "$SYM1" | jget 'j.record.logDate')"
+check "증상 목록 저장" "cramps,fatigue" "$(echo "$SYM1" | jget 'j.record.symptoms.join(",")')"
+curl -s -X PUT "$BASE/api/symptoms/s2" "${AUTHZ[@]}" -d '{"logDate":"2026-09-04","symptoms":["headache"],"savedAt":"2026-09-04T12:00:00.000Z"}' >/dev/null
+SYMPTOMS=$(curl -s "$BASE/api/symptoms" "${AUTHZ[@]}")
+check "증상 2건 조회" "2" "$(echo "$SYMPTOMS" | jget 'j.records.length')"
+check "최근 증상 먼저 정렬" "2026-09-04" "$(echo "$SYMPTOMS" | jget 'j.records[0].logDate')"
+check "빈 증상 400" "400" "$(status -X PUT "$BASE/api/symptoms/s9" "${AUTHZ[@]}" -d '{"logDate":"2026-09-05","symptoms":[]}')"
+check "지원하지 않는 증상 400" "400" "$(status -X PUT "$BASE/api/symptoms/s9" "${AUTHZ[@]}" -d '{"logDate":"2026-09-05","symptoms":["unknown"]}')"
+
+echo "== 5. 재기동 후 영속성 =="
 stop_backend
 start_backend
 check "재기동 후 1건 유지" "1" "$(curl -s "$BASE/api/cycles" -H "authorization: Bearer $TOKEN" | jget 'j.records.length')"
+check "재기동 후 증상 2건 유지" "2" "$(curl -s "$BASE/api/symptoms" -H "authorization: Bearer $TOKEN" | jget 'j.records.length')"
 check "토큰 재사용 가능" "200" "$(status "$BASE/api/me" -H "authorization: Bearer $TOKEN")"
 
 echo "== 5. 백업 =="

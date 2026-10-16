@@ -1,4 +1,5 @@
 import { getAuthToken } from './token';
+import type { SymptomId } from '../data/symptoms';
 
 export const API_URL = (
   import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
@@ -70,6 +71,13 @@ export interface CycleEntry {
   savedAt: string;
 }
 
+export interface SymptomLogEntry {
+  id: string;
+  logDate: string;
+  symptoms: SymptomId[];
+  savedAt: string;
+}
+
 export const authApi = {
   async signup(email: string, password: string) {
     return request<AuthResult>('/auth/signup', { method: 'POST', body: { email, password } });
@@ -95,5 +103,21 @@ export const cycleApi = {
   },
   async remove(id: string) {
     await request<void>(`/api/cycles/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  },
+};
+
+export const symptomApi = {
+  async list() {
+    const data = await request<{ records: SymptomLogEntry[] }>('/api/symptoms');
+    return data.records;
+  },
+  async upsert(entry: SymptomLogEntry) {
+    return request<{ record: SymptomLogEntry }>(
+      `/api/symptoms/${encodeURIComponent(entry.id)}`,
+      { method: 'PUT', body: entry },
+    );
+  },
+  async remove(id: string) {
+    await request<void>(`/api/symptoms/${encodeURIComponent(id)}`, { method: 'DELETE' });
   },
 };

@@ -5,6 +5,8 @@
 마지막 생리 시작일과 평균 주기만 알려주면, 다음 생리·배란·가임기를 한눈에 보여주는
 가벼운 웹 앱이에요.
 
+- **별도 증상 관리** — 전용 탭에서 MIT 라이선스의 [Microsoft Fluent UI Emoji](https://github.com/microsoft/fluentui-emoji)로
+  복통·두통·피로 등 오늘의 증상을 여러 개 골라 기록합니다.
 - **계정 없이 사용** — 데이터는 브라우저(localStorage) 안에서만 다뤄집니다.
 - **로그인하면 서버 저장** — 계정을 만들면 주기 기록이 백엔드(PostgreSQL)에도 저장되어
   어느 기기에서든 이어집니다.
@@ -16,8 +18,9 @@ bloom/
 ├── bloom/                # 프론트엔드 (React 19 · TypeScript · Vite · PWA)
 ├── bloom-svc/            # 백엔드 API 서비스 (NestJS · TypeScript · PostgreSQL)
 ├── bloom-backup/         # pg_dump 기반 백업 러너 (postgres:17-alpine)
-├── compose.yaml          # db + 백엔드 + 백업 + 프론트 (dev/prod 공용, env 로 분기)
-├── Makefile              # env 파일을 붙여 주는 배포 명령 (make dev-up / make prod-up)
+├── compose.yaml          # 운영 및 공통 서비스 정의
+├── compose.dev.yaml      # Vite HMR · 백엔드 watch 개발 오버라이드
+├── Makefile              # env와 compose 파일을 묶는 실행 명령
 ├── .env.dev.example      # 개발 배포 변수 예시
 ├── .env.prod.example     # 운영 배포 변수 예시 (필수값은 비워 둠 → 미설정 시 즉시 실패)
 └── test-stack.sh         # API · 영속성 · 백업/복원 · SQLite 이관 통합 검증
@@ -27,10 +30,10 @@ bloom/
 
 ```bash
 cp .env.dev.example .env.dev       # 또는 make env-dev
-docker compose --env-file .env.dev up -d --build   # 또는 make dev-up
+make dev-up
 ```
 
-- 프론트엔드: <http://localhost:5173>
+- 프론트엔드: <http://localhost:5273> (소스 저장 시 Vite HMR로 즉시 반영)
 - 백엔드: <http://localhost:3000> (`GET /health` → `{"status":"ok"}`, DB 장애 시 503)
 - PostgreSQL: `127.0.0.1:5432` (loopback 전용, 외부 노출 없음)
 
@@ -39,18 +42,16 @@ docker compose --env-file .env.dev up -d --build   # 또는 make dev-up
 ```bash
 make dev-down              # 컨테이너 중지 (DB·백업 데이터 유지)
 make dev-logs              # 로그
-docker compose --env-file .env.dev down -v   # DB·백업 볼륨까지 삭제 (기록 초기화)
+docker compose --env-file .env.dev -f compose.yaml -f compose.dev.yaml down -v
 ```
 
-> 코드를 바꾼 뒤에는 반드시 `--build`를 붙이세요. compose는 이미지 태그가 같으면 기존
-> 이미지를 재사용하므로, `up -d`만 하면 예전 코드가 그대로 돌아갑니다.
+> 최초 실행과 의존성·Dockerfile 변경 뒤에는 `make dev-up`으로 이미지를 다시 빌드하세요.
+> 이후 `bloom/src`와 `bloom-svc/src` 변경은 컨테이너 재빌드 없이 즉시 반영됩니다.
 
 ## 배포: dev / prod 분리
 
-**compose 파일은 하나, 환경변수 파일이 둘**입니다. 이렇게 하는 이유:
-
-- 파일을 복제해 나누면 두 벌이 서로 어긋남(drift) — 설정 하나를 한쪽에만 고치는 사고
-- Coolify 같은 배포 도구는 보통 compose 파일 하나만 지정받음
+공통 서비스는 `compose.yaml`, 개발용 watch 설정만 `compose.dev.yaml`에 둡니다.
+운영은 공통 파일만 사용하므로 Vite 개발 서버나 소스 bind mount가 포함되지 않습니다.
 
 핵심은 **`COMPOSE_PROJECT_NAME`** 입니다. 값이 다르면 컨테이너·볼륨·이미지 이름이 전부
 갈라져서, 같은 호스트에서 dev와 prod를 동시에 돌려도 데이터가 섞이지 않습니다.
@@ -59,10 +60,11 @@ docker compose --env-file .env.dev down -v   # DB·백업 볼륨까지 삭제 (�
 | --- | --- | --- |
 | 명령 | `make dev-up` | `make prod-up` |
 | env 파일 | `.env.dev` | `.env.prod` |
+| compose 파일 | `compose.yaml` + `compose.dev.yaml` | `compose.yaml` |
 | 프로젝트 | `bloom-dev` | `bloom-prod` |
 | 볼륨 | `bloom-dev_bloom-db` | `bloom-prod_bloom-db` |
 | 이미지 | `bloom-dev-backend` 등 | `bloom-prod-backend` 등 |
-| 포트 | 5432 / 3000 / 5173 | 5432 / 3000 / 5173 (호스트가 다르면 동일해도 됨) |
+| 포트 | 5432 / 3000 / 5273 | 5432 / 3000 / 5173 (호스트가 다르면 동일해도 됨) |
 
 ### 같은 호스트에서 둘 다 돌리기
 
@@ -235,8 +237,8 @@ SQLITE_PATH=data/bloom.db DATABASE_URL=postgres://bloom:bloom@localhost:5432/blo
 ```
 
 검증 전용 프로젝트(`bloom-test`)와 포트를 써서 dev/prod 스택을 건드리지 않습니다.
-마이그레이션, 인증/주기 API 계약(응답 형태·상태 코드), 재기동 후 영속성, 백업 보관 개수
-정리, 덤프 복원, SQLite 이관까지 한 번에 확인합니다.
+마이그레이션, 인증·주기·증상 API 계약, 재기동 후 영속성, 백업 보관 개수 정리,
+덤프 복원, SQLite 이관까지 한 번에 확인합니다.
 
 ### 백엔드 구조
 
@@ -251,6 +253,7 @@ bloom-svc/src/
     database.module.ts            # PG_POOL 프로바이더 (종료 시 pool.end)
   auth/                           # signup · login · me, JwtModule, AuthGuard, DTO
   cycles/                         # 주기 기록 CRUD, DTO 검증
+  symptoms/                       # 일별 증상 기록 CRUD, DTO 검증
   health.controller.ts            # /health (DB 연결 확인)
 ```
 
@@ -264,13 +267,18 @@ bloom-svc/src/
 | `GET` | `/api/cycles` | 내 주기 기록 목록 |
 | `PUT` | `/api/cycles/:id` | 기록 저장/갱신 (같은 시작일이면 덮어씀) |
 | `DELETE` | `/api/cycles/:id` | 기록 삭제 |
+| `GET` | `/api/symptoms` | 내 일별 증상 기록 목록 |
+| `PUT` | `/api/symptoms/:id` | 증상 저장/갱신 (같은 기록일이면 덮어씀) |
+| `DELETE` | `/api/symptoms/:id` | 증상 기록 삭제 |
 
 보호된 API는 `Authorization: Bearer <token>` 헤더가 필요합니다.
 오류 응답은 항상 `{ error: string }` 형태입니다.
 `GET /api/cycles`의 `lastPeriodDate`는 `YYYY-MM-DD` 문자열, `savedAt`은 ISO 문자열입니다.
+`PUT /api/symptoms/:id`의 `symptoms`는 `cramps`, `headache`, `fatigue`, `bloating`,
+`mood-swings`, `backache`, `skin-trouble`, `cravings` 중 하나 이상을 담은 배열입니다.
 
-데이터 동기화 방식: 로그인 시 로컬 기록과 서버 기록을 시작일 기준으로 병합하고,
-서버에 없는 기록은 자동으로 업로드합니다. 저장/삭제는 발생 시점에 실시간 반영됩니다.
+데이터 동기화 방식: 로그인 시 주기 기록은 시작일, 증상 기록은 기록일 기준으로 각각
+병합합니다. 서버에 없는 로컬 기록은 자동 업로드되고 저장/삭제는 실시간 반영됩니다.
 
 ## 브랜드
 
