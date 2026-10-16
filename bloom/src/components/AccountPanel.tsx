@@ -95,19 +95,23 @@ export default function AccountPanel() {
                 <span>{SYNC_LABEL[remoteStatus]}</span>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl bg-sand-50/80 px-2.5 py-2 text-xs text-gray-600">
+              <Link
+                to="/settings"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-between rounded-xl bg-sand-50/80 px-2.5 py-2 text-xs text-gray-600 transition hover:bg-primary-50 hover:text-primary-800"
+              >
                 <span className="flex items-center gap-1.5">
                   <Bell className="h-3.5 w-3.5 text-primary-500" />
-                  <span>웹 푸시 알림</span>
+                  <span>알림 및 설정</span>
                 </span>
                 <span
                   className={`font-semibold ${
                     isSubscribed ? 'text-emerald-600' : 'text-gray-400'
                   }`}
                 >
-                  {isSubscribed ? '켜짐' : '꺼짐'}
+                  {isSubscribed ? '알림 켜짐' : '설정하기 →'}
                 </span>
-              </div>
+              </Link>
               <button
                 type="button"
                 onClick={handleLogout}

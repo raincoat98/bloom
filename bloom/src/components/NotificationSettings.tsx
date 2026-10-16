@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Bell,
   BellRing,
@@ -9,9 +10,9 @@ import {
   Loader2,
   Send,
 } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 import { useCycleStore } from '../store/cycleStore';
 import { useNotificationStore } from '../store/notificationStore';
-
 interface NotificationSettingsProps {
   compact?: boolean;
 }
@@ -31,7 +32,8 @@ export default function NotificationSettings({ compact = false }: NotificationSe
     sendTestPush,
     clearMessages,
   } = useNotificationStore();
-
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const { lastPeriodDate, cycleLength, periodLength } = useCycleStore();
   const [expanded, setExpanded] = useState(!compact);
   const [testType, setTestType] = useState<'period' | 'fertile' | 'symptom'>('period');
@@ -44,13 +46,16 @@ export default function NotificationSettings({ compact = false }: NotificationSe
 
   const handleToggleSubscribe = async () => {
     clearMessages();
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     if (isSubscribed) {
       await disableNotifications();
     } else {
       await enableNotifications(cycleInfo);
     }
   };
-
   const handleTogglePref = (key: keyof typeof preferences) => {
     updatePreferences({ [key]: !preferences[key] }, cycleInfo);
   };
@@ -134,6 +139,18 @@ export default function NotificationSettings({ compact = false }: NotificationSe
           </button>
         </div>
       </div>
+
+      {!user && (
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-primary-50/80 p-3.5 text-xs text-primary-900 ring-1 ring-primary-100">
+          <span>알림을 켜고 관리하려면 먼저 로그인해 주세요 🌸</span>
+          <Link
+            to="/login"
+            className="shrink-0 rounded-xl bg-primary-500 px-3 py-1.5 font-semibold text-white shadow-sm transition hover:bg-primary-600"
+          >
+            로그인하기
+          </Link>
+        </div>
+      )}
 
       {/* 안내 및 오류/성공 메시지 */}
       {error && (
