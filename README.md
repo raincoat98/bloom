@@ -273,6 +273,11 @@ bloom-svc/src/
 
 보호된 API는 `Authorization: Bearer <token>` 헤더가 필요합니다.
 오류 응답은 항상 `{ error: string }` 형태입니다.
+
+프론트엔드는 JWT와 사용자 정보를 `bloom-auth` 로컬 스토리지에 보관하고 앱 시작 시
+`GET /api/me`로 검증합니다. 오프라인·네트워크 오류·일시적 서버 오류에서는 저장된 세션을
+유지하며, 서버가 토큰을 `401 Unauthorized`로 거부하거나 사용자가 로그아웃한 경우에만
+저장된 세션을 삭제합니다. JWT 유효기간은 90일입니다.
 `GET /api/cycles`의 `lastPeriodDate`는 `YYYY-MM-DD` 문자열, `savedAt`은 ISO 문자열입니다.
 `PUT /api/symptoms/:id`의 `symptoms`는 `cramps`, `headache`, `fatigue`, `bloating`,
 `mood-swings`, `backache`, `skin-trouble`, `cravings` 중 하나 이상을 담은 배열입니다.

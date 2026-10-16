@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { authApi } from '../lib/api';
+import { ApiError, authApi } from '../lib/api';
 import { setAuthToken } from '../lib/token';
 
 export interface AuthUser {
@@ -74,10 +74,19 @@ export const useAuthStore = create<AuthState>()(
         setAuthToken(token);
         try {
           const result = await authApi.me();
+          if (get().token !== token) return;
           set({ user: result.user, token, ready: true });
-        } catch {
-          setAuthToken(null);
-          set({ user: null, token: null, ready: true });
+        } catch (error) {
+          if (get().token !== token) return;
+
+          // PWA 부팅 중 오프라인이거나 서버가 잠시 내려간 경우에는 저장된 세션을 유지한다.
+          // 서버가 토큰을 명시적으로 거부한 경우에만 로그아웃 상태로 전환한다.
+          if (error instanceof ApiError && error.status === 401) {
+            setAuthToken(null);
+            set({ user: null, token: null, ready: true });
+            return;
+          }
+          set({ ready: true });
         }
       },
     }),
