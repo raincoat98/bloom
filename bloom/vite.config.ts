@@ -33,7 +33,13 @@ export default defineConfig({
       devOptions: {
         enabled: false,
       },
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: [
+        'favicon.svg',
+        'icons.svg',
+        'robots.txt',
+        'sitemap.xml',
+        'og-image.png',
+      ],
       manifest: {
         name: 'Bloom · 나의 주기 다이어리',
         short_name: 'Bloom',

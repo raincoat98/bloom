@@ -36,7 +36,7 @@ export default function ResultCard() {
     <section className="space-y-4">
       <div className="rounded-3xl bg-gradient-to-br from-primary-400 via-primary-500 to-rose-500 p-6 text-white shadow-bloom">
         <div className="flex items-center justify-between text-sm opacity-90">
-          <p>오늘의 리듬</p>
+          <h2 className="text-sm font-semibold tracking-wide opacity-90">오늘의 리듬</h2>
           <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-medium tracking-wide">
             BLOOM
           </span>
