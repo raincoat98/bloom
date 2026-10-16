@@ -121,16 +121,19 @@ check "지원하지 않는 증상 400" "400" "$(status -X PUT "$BASE/api/symptom
 echo "== 5. 웹 푸시 알림 =="
 VAPID_RES=$(curl -s "$BASE/api/push/vapid-public-key")
 check "VAPID 공개키 조회" "true" "$(echo "$VAPID_RES" | jget 'Boolean(j.publicKey && j.publicKey.length > 20)')"
+check "비로그인 푸시 구독 차단 401" "401" "$(status -X POST "$BASE/api/push/subscribe" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest","keys":{"p256dh":"k1","auth":"k2"}}')"
+check "비로그인 테스트 알림 차단 401" "401" "$(status -X POST "$BASE/api/push/test" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest","type":"period"}')"
 
-SUB_GUEST=$(curl -s -X POST "$BASE/api/push/subscribe" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest","keys":{"p256dh":"dummy-p256dh","auth":"dummy-auth"},"cycleInfo":{"lastPeriodDate":"2026-10-01","cycleLength":28,"periodLength":5}}')
-check "비회원 푸시 구독 201" "201" "$(status -X POST "$BASE/api/push/subscribe" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest-2","keys":{"p256dh":"k1","auth":"k2"}}')"
-check "비회원 푸시 구독 endpoint" "mock://ep-guest" "$(echo "$SUB_GUEST" | jget 'j.subscription.endpoint')"
+# 회원 푸시 구독
+SUB_USER=$(curl -s -X POST "$BASE/api/push/subscribe" "${AUTHZ[@]}" -d '{"endpoint":"mock://ep-user","keys":{"p256dh":"dummy-p256dh","auth":"dummy-auth"},"cycleInfo":{"lastPeriodDate":"2026-10-01","cycleLength":28,"periodLength":5}}')
+check "회원 푸시 구독 201" "201" "$(status -X POST "$BASE/api/push/subscribe" "${AUTHZ[@]}" -d '{"endpoint":"mock://ep-user-2","keys":{"p256dh":"k1","auth":"k2"}}')"
+check "회원 푸시 구독 endpoint" "mock://ep-user" "$(echo "$SUB_USER" | jget 'j.subscription.endpoint')"
 
-STATUS_GUEST=$(curl -s "$BASE/api/push/status?endpoint=mock://ep-guest")
-check "구독 상태 확인" "true" "$(echo "$STATUS_GUEST" | jget 'j.subscribed')"
-check "구독 주기 정보 확인" "2026-10-01" "$(echo "$STATUS_GUEST" | jget 'j.cycleInfo.lastPeriodDate')"
+STATUS_USER=$(curl -s "$BASE/api/push/status?endpoint=mock://ep-user" "${AUTHZ[@]}")
+check "구독 상태 확인" "true" "$(echo "$STATUS_USER" | jget 'j.subscribed')"
+check "구독 주기 정보 확인" "2026-10-01" "$(echo "$STATUS_USER" | jget 'j.cycleInfo.lastPeriodDate')"
 
-TEST_PUSH=$(curl -s -X POST "$BASE/api/push/test" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest","type":"period"}')
+TEST_PUSH=$(curl -s -X POST "$BASE/api/push/test" "${AUTHZ[@]}" -d '{"endpoint":"mock://ep-user","type":"period"}')
 check "테스트 알림 발송 200" "true" "$(echo "$TEST_PUSH" | jget 'j.ok')"
 check "테스트 알림 타이틀" "Bloom 🌸" "$(echo "$TEST_PUSH" | jget 'j.payload.title')"
 check "테스트 알림 본문" "생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸" "$(echo "$TEST_PUSH" | jget 'j.payload.body')"
@@ -140,14 +143,10 @@ DISPATCH_RES=$(curl -s -X POST "$BASE/api/push/dispatch" "${AUTH[@]}" -d '{"targ
 check "스케줄 알림 발송 200" "true" "$(echo "$DISPATCH_RES" | jget 'j.ok')"
 check "2일 전 알림 발송 1건" "1" "$(echo "$DISPATCH_RES" | jget 'j.sent.period')"
 
-# 회원 푸시 구독
-SUB_USER=$(curl -s -X POST "$BASE/api/push/subscribe" "${AUTHZ[@]}" -d '{"endpoint":"mock://ep-user","keys":{"p256dh":"k3","auth":"k4"}}')
-check "회원 푸시 구독 성공" "mock://ep-user" "$(echo "$SUB_USER" | jget 'j.subscription.endpoint')"
-
 # 구독 해제
-UNSUB_RES=$(curl -s -X POST "$BASE/api/push/unsubscribe" "${AUTH[@]}" -d '{"endpoint":"mock://ep-guest"}')
+UNSUB_RES=$(curl -s -X POST "$BASE/api/push/unsubscribe" "${AUTHZ[@]}" -d '{"endpoint":"mock://ep-user"}')
 check "구독 해제 200" "true" "$(echo "$UNSUB_RES" | jget 'j.ok')"
-STATUS_UNSUB=$(curl -s "$BASE/api/push/status?endpoint=mock://ep-guest")
+STATUS_UNSUB=$(curl -s "$BASE/api/push/status?endpoint=mock://ep-user" "${AUTHZ[@]}")
 check "해제 후 상태 false" "false" "$(echo "$STATUS_UNSUB" | jget 'j.subscribed')"
 
 echo "== 6. 재기동 후 영속성 =="
