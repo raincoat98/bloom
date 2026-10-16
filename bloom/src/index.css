@@ -29,6 +29,7 @@ body {
   appearance: none;
   width: 100%;
   height: 8px;
+  touch-action: pan-y;
   border-radius: 9999px;
   background: linear-gradient(
     to right,
