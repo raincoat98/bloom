@@ -89,7 +89,7 @@ function App() {
             <BloomMark className="h-10 w-10 drop-shadow-sm" />
             <h1 className="font-display text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               Bloom
-              <span className="sr-only"> · 생리 주기·배란일·가임기 계산기</span>
+              <span className="sr-only">: 생리 주기, 배란일, 가임기 계산기</span>
             </h1>
           </Link>
           <p className="mt-3 text-sm text-gray-600 sm:text-base">

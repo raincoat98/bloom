@@ -74,7 +74,7 @@ export default function ResultCard() {
           label="다음 생리 예정일"
           accent="text-red-600"
           headline={formatDate(prediction.nextPeriodStart)}
-          sub={`${daysLabel(prediction.daysUntilNextPeriod)} · ~${formatShortDate(
+          sub={`${daysLabel(prediction.daysUntilNextPeriod)}, ~${formatShortDate(
             prediction.nextPeriodEnd,
           )}`}
         />

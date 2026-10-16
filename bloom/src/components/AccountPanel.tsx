@@ -8,7 +8,7 @@ const SYNC_LABEL: Record<RemoteStatus, string> = {
   local: '로컬에만 저장',
   syncing: '서버 동기화 중…',
   synced: '서버에 저장됨',
-  error: '동기화 실패 · 로컬에만 저장',
+  error: '동기화 실패 (로컬에만 저장)',
 };
 
 const SYNC_DOT: Record<RemoteStatus, string> = {

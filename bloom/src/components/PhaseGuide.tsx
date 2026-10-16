@@ -119,7 +119,7 @@ export default function PhaseGuide() {
                   <span className={`mt-1 shrink-0 ${accent.bullet}`}>●</span>
                   <span className="text-gray-600">
                     <span className="font-semibold text-gray-800">{s.name}</span>
-                    {' — '}
+                    {': '}
                     {s.desc}
                   </span>
                 </li>

@@ -2,7 +2,7 @@
   "name": "bloom",
   "private": true,
   "version": "0.1.0",
-  "description": "Bloom — 나의 리듬을 부드럽게 따라가는 주기 다이어리",
+  "description": "Bloom: 나의 리듬을 부드럽게 따라가는 주기 다이어리",
   "type": "module",
   "scripts": {
     "dev": "vite",

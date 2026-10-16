@@ -41,7 +41,7 @@ export default defineConfig({
         'og-image.png',
       ],
       manifest: {
-        name: 'Bloom · 나의 주기 다이어리',
+        name: 'Bloom: 나의 주기 다이어리',
         short_name: 'Bloom',
         description:
           '마지막 생리 시작일과 평균 주기를 바탕으로 다음 일정과 컨디션 흐름을 안내합니다.',

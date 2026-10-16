@@ -68,7 +68,7 @@ export default function HistoryPage() {
                   {formatDate(new Date(entry.lastPeriodDate))} 시작
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  주기 {entry.cycleLength}일 · 생리 기간 {entry.periodLength}일
+                  주기 {entry.cycleLength}일, 생리 기간 {entry.periodLength}일
                 </p>
                 <p className="mt-1 text-[11px] text-gray-400">
                   저장일 {formatDate(new Date(entry.savedAt))}

@@ -72,7 +72,7 @@
 
     <!-- Subtitle / Value Proposition -->
     <text x="0" y="235" font-family="-apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif" font-size="34" font-weight="700" fill="#1f2937">
-      나의 주기 다이어리 · 생리 주기·배란일·가임기 계산기
+      나의 주기 다이어리: 생리 주기, 배란일, 가임기 계산기
     </text>
 
     <text x="0" y="285" font-family="-apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif" font-size="22" font-weight="400" fill="#4b5563">
