@@ -110,6 +110,25 @@ localhost가 박히면 사용자 브라우저가 자기 pc를 호출합니다.
   거부되어 **502** 가 납니다. DB·백엔드는 `BIND_HOST`(loopback) 그대로라 LAN 에 안 열립니다.
 
 nginx 설정·번들은 이미지에 들어가므로 코드를 바꾼 뒤에는 `--build` 로 다시 만들어야 합니다.
+### GitHub Actions 자동 배포 (self-hosted runner)
+
+main 브랜치 push(또는 수동 실행) 시 self-hosted 러너가 `docker compose`로 운영 환경을 자동 배포합니다 (`.github/workflows/deploy.yml`).
+
+1. **배포 경로 변수 설정**
+   GitHub 저장소 **Settings → Secrets and variables → Actions → Variables**에서 `DEPLOY_PATH` (또는 `DEPLOY_DIR`) 변수에 서버의 저장소 절대 경로(예: `/Users/raincoat/dev/bloom`)를 등록합니다.
+2. **운영 환경변수 확인**
+   서버 배포 경로에 `.env.prod` 파일이 준비되어 있고 필수값(`POSTGRES_PASSWORD`, `JWT_SECRET`, `VITE_API_URL`, `FRONTEND_URL`)이 설정되어 있어야 합니다.
+3. **러너 등록**
+   워크플로는 `runs-on: self-hosted`로 동작합니다.
+4. **배포 흐름**
+   - 배포 디렉터리, `.env.prod`, 작업 트리 미커밋 변경 여부 확인
+   - 최신 `main` 브랜치 반영 (`git fetch` + `merge --ff-only`)
+   - 컨테이너 이미지 빌드 (`docker compose --env-file .env.prod build`)
+   - Nginx 설정 문법 검증 (`nginx -t`)
+   - 컨테이너 기동 (`docker compose --env-file .env.prod up -d --remove-orphans`)
+   - 헬스체크: 백엔드 `/health`, 프론트엔드 루트 `200`, 프론트엔드 `/health` 역프록시 응답 검증
+   - 미사용 댕글링 이미지 정리 (`docker image prune -f`)
+
 
 ### 보안 체크리스트
 

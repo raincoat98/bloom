@@ -1,0 +1,130 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.repository }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    timeout-minutes: 30
+    env:
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH || vars.DEPLOY_DIR }}
+      PATH: /opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+    steps:
+      - name: 배포 디렉터리와 환경 확인
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_PATH:-}" ]; then
+            echo "::error::저장소 변수(vars.DEPLOY_PATH 또는 vars.DEPLOY_DIR)가 설정되지 않았습니다. GitHub Settings > Secrets and variables > Actions > Variables에서 등록해 주세요."
+            exit 1
+          fi
+          if [ ! -d "$DEPLOY_PATH/.git" ]; then
+            echo "::error::${DEPLOY_PATH} 디렉터리가 없거나 git 저장소가 아닙니다."
+            exit 1
+          fi
+          cd "$DEPLOY_PATH"
+          if [ ! -f .env.prod ]; then
+            echo "::error::${DEPLOY_PATH}/.env.prod 파일이 없습니다. .env.prod.example을 복사해 설정해 주세요."
+            exit 1
+          fi
+          echo "docker: $(command -v docker)"
+          docker version --format 'client={{.Client.Version}} server={{.Server.Version}}'
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::배포 디렉터리에 커밋되지 않은 변경사항이 있어 배포를 중단합니다."
+            git status --short
+            exit 1
+          fi
+
+      - name: 최신 main 반영
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+          git fetch --prune \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "+refs/heads/main:refs/remotes/origin/main"
+          git merge --ff-only origin/main
+          git --no-pager log --oneline -1
+
+      - name: 컨테이너 이미지 빌드
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+          docker compose --env-file .env.prod build
+
+      - name: Nginx 설정 검증
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+          docker compose --env-file .env.prod run --rm --no-deps --entrypoint nginx frontend -t
+
+      - name: 컨테이너 기동
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+          docker compose --env-file .env.prod up -d --remove-orphans
+
+      - name: 헬스체크와 응답 검증
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_PATH"
+          BACKEND_PORT=$(sed -n 's/^BACKEND_PORT=//p' .env.prod | tail -1)
+          FRONTEND_PORT=$(sed -n 's/^FRONTEND_PORT=//p' .env.prod | tail -1)
+          BACKEND_PORT=${BACKEND_PORT:-3000}
+          FRONTEND_PORT=${FRONTEND_PORT:-5173}
+
+          echo "백엔드 헬스체크 대기 (포트: ${BACKEND_PORT})..."
+          for attempt in $(seq 1 30); do
+            if curl -fsS "http://127.0.0.1:${BACKEND_PORT}/health" >/dev/null; then
+              echo "백엔드 헬스체크 성공"
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              echo "::error::백엔드 헬스체크에 실패했습니다."
+              docker compose --env-file .env.prod ps
+              docker compose --env-file .env.prod logs --tail=80 backend
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "프론트엔드 응답 대기 (포트: ${FRONTEND_PORT})..."
+          for attempt in $(seq 1 15); do
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${FRONTEND_PORT}/" || true)
+            if [ "$STATUS" = "200" ]; then
+              echo "프론트엔드 응답 확인 (200 OK)"
+              break
+            fi
+            if [ "$attempt" -eq 15 ]; then
+              echo "::error::프론트엔드 응답 확인에 실패했습니다 (상태 코드: $STATUS)"
+              docker compose --env-file .env.prod ps
+              docker compose --env-file .env.prod logs --tail=80 frontend
+              exit 1
+            fi
+            sleep 1
+          done
+
+          echo "프론트엔드 /health 역프록시 검증..."
+          curl -fsS "http://127.0.0.1:${FRONTEND_PORT}/health" | grep -q '"status":"ok"' || {
+            echo "::error::프론트엔드 역프록시 /health 응답이 올바르지 않습니다."
+            exit 1
+          }
+
+          docker compose --env-file .env.prod ps
+
+      - name: 사용하지 않는 이미지 정리
+        if: always()
+        run: |
+          docker image prune -f
