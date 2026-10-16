@@ -1,8 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { differenceInCalendarDays } from 'date-fns';
+import DropOfBlood from '@fluentui-emoji/react/modern/drop-of-blood';
+import Egg from '@fluentui-emoji/react/modern/egg';
+import Seedling from '@fluentui-emoji/react/modern/seedling';
+import Shield from '@fluentui-emoji/react/modern/shield';
 import { useCycleStore } from '../store/cycleStore';
 import { calculateCycle, formatDate, formatShortDate } from '../utils/cycle';
-
+import PhaseEmoji from './PhaseEmoji';
 const phaseStyles: Record<string, string> = {
   '생리 중': 'bg-red-100 text-red-700',
   여포기: 'bg-blue-100 text-blue-700',
@@ -58,12 +62,15 @@ export default function ResultCard() {
             </div>
           )}
           <span
-            className={`rounded-full px-3 py-1 text-sm font-medium ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${
               prediction.notStartedYet
                 ? 'bg-white/20 text-white'
                 : phaseStyles[prediction.currentPhase]
             }`}
           >
+            {!prediction.notStartedYet && (
+              <PhaseEmoji phase={prediction.currentPhase} className="h-4 w-4 shrink-0" />
+            )}
             {prediction.notStartedYet ? '시작 전' : prediction.currentPhase}
           </span>
         </div>
@@ -77,12 +84,14 @@ export default function ResultCard() {
           sub={`${daysLabel(prediction.daysUntilNextPeriod)}, ~${formatShortDate(
             prediction.nextPeriodEnd,
           )}`}
+          icon={<DropOfBlood className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
           label="배란 예정일"
           accent="text-green-600"
           headline={formatDate(prediction.ovulationDate)}
           sub={daysLabel(prediction.daysUntilOvulation)}
+          icon={<Egg className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
           label="가임기"
@@ -91,6 +100,7 @@ export default function ResultCard() {
             prediction.fertileWindowStart,
           )} ~ ${formatShortDate(prediction.fertileWindowEnd)}`}
           sub="배란일 전 5일 + 다음날"
+          icon={<Seedling className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
           label="안전기 (대략)"
@@ -99,9 +109,9 @@ export default function ResultCard() {
             prediction.nextPeriodStart,
           )} 이후`}
           sub="개인차 있음, 참고용"
+          icon={<Shield className="h-5 w-5" focusable="false" />}
         />
       </div>
-
       <p className="px-2 text-center text-xs text-gray-400">
         Bloom의 예측은 평균 주기를 바탕으로 한 안내예요. 몸이 보내는 신호를
         함께 살피고, 의료 상담은 전문가와 나누어 주세요.
@@ -115,14 +125,18 @@ interface InfoCardProps {
   headline: string;
   sub: string;
   accent: string;
+  icon?: ReactNode;
 }
 
-function InfoCard({ label, headline, sub, accent }: InfoCardProps) {
+function InfoCard({ label, headline, sub, accent, icon }: InfoCardProps) {
   return (
     <div className="rounded-2xl bg-white/90 p-4 shadow-petal ring-1 ring-primary-100/50 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-bloom sm:p-5">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 sm:text-xs">
-        {label}
-      </p>
+      <div className="flex items-center justify-between gap-1">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 sm:text-xs">
+          {label}
+        </p>
+        {icon && <span className="shrink-0">{icon}</span>}
+      </div>
       <p
         className={`mt-1.5 text-sm font-semibold leading-snug sm:mt-2 sm:text-base ${accent}`}
       >

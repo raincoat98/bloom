@@ -1,4 +1,13 @@
 import { useMemo, useState, type ReactNode } from 'react';
+import type { FluentEmojiComponent } from '@fluentui-emoji/react';
+import ChocolateBar from '@fluentui-emoji/react/modern/chocolate-bar';
+import ForkAndKnifeWithPlate from '@fluentui-emoji/react/modern/fork-and-knife-with-plate';
+import Handshake from '@fluentui-emoji/react/modern/handshake';
+import HotBeverage from '@fluentui-emoji/react/modern/hot-beverage';
+import HotSprings from '@fluentui-emoji/react/modern/hot-springs';
+import Pill from '@fluentui-emoji/react/modern/pill';
+import SparklingHeart from '@fluentui-emoji/react/modern/sparkling-heart';
+import Sparkles from '@fluentui-emoji/react/modern/sparkles';
 import { ChevronDown } from 'lucide-react';
 import { useCycleStore } from '../store/cycleStore';
 import { calculateCycle } from '../utils/cycle';
@@ -9,6 +18,15 @@ import {
   suppliesTip,
   type Phase,
 } from '../data/phaseGuides';
+import PhaseEmoji from './PhaseEmoji';
+
+const SUPPLY_ICONS: Record<string, FluentEmojiComponent> = {
+  생리대: Sparkles,
+  '진통제 (이지엔 이브)': Pill,
+  '따뜻한 물주머니': HotSprings,
+  '건강한 간식 (견과류, 다크 초콜릿)': ChocolateBar,
+  '허브차 (생강차, 카모마일)': HotBeverage,
+};
 
 interface PhaseAccent {
   badge: string;
@@ -61,8 +79,8 @@ export default function PhaseGuide() {
         aria-expanded={isExpanded}
         className="flex w-full items-start gap-3 text-left"
       >
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-2xl">
-          {guide.emoji}
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-50 shadow-sm ring-1 ring-primary-100/60">
+          <PhaseEmoji phase={phase} className="h-7 w-7" />
         </span>
         <div className="flex-1 space-y-3">
           <div>
@@ -99,7 +117,10 @@ export default function PhaseGuide() {
 
       {isExpanded && (
         <div className="mt-6 space-y-6">
-          <GuideBlock icon="🍽️" title="추천 음식">
+          <GuideBlock
+            icon={<ForkAndKnifeWithPlate className="h-4 w-4" focusable="false" />}
+            title="추천 음식"
+          >
             <div className="flex flex-wrap gap-2">
               {guide.foods.map((food) => (
                 <span
@@ -112,7 +133,10 @@ export default function PhaseGuide() {
             </div>
           </GuideBlock>
 
-          <GuideBlock icon="💊" title="추천 영양제">
+          <GuideBlock
+            icon={<Pill className="h-4 w-4" focusable="false" />}
+            title="추천 영양제"
+          >
             <ul className="space-y-2.5">
               {guide.supplements.map((s) => (
                 <li key={s.name} className="flex gap-2 text-sm leading-relaxed">
@@ -128,31 +152,43 @@ export default function PhaseGuide() {
           </GuideBlock>
 
           {guide.libido && (
-            <GuideBlock icon="💗" title="성욕 변화">
+            <GuideBlock
+              icon={<SparklingHeart className="h-4 w-4" focusable="false" />}
+              title="성욕 변화"
+            >
               <p className="rounded-2xl bg-rose-50/70 p-4 text-sm leading-relaxed text-gray-600">
                 {guide.libido}
               </p>
             </GuideBlock>
           )}
 
-          <GuideBlock icon="🤝" title="파트너 팁">
+          <GuideBlock
+            icon={<Handshake className="h-4 w-4" focusable="false" />}
+            title="파트너 팁"
+          >
             <p className="rounded-2xl bg-primary-50/60 p-4 text-sm leading-relaxed text-gray-700">
               {guide.partnerTip}
             </p>
           </GuideBlock>
 
           {showSupplies && (
-            <GuideBlock icon="🧺" title="준비물">
+            <GuideBlock
+              icon={<Sparkles className="h-4 w-4" focusable="false" />}
+              title="준비물"
+            >
               <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {periodSupplies.map((item) => (
-                  <li
-                    key={item.label}
-                    className="flex items-center gap-2.5 rounded-2xl bg-sand-50 px-3.5 py-2.5 text-sm text-gray-700 ring-1 ring-sand-200/70"
-                  >
-                    <span className="text-lg">{item.emoji}</span>
-                    <span>{item.label}</span>
-                  </li>
-                ))}
+                {periodSupplies.map((item) => {
+                  const Icon = SUPPLY_ICONS[item.label] ?? Sparkles;
+                  return (
+                    <li
+                      key={item.label}
+                      className="flex items-center gap-2.5 rounded-2xl bg-sand-50 px-3.5 py-2.5 text-sm text-gray-700 ring-1 ring-sand-200/70"
+                    >
+                      <Icon className="h-5 w-5 shrink-0" focusable="false" />
+                      <span>{item.label}</span>
+                    </li>
+                  );
+                })}
               </ul>
               <p className="mt-3 flex gap-2 rounded-2xl bg-amber-50/70 p-4 text-xs leading-relaxed text-amber-800">
                 <span aria-hidden="true">💡</span>
@@ -167,7 +203,7 @@ export default function PhaseGuide() {
 }
 
 interface GuideBlockProps {
-  icon: string;
+  icon: ReactNode;
   title: string;
   children: ReactNode;
 }
