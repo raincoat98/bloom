@@ -1,0 +1,33 @@
+# Bloom (https://bloom.cloudrainit.com)
+# Robots.txt for search engines
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+
+# Naver Yeti
+User-agent: Yeti
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+
+# Daumoa (Kakao/Daum)
+User-agent: Daumoa
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+
+Sitemap: https://bloom.cloudrainit.com/sitemap.xml
