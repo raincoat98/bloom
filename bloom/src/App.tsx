@@ -4,8 +4,14 @@ import AccountPanel from './components/AccountPanel';
 import HistoryPage from './pages/HistoryPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
+import SymptomsPage from './pages/SymptomsPage';
 import { useAuthStore } from './store/authStore';
 import { syncAfterLogin, useCycleStore } from './store/cycleStore';
+import {
+  migrateLegacyLocalSymptoms,
+  syncSymptomsAfterLogin,
+  useSymptomStore,
+} from './store/symptomStore';
 
 function BloomMark({ className = '' }: { className?: string }) {
   return (
@@ -44,11 +50,13 @@ function BloomMark({ className = '' }: { className?: string }) {
 function App() {
   const location = useLocation();
   const isHistory = location.pathname.startsWith('/history');
+  const isSymptoms = location.pathname.startsWith('/symptoms');
   const isLogin = location.pathname.startsWith('/login');
   const refresh = useAuthStore((state) => state.refresh);
   const userId = useAuthStore((state) => state.user?.id);
 
   useEffect(() => {
+    migrateLegacyLocalSymptoms();
     void refresh();
   }, [refresh]);
 
@@ -56,7 +64,11 @@ function App() {
   useEffect(() => {
     if (!userId) return;
     useCycleStore.getState().setRemoteStatus('syncing');
-    syncAfterLogin().catch(() => useCycleStore.getState().setRemoteStatus('error'));
+    useSymptomStore.getState().setRemoteStatus('syncing');
+    Promise.all([syncAfterLogin(), syncSymptomsAfterLogin()]).catch(() => {
+      useCycleStore.getState().setRemoteStatus('error');
+      useSymptomStore.getState().setRemoteStatus('error');
+    });
   }, [userId]);
 
   return (
@@ -88,12 +100,22 @@ function App() {
             <Link
               to="/"
               className={`rounded-full px-4 py-1.5 font-medium transition ${
-                !isHistory && !isLogin
+                !isHistory && !isSymptoms && !isLogin
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50'
               }`}
             >
               오늘의 리듬
+            </Link>
+            <Link
+              to="/symptoms"
+              className={`rounded-full px-4 py-1.5 font-medium transition ${
+                isSymptoms
+                  ? 'bg-primary-500 text-white shadow-sm'
+                  : 'text-primary-700 hover:bg-primary-50'
+              }`}
+            >
+              증상 관리
             </Link>
             <Link
               to="/history"
@@ -111,6 +133,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/symptoms" element={<SymptomsPage />} />
           <Route path="/login" element={<LoginPage />} />
         </Routes>
 

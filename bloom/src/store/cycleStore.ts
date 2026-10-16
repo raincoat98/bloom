@@ -132,6 +132,21 @@ export const useCycleStore = create<CycleState>()(
         });
       },
     }),
-    { name: 'cycle-storage', partialize: (state) => ({ ...state, remoteStatus: 'local' }) },
+    {
+      name: 'cycle-storage',
+      partialize: (state) => ({
+        lastPeriodDate: state.lastPeriodDate,
+        cycleLength: state.cycleLength,
+        periodLength: state.periodLength,
+        history: state.history.map(({ id, lastPeriodDate, cycleLength, periodLength, savedAt }) => ({
+          id,
+          lastPeriodDate,
+          cycleLength,
+          periodLength,
+          savedAt,
+        })),
+        remoteStatus: 'local' as const,
+      }),
+    },
   ),
 );

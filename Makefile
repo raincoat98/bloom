@@ -5,7 +5,7 @@
 # env 파일이 없으면 example 을 복사해 만듭니다. 값을 확인한 뒤 기동하세요.
 
 COMPOSE := docker compose
-DEV := $(COMPOSE) --env-file .env.dev
+DEV := $(COMPOSE) --env-file .env.dev -f compose.yaml -f compose.dev.yaml
 PROD := $(COMPOSE) --env-file .env.prod
 
 .PHONY: env-dev env-prod dev-up dev-down dev-logs dev-db prod-up prod-down prod-logs prod-ps

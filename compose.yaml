@@ -1,4 +1,4 @@
-# dev / prod 배포는 .env.dev / .env.prod 로 분리합니다 (README 의 "배포" 절 참고).
+# 운영과 공통 서비스 정의입니다. 개발에서는 compose.dev.yaml을 함께 적용합니다.
 # 프로젝트 이름이 다르면 컨테이너·볼륨·이미지가 모두 분리됩니다.
 name: ${COMPOSE_PROJECT_NAME:-bloom}
 

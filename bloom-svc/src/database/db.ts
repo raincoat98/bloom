@@ -62,6 +62,42 @@ export const migrations: Migration[] = [
       CREATE INDEX idx_cycles_user_saved ON cycles (user_id, saved_at DESC);
     `,
   },
+  {
+    version: 2,
+    sql: `
+      ALTER TABLE cycles
+      ADD COLUMN symptoms text[] NOT NULL DEFAULT '{}';
+    `,
+  },
+  {
+    version: 3,
+    sql: `
+      CREATE TABLE symptom_logs (
+        id text PRIMARY KEY,
+        user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        log_date date NOT NULL,
+        symptoms text[] NOT NULL,
+        saved_at timestamptz NOT NULL,
+        updated_at timestamptz NOT NULL,
+        UNIQUE (user_id, log_date)
+      );
+
+      INSERT INTO symptom_logs (id, user_id, log_date, symptoms, saved_at, updated_at)
+      SELECT id || '-symptoms', user_id, saved_at::date, symptoms, saved_at, updated_at
+      FROM (
+        SELECT DISTINCT ON (user_id, saved_at::date)
+          id, user_id, symptoms, saved_at, updated_at
+        FROM cycles
+        WHERE cardinality(symptoms) > 0
+        ORDER BY user_id, saved_at::date, saved_at DESC
+      ) AS latest_daily_symptoms;
+
+      CREATE INDEX idx_symptom_logs_user_date
+      ON symptom_logs (user_id, log_date DESC);
+
+      ALTER TABLE cycles DROP COLUMN symptoms;
+    `,
+  },
 ];
 
 export async function migrate(pool: Pool): Promise<void> {
