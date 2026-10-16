@@ -118,15 +118,15 @@ export class PushService implements OnApplicationBootstrap, OnModuleDestroy {
 
   async subscribe(
     dto: SubscribePushDto,
-    userId?: string | null,
+    userId: string,
   ): Promise<{ ok: boolean; subscription: Partial<PushSubscriptionRecord> }> {
     const id = randomUUID();
     let lastPeriodDate = dto.cycleInfo?.lastPeriodDate ?? null;
     let cycleLength = dto.cycleInfo?.cycleLength ?? null;
     let periodLength = dto.cycleInfo?.periodLength ?? null;
 
-    // 만약 사용자가 로그인되어 있고 요청 본문에 주기 정보가 없다면 최신 주기 조회
-    if (userId && (!lastPeriodDate || !cycleLength || !periodLength)) {
+    // 요청 본문에 주기 정보가 없다면 계정의 최신 주기 조회
+    if (!lastPeriodDate || !cycleLength || !periodLength) {
       const { rows } = await this.pool.query<{
         last_period_date: string;
         cycle_length: number;
@@ -160,7 +160,7 @@ export class PushService implements OnApplicationBootstrap, OnModuleDestroy {
          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now()
        )
        ON CONFLICT (endpoint) DO UPDATE SET
-         user_id = COALESCE(EXCLUDED.user_id, push_subscriptions.user_id),
+         user_id = EXCLUDED.user_id,
          p256dh = EXCLUDED.p256dh,
          auth = EXCLUDED.auth,
          last_period_date = COALESCE(EXCLUDED.last_period_date, push_subscriptions.last_period_date),
@@ -174,7 +174,7 @@ export class PushService implements OnApplicationBootstrap, OnModuleDestroy {
                  to_char(last_period_date, 'YYYY-MM-DD') AS last_period_date, cycle_length, period_length`,
       [
         id,
-        userId || null,
+        userId,
         dto.endpoint,
         dto.keys.p256dh,
         dto.keys.auth,
@@ -190,17 +190,24 @@ export class PushService implements OnApplicationBootstrap, OnModuleDestroy {
     return { ok: true, subscription: rows[0] };
   }
 
-  async unsubscribe(endpoint: string): Promise<{ ok: boolean }> {
-    await this.pool.query(
-      `DELETE FROM push_subscriptions WHERE endpoint = $1`,
-      [endpoint],
-    );
+  async unsubscribe(endpoint: string, userId?: string): Promise<{ ok: boolean }> {
+    if (userId) {
+      await this.pool.query(
+        `DELETE FROM push_subscriptions WHERE endpoint = $1 AND user_id = $2`,
+        [endpoint, userId],
+      );
+    } else {
+      await this.pool.query(
+        `DELETE FROM push_subscriptions WHERE endpoint = $1`,
+        [endpoint],
+      );
+    }
     return { ok: true };
   }
 
   async getStatus(
     endpoint: string,
-    userId?: string | null,
+    userId: string,
   ): Promise<{
     subscribed: boolean;
     preferences?: {
@@ -218,9 +225,10 @@ export class PushService implements OnApplicationBootstrap, OnModuleDestroy {
       `SELECT endpoint, notify_period_before, notify_fertile_before, notify_symptom_reminder,
               to_char(last_period_date, 'YYYY-MM-DD') AS last_period_date, cycle_length, period_length
        FROM push_subscriptions
-       WHERE endpoint = $1 ${userId ? 'OR user_id = $2' : ''}
+       WHERE user_id = $1 AND (endpoint = $2 OR $2 = '')
+       ORDER BY updated_at DESC
        LIMIT 1`,
-      userId ? [endpoint, userId] : [endpoint],
+      [userId, endpoint],
     );
 
     if (rows.length === 0) {
@@ -287,10 +295,12 @@ export class PushService implements OnApplicationBootstrap, OnModuleDestroy {
 
   async sendTest(
     dto: TestPushDto,
+    userId?: string,
   ): Promise<{ ok: boolean; message: string; payload: PushPayload }> {
     const { rows } = await this.pool.query<PushSubscriptionRecord>(
-      `SELECT endpoint, p256dh, auth FROM push_subscriptions WHERE endpoint = $1 LIMIT 1`,
-      [dto.endpoint],
+      `SELECT endpoint, p256dh, auth FROM push_subscriptions
+       WHERE endpoint = $1 ${userId ? 'AND user_id = $2' : ''} LIMIT 1`,
+      userId ? [dto.endpoint, userId] : [dto.endpoint],
     );
 
     if (rows.length === 0) {

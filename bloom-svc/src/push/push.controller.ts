@@ -7,9 +7,9 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import type { Request } from 'express';
-import { AuthService } from '../auth/auth.service';
+import { AuthGuard, AuthedRequest } from '../auth/auth.guard';
 import {
   DispatchPushDto,
   SubscribePushDto,
@@ -20,23 +20,7 @@ import { PushService } from './push.service';
 
 @Controller('api/push')
 export class PushController {
-  constructor(
-    private readonly pushService: PushService,
-    private readonly authService: AuthService,
-  ) {}
-
-  private async extractUserId(req: Request): Promise<string | null> {
-    const authHeader = req.headers.authorization ?? '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-    if (!token) return null;
-
-    try {
-      const user = await this.authService.verifyToken(token);
-      return user.id;
-    } catch {
-      return null;
-    }
-  }
+  constructor(private readonly pushService: PushService) {}
 
   @Get('vapid-public-key')
   getVapidPublicKey() {
@@ -44,27 +28,29 @@ export class PushController {
   }
 
   @Post('subscribe')
-  async subscribe(@Body() dto: SubscribePushDto, @Req() req: Request) {
-    const userId = await this.extractUserId(req);
-    return this.pushService.subscribe(dto, userId);
+  @UseGuards(AuthGuard)
+  subscribe(@Body() dto: SubscribePushDto, @Req() req: AuthedRequest) {
+    return this.pushService.subscribe(dto, req.user.id);
   }
 
   @Post('unsubscribe')
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  unsubscribe(@Body() dto: UnsubscribePushDto) {
-    return this.pushService.unsubscribe(dto.endpoint);
+  unsubscribe(@Body() dto: UnsubscribePushDto, @Req() req: AuthedRequest) {
+    return this.pushService.unsubscribe(dto.endpoint, req.user.id);
   }
 
   @Get('status')
-  async getStatus(@Query('endpoint') endpoint: string, @Req() req: Request) {
-    const userId = await this.extractUserId(req);
-    return this.pushService.getStatus(endpoint || '', userId);
+  @UseGuards(AuthGuard)
+  getStatus(@Query('endpoint') endpoint: string, @Req() req: AuthedRequest) {
+    return this.pushService.getStatus(endpoint || '', req.user.id);
   }
 
   @Post('test')
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  sendTest(@Body() dto: TestPushDto) {
-    return this.pushService.sendTest(dto);
+  sendTest(@Body() dto: TestPushDto, @Req() req: AuthedRequest) {
+    return this.pushService.sendTest(dto, req.user.id);
   }
 
   @Post('dispatch')

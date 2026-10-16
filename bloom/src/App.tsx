@@ -5,6 +5,7 @@ import AccountPanel from './components/AccountPanel';
 import HistoryPage from './pages/HistoryPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
+import SettingsPage from './pages/SettingsPage';
 import SymptomsPage from './pages/SymptomsPage';
 import { useAuthStore } from './store/authStore';
 import { syncAfterLogin, useCycleStore } from './store/cycleStore';
@@ -52,6 +53,7 @@ function App() {
   const location = useLocation();
   const isHistory = location.pathname.startsWith('/history');
   const isSymptoms = location.pathname.startsWith('/symptoms');
+  const isSettings = location.pathname.startsWith('/settings');
   const isLogin = location.pathname.startsWith('/login');
   const refresh = useAuthStore((state) => state.refresh);
   const userId = useAuthStore((state) => state.user?.id);
@@ -106,7 +108,7 @@ function App() {
             <Link
               to="/"
               className={`rounded-full px-4 py-1.5 font-medium transition ${
-                !isHistory && !isSymptoms && !isLogin
+                !isHistory && !isSymptoms && !isSettings && !isLogin
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50'
               }`}
@@ -133,6 +135,16 @@ function App() {
             >
               이력 관리
             </Link>
+            <Link
+              to="/settings"
+              className={`rounded-full px-4 py-1.5 font-medium transition ${
+                isSettings
+                  ? 'bg-primary-500 text-white shadow-sm'
+                  : 'text-primary-700 hover:bg-primary-50'
+              }`}
+            >
+              설정
+            </Link>
           </nav>
         </header>
 
@@ -140,6 +152,7 @@ function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/symptoms" element={<SymptomsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/login" element={<LoginPage />} />
         </Routes>
 

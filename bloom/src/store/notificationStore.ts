@@ -4,6 +4,7 @@ import {
   pushApi,
   type PushCycleInfo,
 } from '../lib/api';
+import { getAuthToken } from '../lib/token';
 import {
   getCurrentPushSubscription,
   getNotificationPermission,
@@ -70,6 +71,12 @@ export const useNotificationStore = create<NotificationState>()(
         set({ isSupported: supported, permission });
         if (!supported) return;
 
+        const token = getAuthToken();
+        if (!token) {
+          set({ isSubscribed: false, endpoint: null });
+          return;
+        }
+
         try {
           const sub = await getCurrentPushSubscription();
           if (sub) {
@@ -99,6 +106,14 @@ export const useNotificationStore = create<NotificationState>()(
       },
 
       enableNotifications: async (cycleInfo?: PushCycleInfo) => {
+        const token = getAuthToken();
+        if (!token) {
+          set({
+            error: '알림 기능은 로그인 후 이용하실 수 있어요.',
+          });
+          return false;
+        }
+
         if (!isPushSupported()) {
           set({
             error:

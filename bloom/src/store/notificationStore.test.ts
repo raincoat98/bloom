@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as ApiModule from '../lib/api';
+import { setAuthToken } from '../lib/token';
 
 const mockApi = vi.hoisted(() => ({
   getVapidPublicKey: vi.fn(),
@@ -21,6 +22,7 @@ import { useNotificationStore } from './notificationStore';
 
 beforeEach(() => {
   localStorage.clear();
+  setAuthToken('mock-auth-token');
   useNotificationStore.setState({
     isSupported: true,
     permission: 'default',
@@ -40,6 +42,16 @@ beforeEach(() => {
 });
 
 describe('notificationStore', () => {
+  it('requires login before enabling notifications', async () => {
+    setAuthToken(null);
+    const success = await useNotificationStore.getState().enableNotifications();
+
+    expect(success).toBe(false);
+    expect(useNotificationStore.getState().error).toBe(
+      '알림 기능은 로그인 후 이용하실 수 있어요.',
+    );
+  });
+
   it('updates preferences and persists to localStorage', async () => {
     await useNotificationStore.getState().updatePreferences({ periodBefore: false });
 
