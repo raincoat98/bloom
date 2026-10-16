@@ -106,7 +106,7 @@ localhost가 박히면 사용자 브라우저가 자기 pc를 호출합니다.
 - `VITE_API_URL` = 프론트와 **같은** 오리진 (예: `https://bloom.cloudrainit.com`)
 - `FRONTEND_URL` = 같은 값 (백엔드 CORS 허용 주소)
 - `PUBLIC_BIND_HOST=0.0.0.0` — cloudflared 가 colima VM 안에서 돌면 인그레스가 호스트
-  LAN IP(`192.168.0.118:5173`)로 들어옵니다. loopback 바인딩이면 VM→호스트 LAN IP 연결이
+  LAN IP의 `${FRONTEND_PORT}`로 들어옵니다. loopback 바인딩이면 VM→호스트 LAN IP 연결이
   거부되어 **502** 가 납니다. DB·백엔드는 `BIND_HOST`(loopback) 그대로라 LAN 에 안 열립니다.
 
 nginx 설정·번들은 이미지에 들어가므로 코드를 바꾼 뒤에는 `--build` 로 다시 만들어야 합니다.
@@ -130,11 +130,11 @@ nginx 설정·번들은 이미지에 들어가므로 코드를 바꾼 뒤에는 
 | `NODE_ENV` | `development` | `production` | |
 | `POSTGRES_USER` / `POSTGRES_DB` | `bloom` | `bloom` | |
 | `POSTGRES_PASSWORD` | 임의값 | **필수, 교체** | 비면 기동 실패 |
-| `DB_PORT` | `5432` | `5432` | 호스트 loopback 노출 포트 |
+| `DB_PORT` | `5432` | `5434` | 호스트 loopback 노출 포트 |
 | `DATABASE_URL` | (미지정) | (미지정) | 지정 시 PG* 대신 사용. 관리형 Postgres용 |
 | `DATABASE_SSL` | `false` | `false` | 관리형 Postgres가 TLS 요구 시 `true` |
 | `JWT_SECRET` | dev 전용 | **필수, 교체** | 비면 기동 실패 |
-| `BACKEND_PORT` / `FRONTEND_PORT` | `3000` / `5173` | `3000` / `5173` | |
+| `BACKEND_PORT` / `FRONTEND_PORT` | `3000` / `5173` | `3100` / `5273` | 호스트의 다른 서비스와 충돌 방지 |
 | `VITE_API_URL` | `http://localhost:3000` | 프론트와 같은 오리진 | **빌드 시 번들에 포함** |
 | `FRONTEND_URL` | `http://localhost:5173` | 실제 프론트 도메인 | 백엔드 CORS 허용 |
 | `BIND_HOST` | `127.0.0.1` | `127.0.0.1` | `0.0.0.0`으로 바꾸지 마세요 |
