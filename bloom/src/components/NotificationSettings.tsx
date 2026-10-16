@@ -1,23 +1,15 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Bell,
   BellRing,
   Check,
-  ChevronDown,
-  ChevronUp,
   Info,
-  Loader2,
-  Send,
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useCycleStore } from '../store/cycleStore';
 import { useNotificationStore } from '../store/notificationStore';
-interface NotificationSettingsProps {
-  compact?: boolean;
-}
 
-export default function NotificationSettings({ compact = false }: NotificationSettingsProps) {
+export default function NotificationSettings() {
   const {
     isSupported,
     permission,
@@ -29,14 +21,12 @@ export default function NotificationSettings({ compact = false }: NotificationSe
     enableNotifications,
     disableNotifications,
     updatePreferences,
-    sendTestPush,
     clearMessages,
   } = useNotificationStore();
+
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const { lastPeriodDate, cycleLength, periodLength } = useCycleStore();
-  const [expanded, setExpanded] = useState(!compact);
-  const [testType, setTestType] = useState<'period' | 'fertile' | 'symptom'>('period');
 
   const cycleInfo = {
     lastPeriodDate,
@@ -56,12 +46,9 @@ export default function NotificationSettings({ compact = false }: NotificationSe
       await enableNotifications(cycleInfo);
     }
   };
+
   const handleTogglePref = (key: keyof typeof preferences) => {
     updatePreferences({ [key]: !preferences[key] }, cycleInfo);
-  };
-
-  const handleSendTest = async () => {
-    await sendTestPush(testType);
   };
 
   return (
@@ -104,21 +91,6 @@ export default function NotificationSettings({ compact = false }: NotificationSe
         </div>
 
         <div className="flex items-center gap-2">
-          {compact && (
-            <button
-              type="button"
-              onClick={() => setExpanded(!expanded)}
-              className="rounded-full p-2 text-gray-500 hover:bg-stone-100 hover:text-gray-800"
-              aria-label={expanded ? '알림 설정 접기' : '알림 설정 펼치기'}
-            >
-              {expanded ? (
-                <ChevronUp className="h-5 w-5" />
-              ) : (
-                <ChevronDown className="h-5 w-5" />
-              )}
-            </button>
-          )}
-
           <button
             type="button"
             onClick={handleToggleSubscribe}
@@ -187,175 +159,130 @@ export default function NotificationSettings({ compact = false }: NotificationSe
         </div>
       )}
 
-      {/* 펼쳐진 상세 설정 */}
-      {expanded && (
-        <div className="mt-5 border-t border-gray-100 pt-5">
-          <div className="space-y-3">
-            {/* 1. 생리 시작 2일 전 알림 */}
-            <div
-              className={`flex items-start justify-between gap-3 rounded-2xl border p-3.5 transition ${
+      {/* 알림 종류별 설정 */}
+      <div className="mt-5 border-t border-gray-100 pt-5">
+        <div className="space-y-3">
+          {/* 1. 생리 시작 2일 전 알림 */}
+          <div
+            className={`flex items-start justify-between gap-3 rounded-2xl border p-3.5 transition ${
+              preferences.periodBefore && isSubscribed
+                ? 'border-primary-200/80 bg-primary-50/40'
+                : 'border-stone-100 bg-stone-50/60 opacity-80'
+            }`}
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-1.5 font-medium text-gray-900 text-sm">
+                <span>🌸</span>
+                <span>생리 시작 2일 전 알림</span>
+              </div>
+              <p className="mt-1 text-xs text-gray-600">
+                &ldquo;생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸&rdquo;
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleTogglePref('periodBefore')}
+              disabled={!isSubscribed}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40 ${
                 preferences.periodBefore && isSubscribed
-                  ? 'border-primary-200/80 bg-primary-50/40'
-                  : 'border-stone-100 bg-stone-50/60 opacity-80'
+                  ? 'bg-primary-500'
+                  : 'bg-gray-300'
               }`}
+              role="switch"
+              aria-checked={preferences.periodBefore}
+              aria-label="생리 시작 2일 전 알림 켜기/끄기"
             >
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5 font-medium text-gray-900 text-sm">
-                  <span>🌸</span>
-                  <span>생리 시작 2일 전 알림</span>
-                </div>
-                <p className="mt-1 text-xs text-gray-600">
-                  &ldquo;생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸&rdquo;
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleTogglePref('periodBefore')}
-                disabled={!isSubscribed}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40 ${
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
                   preferences.periodBefore && isSubscribed
-                    ? 'bg-primary-500'
-                    : 'bg-gray-300'
+                    ? 'translate-x-5'
+                    : 'translate-x-0'
                 }`}
-                role="switch"
-                aria-checked={preferences.periodBefore}
-                aria-label="생리 시작 2일 전 알림 켜기/끄기"
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    preferences.periodBefore && isSubscribed
-                      ? 'translate-x-5'
-                      : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* 2. 가임기 시작 1일 전 알림 */}
-            <div
-              className={`flex items-start justify-between gap-3 rounded-2xl border p-3.5 transition ${
-                preferences.fertileBefore && isSubscribed
-                  ? 'border-emerald-200/80 bg-emerald-50/40'
-                  : 'border-stone-100 bg-stone-50/60 opacity-80'
-              }`}
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5 font-medium text-gray-900 text-sm">
-                  <span>🌱</span>
-                  <span>가임기 시작 1일 전 알림</span>
-                </div>
-                <p className="mt-1 text-xs text-gray-600">
-                  &ldquo;내일부터 가임기가 시작돼요 🌱&rdquo;
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleTogglePref('fertileBefore')}
-                disabled={!isSubscribed}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40 ${
-                  preferences.fertileBefore && isSubscribed
-                    ? 'bg-emerald-500'
-                    : 'bg-gray-300'
-                }`}
-                role="switch"
-                aria-checked={preferences.fertileBefore}
-                aria-label="가임기 시작 1일 전 알림 켜기/끄기"
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    preferences.fertileBefore && isSubscribed
-                      ? 'translate-x-5'
-                      : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* 3. 오늘 컨디션 및 증상 기록 리마인더 */}
-            <div
-              className={`flex items-start justify-between gap-3 rounded-2xl border p-3.5 transition ${
-                preferences.symptomReminder && isSubscribed
-                  ? 'border-amber-200/80 bg-amber-50/40'
-                  : 'border-stone-100 bg-stone-50/60 opacity-80'
-              }`}
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5 font-medium text-gray-900 text-sm">
-                  <span>✨</span>
-                  <span>컨디션 및 증상 기록 리마인더</span>
-                </div>
-                <p className="mt-1 text-xs text-gray-600">
-                  &ldquo;오늘 하루 컨디션은 어떠셨나요? 증상을 기록해 보세요 ✨&rdquo;
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleTogglePref('symptomReminder')}
-                disabled={!isSubscribed}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40 ${
-                  preferences.symptomReminder && isSubscribed
-                    ? 'bg-amber-500'
-                    : 'bg-gray-300'
-                }`}
-                role="switch"
-                aria-checked={preferences.symptomReminder}
-                aria-label="컨디션 및 증상 기록 리마인더 켜기/끄기"
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    preferences.symptomReminder && isSubscribed
-                      ? 'translate-x-5'
-                      : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
+              />
+            </button>
           </div>
 
-          {/* 테스트 알림 발송 영역 */}
-          <div className="mt-5 rounded-2xl bg-stone-50 p-4">
-            <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-semibold text-gray-700">
-                  🔔 즉시 테스트 알림 받기
-                </p>
-                <p className="text-xs text-gray-500">
-                  기기에서 알림이 정상적으로 수신되는지 바로 확인해 보세요.
-                </p>
+          {/* 2. 가임기 시작 1일 전 알림 */}
+          <div
+            className={`flex items-start justify-between gap-3 rounded-2xl border p-3.5 transition ${
+              preferences.fertileBefore && isSubscribed
+                ? 'border-emerald-200/80 bg-emerald-50/40'
+                : 'border-stone-100 bg-stone-50/60 opacity-80'
+            }`}
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-1.5 font-medium text-gray-900 text-sm">
+                <span>🌱</span>
+                <span>가임기 시작 1일 전 알림</span>
               </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <select
-                  value={testType}
-                  onChange={(e) =>
-                    setTestType(e.target.value as 'period' | 'fertile' | 'symptom')
-                  }
-                  className="rounded-xl border border-gray-200 bg-white px-2.5 py-1.5 text-xs text-gray-700 shadow-sm focus:border-primary-400 focus:outline-none"
-                  aria-label="테스트 알림 종류 선택"
-                >
-                  <option value="period">생리 2일 전 🌸</option>
-                  <option value="fertile">가임기 1일 전 🌱</option>
-                  <option value="symptom">증상 기록 ✨</option>
-                </select>
-
-                <button
-                  type="button"
-                  onClick={handleSendTest}
-                  disabled={isLoading}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-primary-600 disabled:opacity-50"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Send className="h-3.5 w-3.5" />
-                  )}
-                  알림 발송
-                </button>
-              </div>
+              <p className="mt-1 text-xs text-gray-600">
+                &ldquo;내일부터 가임기가 시작돼요 🌱&rdquo;
+              </p>
             </div>
+            <button
+              type="button"
+              onClick={() => handleTogglePref('fertileBefore')}
+              disabled={!isSubscribed}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40 ${
+                preferences.fertileBefore && isSubscribed
+                  ? 'bg-emerald-500'
+                  : 'bg-gray-300'
+              }`}
+              role="switch"
+              aria-checked={preferences.fertileBefore}
+              aria-label="가임기 시작 1일 전 알림 켜기/끄기"
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                  preferences.fertileBefore && isSubscribed
+                    ? 'translate-x-5'
+                    : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* 3. 오늘 컨디션 및 증상 기록 리마인더 */}
+          <div
+            className={`flex items-start justify-between gap-3 rounded-2xl border p-3.5 transition ${
+              preferences.symptomReminder && isSubscribed
+                ? 'border-amber-200/80 bg-amber-50/40'
+                : 'border-stone-100 bg-stone-50/60 opacity-80'
+            }`}
+          >
+            <div className="flex-1">
+              <div className="flex items-center gap-1.5 font-medium text-gray-900 text-sm">
+                <span>✨</span>
+                <span>컨디션 및 증상 기록 리마인더</span>
+              </div>
+              <p className="mt-1 text-xs text-gray-600">
+                &ldquo;오늘 하루 컨디션은 어떠셨나요? 증상을 기록해 보세요 ✨&rdquo;
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleTogglePref('symptomReminder')}
+              disabled={!isSubscribed}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out disabled:opacity-40 ${
+                preferences.symptomReminder && isSubscribed
+                  ? 'bg-amber-500'
+                  : 'bg-gray-300'
+              }`}
+              role="switch"
+              aria-checked={preferences.symptomReminder}
+              aria-label="컨디션 및 증상 기록 리마인더 켜기/끄기"
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                  preferences.symptomReminder && isSubscribed
+                    ? 'translate-x-5'
+                    : 'translate-x-0'
+                }`}
+              />
+            </button>
           </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }

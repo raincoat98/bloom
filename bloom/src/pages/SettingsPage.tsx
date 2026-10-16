@@ -2,29 +2,13 @@ import { Link } from 'react-router-dom';
 import { LogIn, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import NotificationSettings from '../components/NotificationSettings';
 import { useAuthStore } from '../store/authStore';
-import { useCycleStore, type RemoteStatus } from '../store/cycleStore';
-
-const SYNC_LABEL: Record<RemoteStatus, string> = {
-  local: '로컬에만 저장됨',
-  syncing: '서버와 동기화 중…',
-  synced: '서버에 안전하게 보관됨',
-  error: '동기화 일시 오류 (로컬에 저장됨)',
-};
-
-const SYNC_BADGE: Record<RemoteStatus, string> = {
-  local: 'bg-stone-100 text-stone-600',
-  syncing: 'bg-amber-100 text-amber-700 animate-pulse',
-  synced: 'bg-emerald-100 text-emerald-700',
-  error: 'bg-rose-100 text-rose-700',
-};
 
 export default function SettingsPage() {
   const { user, logout } = useAuthStore();
-  const remoteStatus = useCycleStore((state) => state.remoteStatus);
 
   return (
     <div className="space-y-6">
-      {/* 1. 계정 상태 영역 */}
+      {/* 1. 계정 정보 영역 */}
       <section className="overflow-hidden rounded-3xl border border-primary-100/70 bg-white/90 p-5 shadow-petal backdrop-blur-sm sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5">
@@ -32,18 +16,9 @@ export default function SettingsPage() {
               <UserRound className="h-6 w-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="font-display text-base font-bold text-gray-900 sm:text-lg">
-                  {user ? '내 계정 정보' : '계정 로그인'}
-                </h2>
-                {user && (
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-semibold ${SYNC_BADGE[remoteStatus]}`}
-                  >
-                    {SYNC_LABEL[remoteStatus]}
-                  </span>
-                )}
-              </div>
+              <h2 className="font-display text-base font-bold text-gray-900 sm:text-lg">
+                {user ? '내 계정' : '계정 로그인'}
+              </h2>
               <p className="mt-0.5 text-xs text-gray-600 sm:text-sm">
                 {user
                   ? user.email
@@ -77,7 +52,7 @@ export default function SettingsPage() {
 
       {/* 2. 웹 푸시 알림 설정 영역 */}
       {user ? (
-        <NotificationSettings compact={false} />
+        <NotificationSettings />
       ) : (
         <section className="overflow-hidden rounded-3xl border border-primary-100/70 bg-gradient-to-br from-white via-primary-50/20 to-rose-50/30 p-6 shadow-petal backdrop-blur-sm sm:p-8">
           <div className="max-w-xl">

@@ -108,7 +108,7 @@ function App() {
             <Link
               to="/"
               className={`rounded-full px-4 py-1.5 font-medium transition ${
-                !isHistory && !isSymptoms && !isSettings && !isLogin
+                !isHistory && !isSymptoms && !isLogin && !isSettings
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50'
               }`}
@@ -134,16 +134,6 @@ function App() {
               }`}
             >
               이력 관리
-            </Link>
-            <Link
-              to="/settings"
-              className={`rounded-full px-4 py-1.5 font-medium transition ${
-                isSettings
-                  ? 'bg-primary-500 text-white shadow-sm'
-                  : 'text-primary-700 hover:bg-primary-50'
-              }`}
-            >
-              설정
             </Link>
           </nav>
         </header>
