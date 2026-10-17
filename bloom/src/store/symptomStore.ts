@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { SymptomId } from '../data/symptoms';
@@ -22,10 +23,11 @@ interface SymptomState {
   toggleSymptom: (symptom: SymptomId) => void;
   saveLog: () => void;
   removeLog: (id: string) => void;
+  removeSymptomFromLog: (id: string, symptom: SymptomId) => void;
   setRemoteStatus: (status: RemoteStatus) => void;
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+export const getTodayDateString = () => format(new Date(), 'yyyy-MM-dd');
 
 const createId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
@@ -117,28 +119,40 @@ export function migrateLegacyLocalSymptoms(): void {
 export const useSymptomStore = create<SymptomState>()(
   persist(
     (set, get) => ({
-      logDate: today(),
+      logDate: getTodayDateString(),
       symptoms: [],
       logs: [],
       remoteStatus: 'local',
       setLogDate: (date) => {
-        const existing = get().logs.find((entry) => entry.logDate === date);
-        set({ logDate: date, symptoms: existing?.symptoms ?? [] });
+        set({ logDate: date, symptoms: [] });
       },
-      toggleSymptom: (symptom) =>
-        set((state) => ({
-          symptoms: state.symptoms.includes(symptom)
-            ? state.symptoms.filter((item) => item !== symptom)
-            : [...state.symptoms, symptom],
-        })),
+      toggleSymptom: (symptom) => {
+        const { logDate, logs, symptoms } = get();
+        const recordedForDate = logs
+          .filter((entry) => entry.logDate === logDate)
+          .flatMap((entry) => entry.symptoms);
+        if (recordedForDate.includes(symptom)) return;
+        set({
+          symptoms: symptoms.includes(symptom)
+            ? symptoms.filter((item) => item !== symptom)
+            : [...symptoms, symptom],
+        });
+      },
       saveLog: () => {
         const { logDate, symptoms, logs } = get();
         if (symptoms.length === 0) return;
         const existing = logs.find((entry) => entry.logDate === logDate);
+        const existingSymptoms = existing?.symptoms ?? [];
+        const newSymptoms = symptoms.filter((s) => !existingSymptoms.includes(s));
+        if (newSymptoms.length === 0) {
+          set({ symptoms: [] });
+          return;
+        }
+        const combinedSymptoms = [...existingSymptoms, ...newSymptoms];
         const entry: SymptomLog = {
           id: existing?.id ?? createId(),
           logDate,
-          symptoms,
+          symptoms: combinedSymptoms,
           savedAt: new Date().toISOString(),
         };
         const others = existing
@@ -147,12 +161,33 @@ export const useSymptomStore = create<SymptomState>()(
         const updatedLogs = [entry, ...others].sort((a, b) =>
           a.logDate < b.logDate ? 1 : -1,
         );
-        set({ logs: updatedLogs });
+        set({ logs: updatedLogs, symptoms: [] });
         pushToServer(entry);
       },
       removeLog: (id) => {
         set({ logs: get().logs.filter((entry) => entry.id !== id) });
         removeFromServer(id);
+      },
+      removeSymptomFromLog: (id, symptom) => {
+        const { logs } = get();
+        const target = logs.find((entry) => entry.id === id);
+        if (!target) return;
+        const remaining = target.symptoms.filter((item) => item !== symptom);
+        if (remaining.length === 0) {
+          set({ logs: logs.filter((entry) => entry.id !== id) });
+          removeFromServer(id);
+        } else {
+          const updated: SymptomLog = {
+            ...target,
+            symptoms: remaining,
+            savedAt: new Date().toISOString(),
+          };
+          const updatedLogs = logs.map((entry) =>
+            entry.id === id ? updated : entry,
+          );
+          set({ logs: updatedLogs });
+          pushToServer(updated);
+        }
       },
       setRemoteStatus: (status) => set({ remoteStatus: status }),
     }),
