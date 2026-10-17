@@ -77,7 +77,7 @@ export default function CycleCalendar() {
               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold transition active:scale-95 ${
                 isCurrentMonth
                   ? 'border border-gray-200/80 bg-gray-50/50 text-gray-400 cursor-default dark:border-stone-800 dark:bg-stone-800/50 dark:text-stone-500'
-                  : 'bg-primary-50 text-primary-700 hover:bg-primary-100 ring-1 ring-primary-200/70 shadow-xs dark:bg-primary-950/80 dark:text-primary-300 dark:ring-primary-800/60 dark:hover:bg-primary-900'
+                  : 'bg-primary-50 text-primary-700 hover:bg-primary-100 ring-1 ring-primary-200/70 shadow-xs dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60 dark:hover:bg-primary-900'
               }`}
               title="오늘이 속한 달로 이동"
             >

@@ -41,7 +41,7 @@ export default function HistoryPage() {
         <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
           저장된 주기 기록
         </h2>
-        <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/60 dark:text-primary-300">
+        <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
           {history.length}건
         </span>
       </div>

@@ -74,12 +74,12 @@ export default function NotificationSettings() {
                 주기 알림
               </h2>
               {isSubscribed ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-800">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/60">
                   <Check className="h-3 w-3" />
                   켜짐
                 </span>
               ) : (
-                <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-600 dark:bg-stone-800 dark:text-stone-300">
+                <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:ring-1 dark:ring-stone-700/60">
                   꺼짐
                 </span>
               )}

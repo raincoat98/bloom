@@ -83,7 +83,7 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
                 setViewMonth(todayDate);
                 setOpen(false);
               }}
-              className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100 active:scale-95 dark:bg-primary-950/80 dark:text-primary-300 dark:hover:bg-primary-900"
+              className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100 active:scale-95 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60 dark:hover:bg-primary-900"
             >
               오늘로 선택
             </button>

@@ -98,7 +98,7 @@ export default function SettingsPage() {
               <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
                 화면 모드
               </h2>
-              <span className="rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-700 ring-1 ring-primary-100 dark:bg-stone-800 dark:text-primary-300 dark:ring-stone-700">
+              <span className="rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-700 ring-1 ring-primary-100 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
                 {mode === 'system'
                   ? `시스템 설정 (${resolvedTheme === 'dark' ? '다크' : '라이트'})`
                   : mode === 'dark'
@@ -166,7 +166,7 @@ export default function SettingsPage() {
       ) : (
         <section className="overflow-hidden rounded-3xl border border-primary-100/70 bg-gradient-to-br from-white via-primary-50/20 to-rose-50/30 p-4 shadow-petal backdrop-blur-sm dark:border-stone-800 dark:from-stone-900 dark:via-stone-900/90 dark:to-stone-850 sm:p-8">
           <div className="max-w-xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100/80 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100/80 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
               <ShieldCheck className="h-3.5 w-3.5" />
               로그인 전용 기능
             </span>
