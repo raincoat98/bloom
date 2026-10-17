@@ -8,10 +8,10 @@ import { useCycleStore } from '../store/cycleStore';
 import { calculateCycle, formatDate, formatShortDate } from '../utils/cycle';
 import PhaseEmoji from './PhaseEmoji';
 const phaseStyles: Record<string, string> = {
-  '생리 중': 'bg-red-100 text-red-700',
-  여포기: 'bg-blue-100 text-blue-700',
-  배란기: 'bg-green-100 text-green-700',
-  황체기: 'bg-amber-100 text-amber-700',
+  '생리 중': 'bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300',
+  여포기: 'bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300',
+  배란기: 'bg-green-100 text-green-700 dark:bg-green-950/80 dark:text-green-300',
+  황체기: 'bg-amber-100 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300',
 };
 
 export default function ResultCard() {
@@ -79,7 +79,7 @@ export default function ResultCard() {
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <InfoCard
           label="다음 생리 예정일"
-          accent="text-red-600"
+          accent="text-red-600 dark:text-red-400"
           headline={formatDate(prediction.nextPeriodStart)}
           sub={`${daysLabel(prediction.daysUntilNextPeriod)}, ~${formatShortDate(
             prediction.nextPeriodEnd,
@@ -88,14 +88,14 @@ export default function ResultCard() {
         />
         <InfoCard
           label="배란 예정일"
-          accent="text-purple-600"
+          accent="text-purple-600 dark:text-purple-400"
           headline={formatDate(prediction.ovulationDate)}
           sub={daysLabel(prediction.daysUntilOvulation)}
           icon={<Blossom className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
           label="가임기"
-          accent="text-emerald-600"
+          accent="text-emerald-600 dark:text-emerald-400"
           headline={`${formatShortDate(
             prediction.fertileWindowStart,
           )} ~ ${formatShortDate(prediction.fertileWindowEnd)}`}
@@ -104,7 +104,7 @@ export default function ResultCard() {
         />
         <InfoCard
           label="안전기 (대략)"
-          accent="text-blue-600"
+          accent="text-blue-600 dark:text-blue-400"
           headline={`${formatShortDate(
             prediction.nextPeriodStart,
           )} 이후`}
@@ -112,7 +112,7 @@ export default function ResultCard() {
           icon={<Shield className="h-5 w-5" focusable="false" />}
         />
       </div>
-      <p className="px-2 text-center text-xs text-gray-400">
+      <p className="px-2 text-center text-xs text-gray-400 dark:text-stone-400">
         Bloom의 예측은 평균 주기를 바탕으로 한 안내예요. 몸이 보내는 신호를
         함께 살피고, 의료 상담은 전문가와 나누어 주세요.
       </p>
@@ -130,9 +130,9 @@ interface InfoCardProps {
 
 function InfoCard({ label, headline, sub, accent, icon }: InfoCardProps) {
   return (
-    <div className="rounded-2xl bg-white/90 p-4 shadow-petal ring-1 ring-primary-100/50 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-bloom sm:p-5">
+    <div className="rounded-2xl bg-white/90 p-4 shadow-petal ring-1 ring-primary-100/50 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-bloom sm:p-5 dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
       <div className="flex items-center justify-between gap-1">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 sm:text-xs">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-gray-500 sm:text-xs dark:text-stone-400">
           {label}
         </p>
         {icon && <span className="shrink-0">{icon}</span>}
@@ -142,7 +142,7 @@ function InfoCard({ label, headline, sub, accent, icon }: InfoCardProps) {
       >
         {headline}
       </p>
-      <p className="mt-1 text-[11px] text-gray-400 sm:text-xs">{sub}</p>
+      <p className="mt-1 text-[11px] text-gray-400 sm:text-xs dark:text-stone-400">{sub}</p>
     </div>
   );
 }

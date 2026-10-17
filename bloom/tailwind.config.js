@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
@@ -55,6 +56,8 @@ export default {
       backgroundImage: {
         'bloom-radial':
           'radial-gradient(circle at 20% 0%, #ffe4e0 0%, transparent 45%), radial-gradient(circle at 90% 10%, #fff1c6 0%, transparent 40%), radial-gradient(circle at 50% 100%, #fde2d6 0%, transparent 50%)',
+        'bloom-radial-dark':
+          'radial-gradient(circle at 20% 0%, rgba(244, 88, 74, 0.12) 0%, transparent 45%), radial-gradient(circle at 90% 10%, rgba(251, 146, 60, 0.08) 0%, transparent 40%), radial-gradient(circle at 50% 100%, rgba(182, 47, 41, 0.1) 0%, transparent 50%)',
       },
     },
   },
