@@ -328,7 +328,11 @@ bloom/src/
     AccountPanel.tsx   # 로그인/회원가입/동기화 상태
   pages/
     MainPage.tsx       # 메인 (입력 + 결과)
+    AboutPage.tsx      # 서비스 소개 및 개요
+    SymptomsPage.tsx   # 일별 증상 기록 관리
     HistoryPage.tsx    # 주기 입력 이력 관리
+    SettingsPage.tsx   # 테마 및 웹 푸시 알림 설정
+    LoginPage.tsx      # 로그인 및 회원가입
   data/phaseGuides.ts  # 시기별 음식·영양제·파트너 팁·준비물
   store/cycleStore.ts  # Zustand 스토어 (로컬 + 서버 동기화)
   store/authStore.ts   # 인증 상태

@@ -32,6 +32,12 @@ export const ROUTE_METAS: Record<string, RouteMeta> = {
       'Bloom 계정으로 로그인하고 기기가 바뀌어도 소중한 생리 주기와 증상 기록을 안전하게 이어가세요.',
     canonicalPath: '/login',
   },
+  '/about': {
+    title: '서비스 개요 | 나의 리듬을 부드럽게 따라가는 주기 다이어리 (Bloom)',
+    description:
+      'Bloom은 복잡함 없이 마지막 생리일과 주기만으로 다음 생리, 배란일, 가임기를 안내하고 매일의 컨디션 증상을 기록하는 가볍고 다정한 주기 다이어리입니다.',
+    canonicalPath: '/about',
+  },
 };
 
 export const BASE_URL = 'https://bloom.cloudrainit.com';

@@ -7,7 +7,7 @@ describe('usePageMeta / ROUTE_METAS', () => {
   });
 
   it('defines metadata for all primary routes', () => {
-    const requiredRoutes = ['/', '/symptoms', '/history', '/login'];
+    const requiredRoutes = ['/', '/symptoms', '/history', '/login', '/about'];
     for (const route of requiredRoutes) {
       expect(ROUTE_METAS).toHaveProperty(route);
       const meta = ROUTE_METAS[route];
