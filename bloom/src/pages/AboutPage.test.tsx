@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import AboutPage from './AboutPage';
 
 describe('AboutPage', () => {
-  it('renders hero title and core introductory message', () => {
+  it('renders hero title and core accessible message', () => {
     const html = renderToString(
       createElement(
         MemoryRouter,
@@ -15,9 +15,24 @@ describe('AboutPage', () => {
     );
 
     expect(html).toContain('Bloom 서비스 소개');
-    expect(html).toContain('나의 리듬을 부드럽게 따라가는');
-    expect(html).toContain('가볍고 다정한 주기 다이어리');
-    expect(html).toContain('어지러운 광고와 복잡한 가입 절차 없이');
+    expect(html).toContain('설치도, 가입도 필요 없이');
+    expect(html).toContain('언제 어디서나 가볍게 여는 주기 다이어리');
+    expect(html).toContain('웹 브라우저에서 바로 열고 날짜만 콕 찍으면');
+  });
+
+  it('renders quick access badges', () => {
+    const html = renderToString(
+      createElement(
+        MemoryRouter,
+        null,
+        createElement(AboutPage),
+      ),
+    );
+
+    expect(html).toContain('앱 설치 없이 바로 열기');
+    expect(html).toContain('가입 절차 없이 3초 시작');
+    expect(html).toContain('이모지로 3초 기록');
+    expect(html).toContain('스마트폰·PC 어디서나');
   });
 
   it('renders primary CTA buttons navigating to features', () => {
@@ -33,7 +48,7 @@ describe('AboutPage', () => {
     expect(html).toContain('증상 기록해보기');
   });
 
-  it('renders all four core features', () => {
+  it('renders all four core features in user-friendly terms', () => {
     const html = renderToString(
       createElement(
         MemoryRouter,
@@ -42,13 +57,13 @@ describe('AboutPage', () => {
       ),
     );
 
-    expect(html).toContain('스마트 주기 예측 &amp; 한눈 캘린더');
-    expect(html).toContain('이모지로 3초 만에 남기는 증상 기록');
-    expect(html).toContain('시기별 맞춤 영양 &amp; 케어 가이드');
-    expect(html).toContain('놓치지 않는 스마트 웹 푸시 알림');
+    expect(html).toContain('날짜만 콕 찍으면 끝나는 주기 예측 &amp; 캘린더');
+    expect(html).toContain('글 쓸 필요 없이 터치 한 번, 이모지 기록');
+    expect(html).toContain('내 몸의 시기에 맞춘 다정한 케어 가이드');
+    expect(html).toContain('중요한 날을 미리 챙겨주는 조용한 알림');
   });
 
-  it('renders Bloom three commitments', () => {
+  it('renders ease-of-use reasons', () => {
     const html = renderToString(
       createElement(
         MemoryRouter,
@@ -57,10 +72,10 @@ describe('AboutPage', () => {
       ),
     );
 
-    expect(html).toContain('Bloom이 지키는 3가지 약속');
-    expect(html).toContain('가입 없는 즉시 사용');
-    expect(html).toContain('안전한 클라우드 동기화');
-    expect(html).toContain('철저한 데이터 보호');
+    expect(html).toContain('Bloom을 마음 편히 쓸 수 있는 이유');
+    expect(html).toContain('앱 설치 없는 간편함');
+    expect(html).toContain('첫 화면부터 즉시 사용');
+    expect(html).toContain('설명서 없이 바로 쓰는 사용법');
   });
 
   it('renders FAQ section and medical disclaimer', () => {
@@ -73,11 +88,11 @@ describe('AboutPage', () => {
     );
 
     expect(html).toContain('자주 묻는 질문');
-    expect(html).toContain('회원가입 없이도 모든 기능을 이용할 수 있나요?');
-    expect(html).toContain('비회원으로 기록하다가 나중에 로그인하면 이전 기록이 유지되나요?');
-    expect(html).toContain('웹 푸시 알림은 어떻게 설정하나요?');
-    expect(html).toContain('주기가 불규칙한 편인데 도움이 될까요?');
-    expect(html).toContain('Bloom의 예측 결과를 피임 목적으로 사용할 수 있나요?');
+    expect(html).toContain('정말 회원가입 없이 그냥 써도 되나요?');
+    expect(html).toContain('앱스토어에서 앱을 따로 다운로드받아야 하나요?');
+    expect(html).toContain('생리 주기가 매달 달라지는데 잘 맞을까요?');
+    expect(html).toContain('다가오는 일정을 잊지 않도록 알림을 받을 수 있나요?');
+    expect(html).toContain('배란일이나 가임기 예측을 피임에 그대로 믿어도 되나요?');
     expect(html).toContain('면책 안내:');
   });
 });
