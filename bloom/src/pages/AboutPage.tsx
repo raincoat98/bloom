@@ -6,12 +6,10 @@ import {
   Calendar,
   ChevronDown,
   Heart,
-  Lock,
-  Moon,
-  RefreshCw,
-  ShieldCheck,
   Smartphone,
+  Smile,
   Sparkles,
+  Zap,
 } from 'lucide-react';
 import PhaseEmoji from '../components/PhaseEmoji';
 import SymptomEmoji from '../components/SymptomEmoji';
@@ -25,29 +23,29 @@ interface FaqItem {
 
 const FAQ_ITEMS: readonly FaqItem[] = [
   {
-    question: '회원가입 없이도 모든 기능을 이용할 수 있나요?',
+    question: '정말 회원가입 없이 그냥 써도 되나요?',
     answer:
-      '네, 주기 계산, 캘린더 흐름 파악, 시기별 맞춤 가이드, 일별 증상 기록 등 핵심 기능은 가입 없이 브라우저(로컬 스토리지)에 바로 저장되어 무료로 이용하실 수 있습니다. 다른 기기와의 동기화 및 PWA 웹 푸시 알림이 필요하실 때만 가벼운 이메일 계정을 만드시면 됩니다.',
+      '네, 맞아요! 사이트에 접속하자마자 다음 생리일 계산부터 한 달 캘린더 확인, 이모지 증상 기록까지 모든 기능을 즉시 무료로 이용하실 수 있습니다. 다른 스마트폰이나 PC에서도 기록을 함께 관리하고 싶을 때만 가볍게 계정을 연동해 두시면 됩니다.',
   },
   {
-    question: '비회원으로 기록하다가 나중에 로그인하면 이전 기록이 유지되나요?',
+    question: '앱스토어에서 앱을 따로 다운로드받아야 하나요?',
     answer:
-      '네, 안전하게 유지됩니다. 계정을 만들고 로그인하는 순간, 현재 기기의 브라우저에 저장되어 있던 모든 주기 및 증상 기록이 클라우드 서버와 자동으로 병합됩니다. 소중한 기록이 유실될 걱정 없이 안심하고 시작하세요.',
+      '아니요, 따로 앱을 설치할 필요가 없습니다. 모바일 브라우저(사파리, 크롬 등)에서 [홈 화면에 추가]만 해두시면 앱처럼 아이콘 하나로 터치해 언제든 빠르게 들어오실 수 있습니다.',
   },
   {
-    question: '웹 푸시 알림은 어떻게 설정하나요?',
+    question: '생리 주기가 매달 달라지는데 잘 맞을까요?',
     answer:
-      '로그인 후 상단 오른쪽 계정 메뉴 또는 하단의 [환경 설정] 탭에서 웹 푸시 알림을 켜실 수 있습니다. 생리 시작 2일 전, 가임기 시작 1일 전, 그리고 저녁 컨디션 기록 리마인더를 모바일 브라우저(PWA)나 PC로 보내드립니다.',
+      '주기가 조금 불규칙하더라도 평소 평균 주기를 바탕으로 가장 유력한 시점을 안내해 드립니다. 새로운 생리가 시작되었을 때 시작일만 다시 선택해 주시면 즉시 다음 예정일과 가임기가 새로 계산됩니다. 이전 주기는 [이력 관리] 탭에서 편하게 비교해 보실 수 있습니다.',
   },
   {
-    question: '주기가 불규칙한 편인데 도움이 될까요?',
+    question: '다가오는 일정을 잊지 않도록 알림을 받을 수 있나요?',
     answer:
-      '불규칙한 경우에도 최근 몇 번의 평균 주기를 입력하시면 통계적 추정치로 다음 일정을 예측해 드립니다. 새로운 생리가 시작될 때마다 [오늘의 리듬] 탭에서 언제든 시작일을 갱신할 수 있으며, [이력 관리] 탭에서 지난 주기의 흐름을 비교해 보실 수 있습니다.',
+      '네, 로그인 후 환경 설정에서 알림을 켜시면 생리 시작 2일 전, 가임기 시작 1일 전에 잊지 않고 챙길 수 있도록 미리 조용히 알려드립니다.',
   },
   {
-    question: 'Bloom의 예측 결과를 피임 목적으로 사용할 수 있나요?',
+    question: '배란일이나 가임기 예측을 피임에 그대로 믿어도 되나요?',
     answer:
-      'Bloom의 배란일 및 가임기 예측은 일반적인 생리 주기 통계 모델을 바탕으로 한 안내입니다. 스트레스, 수면 상태, 호르몬 변화에 따라 실제 배란 시점은 얼마든지 달라질 수 있으므로 의학적 진단이나 완벽한 피임의 근거로 사용하는 것은 권장하지 않습니다.',
+      'Bloom의 계산은 일반적인 주기 모델에 기반한 안내 지표입니다. 수면 상태나 스트레스, 컨디션에 따라 배란 시점은 얼마든지 달라질 수 있으므로 의학적 진단이나 확실한 피임 목적으로 맹신하기보다는 내 몸을 살피는 건강 관리 참고용으로 활용해 주세요.',
   },
 ];
 
@@ -76,15 +74,15 @@ export default function AboutPage() {
           </div>
 
           <h2 className="mt-4 font-display text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl lg:text-4xl">
-            나의 리듬을 부드럽게 따라가는
+            설치도, 가입도 필요 없이
             <br />
-            가볍고 다정한 주기 다이어리
+            언제 어디서나 가볍게 여는 주기 다이어리
           </h2>
 
           <p className="mt-4 text-sm leading-relaxed text-gray-600 dark:text-stone-300 sm:text-base">
-            어지러운 광고와 복잡한 가입 절차 없이, 마지막 생리 시작일과 평균 주기만 알려주세요.
-            다음 생리 예정일과 배란일, 가임기를 살며시 짚어드리고 매일의 컨디션 변화를 이모지로
-            편안하게 기록할 수 있도록 돕습니다.
+            복잡한 설정이나 번거로운 절차는 모두 덜어냈어요.
+            웹 브라우저에서 바로 열고 날짜만 콕 찍으면,
+            다음 생리 예정일과 가임기, 그리고 오늘의 컨디션 흐름을 편안하게 확인할 수 있습니다.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -105,23 +103,23 @@ export default function AboutPage() {
             </Link>
           </div>
 
-          {/* 주요 가치 태그 */}
+          {/* 간편한 접근성 태그 */}
           <div className="mt-8 flex flex-wrap items-center gap-2 text-xs font-medium text-gray-500 dark:text-stone-400">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 ring-1 ring-gray-200/70 dark:bg-stone-800/60 dark:ring-stone-700">
+              <Zap className="h-3.5 w-3.5 text-amber-500" />
+              앱 설치 없이 바로 열기
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 ring-1 ring-gray-200/70 dark:bg-stone-800/60 dark:ring-stone-700">
               <Sparkles className="h-3.5 w-3.5 text-primary-500" />
-              가입 없이 즉시 사용
+              가입 절차 없이 3초 시작
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 ring-1 ring-gray-200/70 dark:bg-stone-800/60 dark:ring-stone-700">
-              <Lock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-              로컬 저장으로 안전한 프라이버시
+              <Heart className="h-3.5 w-3.5 text-rose-500" />
+              이모지로 3초 기록
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 ring-1 ring-gray-200/70 dark:bg-stone-800/60 dark:ring-stone-700">
-              <Bell className="h-3.5 w-3.5 text-amber-500" />
-              스마트 PWA 웹 푸시
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1 ring-1 ring-gray-200/70 dark:bg-stone-800/60 dark:ring-stone-700">
-              <Moon className="h-3.5 w-3.5 text-purple-500" />
-              세심한 다크 모드
+              <Smartphone className="h-3.5 w-3.5 text-rose-500" />
+              스마트폰·PC 어디서나
             </span>
           </div>
         </div>
@@ -131,10 +129,10 @@ export default function AboutPage() {
       <section className="space-y-4">
         <div>
           <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
-            Bloom의 4가지 핵심 기능
+            누구나 쉽게 쓰는 Bloom의 핵심 기능
           </h3>
           <p className="mt-1 text-xs text-gray-500 dark:text-stone-400 sm:text-sm">
-            불필요한 군더더기는 덜어내고, 꼭 필요한 기능만 정성스레 담았습니다.
+            처음 쓰는 분도 헤매지 않도록 가장 직관적인 경험을 드립니다.
           </p>
         </div>
 
@@ -145,11 +143,11 @@ export default function AboutPage() {
               <Calendar className="h-5 w-5" />
             </div>
             <h4 className="mt-4 font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-              스마트 주기 예측 & 한눈 캘린더
+              날짜만 콕 찍으면 끝나는 주기 예측 & 캘린더
             </h4>
             <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-stone-300 sm:text-sm">
-              마지막 시작일과 평균 주기만 입력하면 다음 생리 예정일, 배란일, 가임기를 즉시 계산합니다.
-              35일 캘린더와 D-day 안내로 내 몸의 사계절 흐름을 한눈에 조망할 수 있습니다.
+              마지막 생리일과 주기만 가볍게 선택하세요. 다음 생리일, 배란일, 임신 가능성이 높은 가임기까지
+              한 달 캘린더 위에 한눈에 보기 쉽게 펼쳐드립니다.
             </p>
             <div className="mt-4 flex flex-wrap gap-1.5 pt-1 border-t border-gray-100 dark:border-stone-800">
               {PHASES.map((p) => (
@@ -170,11 +168,11 @@ export default function AboutPage() {
               <Heart className="h-5 w-5" />
             </div>
             <h4 className="mt-4 font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-              이모지로 3초 만에 남기는 증상 기록
+              글 쓸 필요 없이 터치 한 번, 이모지 기록
             </h4>
             <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-stone-300 sm:text-sm">
-              긴 글 작성의 번거로움 없이, 사랑스러운 Fluent UI 이모지로 오늘의 신체·감정 상태를 가볍게
-              터치하여 기록합니다. 복통, 두통, 피로 등 내 컨디션 패턴을 쉽게 확인할 수 있습니다.
+              몸이 무겁고 피곤한 날, 긴 글을 쓸 필요가 없어요. 복통, 두통, 피로, 기분 변화 등 오늘의
+              컨디션을 귀여운 이모지로 가볍게 콕 눌러 3초 만에 남겨보세요.
             </p>
             <div className="mt-4 flex flex-wrap gap-1.5 pt-1 border-t border-gray-100 dark:border-stone-800">
               {SYMPTOM_IDS.slice(0, 6).map((id) => (
@@ -195,84 +193,81 @@ export default function AboutPage() {
               <Sparkles className="h-5 w-5" />
             </div>
             <h4 className="mt-4 font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-              시기별 맞춤 영양 & 케어 가이드
+              내 몸의 시기에 맞춘 다정한 케어 가이드
             </h4>
             <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-stone-300 sm:text-sm">
-              호르몬 주기에 맞춰 내 몸이 필요로 하는 추천 음식, 필수 영양소, 일상 준비물을 안내해
-              드립니다. 또한 곁에 있는 파트너와 함께 나눌 수 있는 다정한 배려 팁을 제공합니다.
+              호르몬 변화로 지치기 쉬운 시기마다 몸을 편안하게 해주는 따뜻한 음식, 챙겨 먹으면 좋은 영양소,
+              그리고 곁에 있는 파트너와 나눌 수 있는 다정한 배려 팁을 전해드려요.
             </p>
             <div className="mt-4 flex items-center gap-2 pt-1 text-xs text-gray-500 dark:text-stone-400 border-t border-gray-100 dark:border-stone-800">
-              <span className="font-medium text-accent-700 dark:text-accent-400">맞춤 큐레이션</span>
-              <span>· 추천 음식, 영양제, 파트너 팁</span>
+              <span className="font-medium text-accent-700 dark:text-accent-400">맞춤 조언</span>
+              <span>· 추천 음식, 영양소, 파트너 팁</span>
             </div>
           </article>
 
-          {/* 기능 4: 웹 푸시 알림 */}
+          {/* 기능 4: 사전 리마인더 알림 */}
           <article className="rounded-3xl border border-primary-100/70 bg-white/90 p-5 shadow-petal backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/90 sm:p-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 ring-1 ring-amber-100 dark:bg-amber-950/60 dark:text-amber-400 dark:ring-amber-900">
               <Bell className="h-5 w-5" />
             </div>
             <h4 className="mt-4 font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-              놓치지 않는 스마트 웹 푸시 알림
+              중요한 날을 미리 챙겨주는 조용한 알림
             </h4>
             <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-stone-300 sm:text-sm">
-              생리 시작 2일 전, 가임기 시작 1일 전, 컨디션 기록 리마인더를 웹 푸시로 보내 중요한 일정을
-              미리 대비할 수 있도록 돕습니다. 불필요한 스팸 없이 오직 나를 위한 알림만 전송됩니다.
+              생리 시작 2일 전, 가임기 시작 1일 전에 잊지 않고 준비할 수 있도록 미리 알려드려요.
+              불필요한 스팸 알림 없이 꼭 필요한 주기 일정만 조용히 전해집니다.
             </p>
             <div className="mt-4 flex items-center gap-2 pt-1 text-xs text-gray-500 dark:text-stone-400 border-t border-gray-100 dark:border-stone-800">
-              <span className="font-medium text-amber-600 dark:text-amber-400">주요 알림</span>
+              <span className="font-medium text-amber-600 dark:text-amber-400">사전 안내</span>
               <span>· 생리 2일 전, 가임기 1일 전, 컨디션 기록</span>
             </div>
           </article>
         </div>
       </section>
 
-      {/* 3. Bloom만의 세 가지 약속 */}
+      {/* 3. 편안하게 쓸 수 있는 이유 */}
       <section className="rounded-3xl border border-primary-100/70 bg-white/90 p-6 shadow-petal backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/90 sm:p-8">
         <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
-          Bloom이 지키는 3가지 약속
+          Bloom을 마음 편히 쓸 수 있는 이유
         </h3>
         <p className="mt-1 text-xs text-gray-500 dark:text-stone-400 sm:text-sm">
-          사용자의 안심과 편안함을 가장 첫 번째 가치로 생각합니다.
+          사용자를 피곤하게 만드는 모든 방해 요소를 없앴습니다.
         </p>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-3">
           <div className="space-y-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-100/70 text-primary-700 dark:bg-primary-950 dark:text-primary-300">
-              <Smartphone className="h-4 w-4" />
+              <Zap className="h-4 w-4" />
             </div>
             <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
-              가입 없는 즉시 사용
+              앱 설치 없는 간편함
             </h4>
             <p className="text-xs leading-relaxed text-gray-600 dark:text-stone-300">
-              이메일 입력이나 가입 절차 없이, 웹사이트를 여는 즉시 브라우저에서 모든 계산과 기록을
-              시작할 수 있습니다.
+              앱스토어에서 앱을 찾고 용량을 차지할 필요가 없어요. 브라우저에서 바로 열고 언제든 편하게 확인하세요.
             </p>
           </div>
 
           <div className="space-y-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100/70 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-              <RefreshCw className="h-4 w-4" />
+              <Sparkles className="h-4 w-4" />
             </div>
             <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
-              안전한 클라우드 동기화
+              첫 화면부터 즉시 사용
             </h4>
             <p className="text-xs leading-relaxed text-gray-600 dark:text-stone-300">
-              계정을 연결하면 기기가 바뀌어도 기존 데이터가 안전하게 서버에 보존되며, 실시간으로
-              동기화됩니다.
+              접속하자마자 회원가입 창 대신 주기 입력 화면이 먼저 반겨줍니다. 기다림 없이 바로 시작하세요.
             </p>
           </div>
 
           <div className="space-y-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-100/70 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
-              <ShieldCheck className="h-4 w-4" />
+              <Smile className="h-4 w-4" />
             </div>
             <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
-              철저한 데이터 보호
+              설명서 없이 바로 쓰는 사용법
             </h4>
             <p className="text-xs leading-relaxed text-gray-600 dark:text-stone-300">
-              타사 광고 추적기나 불필요한 개인정보 수집을 하지 않으며, 건강 기록을 안전하고 투명하게
-              보호합니다.
+              복잡한 매뉴얼을 익힐 필요가 없어요. 날짜를 누르고 이모지를 콕 선택하는 것만으로 누구나 첫눈에 바로 쓸 수 있습니다.
             </p>
           </div>
         </div>
@@ -284,7 +279,7 @@ export default function AboutPage() {
           자주 묻는 질문
         </h3>
         <p className="mt-1 text-xs text-gray-500 dark:text-stone-400 sm:text-sm">
-          Bloom을 이용하시며 궁금한 점들을 모았습니다.
+          처음 시작하시는 분들이 자주 궁금해하시는 내용이에요.
         </p>
 
         <div className="mt-6 divide-y divide-gray-100 dark:divide-stone-800">
@@ -325,7 +320,7 @@ export default function AboutPage() {
             오늘 나의 리듬을 부드럽게 기록해 보세요 🌸
           </h3>
           <p className="mt-2 text-xs sm:text-sm leading-relaxed text-rose-50">
-            가입 없이 10초면 충분합니다. 마지막 시작일과 주기만 입력하고, 내 몸의 소중한 흐름과
+            날짜 선택 하나면 충분합니다. 마지막 시작일과 주기만 누르고, 내 몸의 소중한 흐름과
             컨디션을 다정하게 마주해 보세요.
           </p>
 
@@ -338,10 +333,10 @@ export default function AboutPage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/settings"
+              to="/symptoms"
               className="inline-flex items-center gap-2 rounded-2xl bg-primary-600/50 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary-600/70"
             >
-              <span>환경 설정 둘러보기</span>
+              <span>증상 기록 체험</span>
             </Link>
           </div>
         </div>
@@ -352,7 +347,7 @@ export default function AboutPage() {
         <p className="leading-relaxed">
           <strong>면책 안내:</strong> Bloom의 모든 주기 예측 및 케어 가이드는 통계적 평균 모델에
           기반한 참고 정보입니다. 전문적인 의학 진단을 대신할 수 없으며, 컨디션에 이상이 있거나
-          중요한 건강 문제는 반드시 전문 의료진과 상담해 주세요.
+          건강에 대한 염려가 있을 때는 전문 의료진과 상담해 주세요.
         </p>
       </footer>
     </div>
