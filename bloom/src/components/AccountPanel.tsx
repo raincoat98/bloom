@@ -17,15 +17,17 @@ export default function AccountPanel() {
     if (location.pathname === '/login') return null;
 
     return (
-      <div className="flex items-center gap-2">
-        <Link
-          to="/settings"
-          className="group flex h-8 w-8 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-petal ring-1 ring-primary-100/70 backdrop-blur transition hover:bg-white hover:text-primary-800 dark:bg-stone-900/85 dark:text-stone-300 dark:ring-stone-800 dark:hover:bg-stone-800 dark:hover:text-white active:scale-[0.98]"
-          aria-label="설정"
-          title="설정"
-        >
-          <Settings className="h-4 w-4" />
-        </Link>
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        {location.pathname !== '/settings' && (
+          <Link
+            to="/settings"
+            className="group flex h-8 w-8 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-petal ring-1 ring-primary-100/70 backdrop-blur transition hover:bg-white hover:text-primary-800 dark:bg-stone-900/85 dark:text-stone-300 dark:ring-stone-800 dark:hover:bg-stone-800 dark:hover:text-white active:scale-[0.98]"
+            aria-label="설정"
+            title="설정"
+          >
+            <Settings className="h-4 w-4" />
+          </Link>
+        )}
         <Link
           to="/login"
           className="group flex items-center gap-1.5 rounded-full bg-white/85 px-3 py-1.5 text-xs font-semibold text-primary-700 shadow-petal ring-1 ring-primary-100/70 backdrop-blur transition hover:bg-white hover:text-primary-800 dark:bg-stone-900/85 dark:text-primary-400 dark:ring-stone-800 dark:hover:bg-stone-800 dark:hover:text-primary-300 active:scale-[0.98]"

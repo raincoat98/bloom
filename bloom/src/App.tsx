@@ -82,7 +82,7 @@ function App() {
   }, [userId]);
 
   return (
-    <div className="relative min-h-screen bg-sand-50 bg-bloom-radial dark:bg-stone-950 dark:bg-bloom-radial-dark transition-colors duration-200">
+    <div className="relative min-h-screen bg-sand-50 bg-bloom-radial dark:bg-black dark:bg-none transition-colors duration-200">
       <div className="absolute right-4 top-4 z-40 sm:right-6 sm:top-6">
         <AccountPanel />
       </div>
