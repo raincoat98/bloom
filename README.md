@@ -65,7 +65,7 @@ docker compose --env-file .env.dev -f compose.yaml -f compose.dev.yaml down -v
 | 프로젝트 | `bloom-dev` | `bloom-prod` |
 | 볼륨 | `bloom-dev_bloom-db` | `bloom-prod_bloom-db` |
 | 이미지 | `bloom-dev-backend` 등 | `bloom-prod-backend` 등 |
-| 포트 | 5432 / 3000 / 5273 | 5432 / 3000 / 5173 (호스트가 다르면 동일해도 됨) |
+| 포트 | 5432 / 3000 / 5273 | 5432 / 3000 / 5273 (호스트가 다르면 동일해도 됨) |
 
 ### 같은 호스트에서 둘 다 돌리기
 
@@ -73,8 +73,8 @@ docker compose --env-file .env.dev -f compose.yaml -f compose.dev.yaml down -v
 
 ```bash
 # prod 를 dev 와 다른 포트로
-DB_PORT=5500 BACKEND_PORT=3100 FRONTEND_PORT=5273 \
-VITE_API_URL=http://localhost:3100 FRONTEND_URL=http://localhost:5273 \
+DB_PORT=5500 BACKEND_PORT=3100 FRONTEND_PORT=5373 \
+VITE_API_URL=http://localhost:3100 FRONTEND_URL=http://localhost:5373 \
   docker compose --env-file .env.prod up -d --build
 ```
 
@@ -156,9 +156,9 @@ main 브랜치 push(또는 수동 실행) 시 self-hosted 러너가 `docker comp
 | `DATABASE_URL` | (미지정) | (미지정) | 지정 시 PG* 대신 사용. 관리형 Postgres용 |
 | `DATABASE_SSL` | `false` | `false` | 관리형 Postgres가 TLS 요구 시 `true` |
 | `JWT_SECRET` | dev 전용 | **필수, 교체** | 비면 기동 실패 |
-| `BACKEND_PORT` / `FRONTEND_PORT` | `3000` / `5173` | `3100` / `5273` | 호스트의 다른 서비스와 충돌 방지 |
+| `BACKEND_PORT` / `FRONTEND_PORT` | `3000` / `5273` | `3000` / `5273` | 호스트 노출 포트 |
 | `VITE_API_URL` | `http://localhost:3000` | 프론트와 같은 오리진 | **빌드 시 번들에 포함** |
-| `FRONTEND_URL` | `http://localhost:5173` | 실제 프론트 도메인 | 백엔드 CORS 허용 |
+| `FRONTEND_URL` | `http://localhost:5273` | 실제 프론트 도메인 | 백엔드 CORS 허용 |
 | `BIND_HOST` | `127.0.0.1` | `127.0.0.1` | `0.0.0.0`으로 바꾸지 마세요 |
 | `PUBLIC_BIND_HOST` | `127.0.0.1` | 터널 쓸 때 `0.0.0.0` | **프론트 nginx만** 호스트에 노출 |
 | `BACKUP_INTERVAL_SECONDS` | `86400` | `86400` | 백업 주기(초) |

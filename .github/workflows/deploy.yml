@@ -83,7 +83,7 @@ jobs:
           BACKEND_PORT=$(sed -n 's/^BACKEND_PORT=//p' .env.prod | tail -1)
           FRONTEND_PORT=$(sed -n 's/^FRONTEND_PORT=//p' .env.prod | tail -1)
           BACKEND_PORT=${BACKEND_PORT:-3000}
-          FRONTEND_PORT=${FRONTEND_PORT:-5173}
+          FRONTEND_PORT=${FRONTEND_PORT:-5273}
 
           echo "백엔드 헬스체크 대기 (포트: ${BACKEND_PORT})..."
           for attempt in $(seq 1 30); do

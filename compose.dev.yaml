@@ -15,7 +15,7 @@ services:
       VITE_API_URL: ${VITE_API_URL:?VITE_API_URL 을 .env.dev 에 설정하세요}
       CHOKIDAR_USEPOLLING: "true"
     ports: !override
-      - "${PUBLIC_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-5173}:5173"
+      - "${PUBLIC_BIND_HOST:-127.0.0.1}:${FRONTEND_PORT:-5273}:5173"
     volumes:
       - ./bloom/src:/app/src
       - ./bloom/public:/app/public
