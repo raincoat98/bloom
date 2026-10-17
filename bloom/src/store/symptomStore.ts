@@ -193,9 +193,12 @@ export const useSymptomStore = create<SymptomState>()(
     }),
     {
       name: 'symptom-storage',
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        state.logDate = getTodayDateString();
+        state.symptoms = [];
+      },
       partialize: (state) => ({
-        logDate: state.logDate,
-        symptoms: state.symptoms,
         logs: state.logs,
         remoteStatus: 'local' as const,
       }),
