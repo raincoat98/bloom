@@ -30,19 +30,19 @@ export default function SymptomTracker() {
   };
 
   return (
-    <section className="relative z-20 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur">
+    <section className="relative z-20 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="font-display text-lg font-semibold text-primary-700">
+          <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
             컨디션 기록
           </h2>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-400 dark:text-stone-500">
             지금 느껴지는 증상을 골라 따로 기록해 보세요.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {recordedSymptoms.size > 0 && (
-            <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100">
+            <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100 dark:bg-primary-950/60 dark:text-primary-300 dark:ring-primary-800/60">
               {recordedSymptoms.size}개 이미 기록됨
             </span>
           )}
@@ -51,7 +51,7 @@ export default function SymptomTracker() {
               {symptoms.length}개 추가 선택
             </span>
           ) : isAllRecorded ? (
-            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200">
+            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-800/60">
               모든 증상 기록 완료
             </span>
           ) : (
@@ -64,14 +64,14 @@ export default function SymptomTracker() {
 
       <div className="mt-4 max-w-sm">
         <div className="mb-1 flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-700 dark:text-stone-200">
             기록 날짜
           </span>
           {!isToday && (
             <button
               type="button"
               onClick={() => setLogDate(todayStr)}
-              className="text-xs font-medium text-primary-600 transition hover:text-primary-700 hover:underline"
+              className="text-xs font-medium text-primary-600 transition hover:text-primary-700 hover:underline dark:text-primary-400 dark:hover:text-primary-300"
             >
               오늘로 변경
             </button>
@@ -102,10 +102,10 @@ export default function SymptomTracker() {
               onClick={() => toggleSymptom(symptom)}
               className={`group flex min-h-[5.5rem] flex-col items-center justify-center rounded-2xl border px-1.5 py-2.5 text-center transition ${
                 isRecorded
-                  ? 'cursor-not-allowed border-dashed border-gray-200 bg-gray-50/70 text-gray-400 opacity-60'
+                  ? 'cursor-not-allowed border-dashed border-gray-200 bg-gray-50/70 text-gray-400 opacity-60 dark:border-stone-800 dark:bg-stone-800/40 dark:text-stone-500'
                   : selected
-                    ? 'border-primary-400 bg-primary-50 text-primary-800 shadow-sm ring-1 ring-primary-200 active:scale-[0.98]'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-primary-200 hover:bg-primary-50/50 active:scale-[0.98]'
+                    ? 'border-primary-400 bg-primary-50 text-primary-800 shadow-sm ring-1 ring-primary-200 dark:border-primary-500 dark:bg-primary-950/50 dark:text-primary-200 dark:ring-primary-800 active:scale-[0.98]'
+                    : 'border-gray-200 bg-white text-gray-600 hover:border-primary-200 hover:bg-primary-50/50 dark:border-stone-800 dark:bg-stone-850 dark:text-stone-300 dark:hover:border-stone-700 dark:hover:bg-stone-800 active:scale-[0.98]'
               }`}
             >
               <SymptomEmoji
@@ -119,14 +119,14 @@ export default function SymptomTracker() {
                   isRecorded
                     ? 'font-normal text-gray-400'
                     : selected
-                      ? 'font-semibold text-primary-800'
-                      : 'font-medium text-gray-700'
+                      ? 'font-semibold text-primary-800 dark:text-primary-200'
+                      : 'font-medium text-gray-700 dark:text-stone-300'
                 }`}
               >
                 {option.label}
               </span>
               {isRecorded ? (
-                <span className="mt-1 inline-flex items-center rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-primary-700">
+                <span className="mt-1 inline-flex items-center rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300">
                   ✓ 기록됨
                 </span>
               ) : selected ? (
@@ -142,8 +142,8 @@ export default function SymptomTracker() {
       </div>
 
       {isAllRecorded && (
-        <div className="mt-3 flex items-center gap-2 rounded-2xl border border-primary-100 bg-primary-50/60 px-3.5 py-2.5 text-xs text-primary-800">
-          <Check size={16} className="shrink-0 text-primary-600" />
+        <div className="mt-3 flex items-center gap-2 rounded-2xl border border-primary-100 bg-primary-50/60 px-3.5 py-2.5 text-xs text-primary-800 dark:border-stone-800 dark:bg-stone-850/60 dark:text-primary-300">
+          <Check size={16} className="shrink-0 text-primary-600 dark:text-primary-400" />
           <span>선택한 날짜의 가능한 모든 증상이 기록되었습니다. 아래 &apos;최근 증상&apos;에서 확인하거나 삭제할 수 있어요.</span>
         </div>
       )}

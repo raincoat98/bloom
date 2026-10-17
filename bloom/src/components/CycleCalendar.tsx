@@ -60,14 +60,14 @@ export default function CycleCalendar() {
   }, [lastPeriodDate, cycleLength, periodLength]);
 
   return (
-    <section className="mt-6 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/50 backdrop-blur sm:p-8">
+    <section className="mt-6 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/50 backdrop-blur sm:p-8 dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
       <header className="mb-4 flex items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-stone-400">
             나의 리듬 캘린더
           </p>
           <div className="flex items-center gap-2">
-            <h2 className="font-display text-xl font-bold text-gray-900">
+            <h2 className="font-display text-xl font-bold text-gray-900 dark:text-white">
               한 달 흐름 보기
             </h2>
             <button
@@ -76,8 +76,8 @@ export default function CycleCalendar() {
               disabled={isCurrentMonth}
               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold transition active:scale-95 ${
                 isCurrentMonth
-                  ? 'border border-gray-200/80 bg-gray-50/50 text-gray-400 cursor-default'
-                  : 'bg-primary-50 text-primary-700 hover:bg-primary-100 ring-1 ring-primary-200/70 shadow-xs'
+                  ? 'border border-gray-200/80 bg-gray-50/50 text-gray-400 cursor-default dark:border-stone-800 dark:bg-stone-800/50 dark:text-stone-500'
+                  : 'bg-primary-50 text-primary-700 hover:bg-primary-100 ring-1 ring-primary-200/70 shadow-xs dark:bg-primary-950/80 dark:text-primary-300 dark:ring-primary-800/60 dark:hover:bg-primary-900'
               }`}
               title="오늘이 속한 달로 이동"
             >
@@ -145,7 +145,7 @@ function CycleDay({
 
 function Legend() {
   return (
-    <ul className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-gray-500">
+    <ul className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-gray-500 dark:text-stone-400">
       <LegendItem className="bg-red-300" label="생리" />
       <LegendItem className="bg-emerald-200" label="가임기" />
       <LegendItem className="bg-violet-500" label="배란" />

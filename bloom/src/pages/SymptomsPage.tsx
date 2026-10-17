@@ -51,27 +51,27 @@ export default function SymptomsPage() {
     <>
       <SymptomTracker />
 
-      <section className="relative z-20 mt-6 rounded-3xl bg-white/80 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur">
+      <section className="relative z-20 mt-6 rounded-3xl bg-white/80 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-display text-lg font-semibold text-primary-700">
+            <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
               최근 증상
             </h2>
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-gray-400 dark:text-stone-500">
               최근에 기록한 컨디션을 한눈에 확인해 보세요.
             </p>
           </div>
-          <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-600">
+          <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-600 dark:bg-primary-950/60 dark:text-primary-300">
             {logs.length}건
           </span>
         </div>
 
         {recentSymptoms.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-primary-200/70 bg-primary-50/40 px-4 py-8 text-center">
-            <p className="text-sm font-medium text-primary-700">
+          <div className="mt-4 rounded-2xl border border-dashed border-primary-200/70 bg-primary-50/40 px-4 py-8 text-center dark:border-stone-800 dark:bg-stone-850/50">
+            <p className="text-sm font-medium text-primary-700 dark:text-primary-400">
               아직 기록한 증상이 없어요
             </p>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-stone-400">
               위에서 오늘의 증상을 선택하면 여기에 차곡차곡 보여드려요.
             </p>
           </div>
@@ -82,10 +82,10 @@ export default function SymptomsPage() {
               return (
                 <li
                   key={entry.id}
-                  className={`flex flex-col gap-2 rounded-2xl border bg-white px-4 py-3 transition sm:flex-row sm:items-center sm:justify-between ${
+                  className={`flex flex-col gap-2 rounded-2xl border bg-white px-4 py-3 transition dark:bg-stone-850 sm:flex-row sm:items-center sm:justify-between ${
                     isSelectedDate
-                      ? 'border-primary-300 ring-1 ring-primary-100 shadow-xs'
-                      : 'border-primary-100/70'
+                      ? 'border-primary-300 ring-1 ring-primary-100 shadow-xs dark:border-primary-500 dark:ring-primary-900/50'
+                      : 'border-primary-100/70 dark:border-stone-800'
                   }`}
                 >
                   <div className="flex shrink-0 items-center gap-2">
@@ -93,14 +93,14 @@ export default function SymptomsPage() {
                       type="button"
                       onClick={() => setLogDate(entry.logDate)}
                       title="기록 날짜로 선택하기"
-                      className="text-left text-xs font-medium text-gray-700 transition hover:text-primary-600 hover:underline"
+                      className="text-left text-xs font-medium text-gray-700 transition hover:text-primary-600 hover:underline dark:text-stone-200 dark:hover:text-primary-400"
                     >
                       <time dateTime={entry.logDate}>
                         {formatDate(new Date(`${entry.logDate}T00:00:00`))}
                       </time>
                     </button>
                     {isSelectedDate && (
-                      <span className="rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[10px] font-semibold text-primary-700">
+                      <span className="rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[10px] font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300">
                         선택 중
                       </span>
                     )}
@@ -110,7 +110,7 @@ export default function SymptomsPage() {
                     {(entry.symptoms ?? []).map((symptom) => (
                       <span
                         key={symptom}
-                        className="group/tag inline-flex items-center gap-1 rounded-full bg-primary-50 py-1 pl-2.5 pr-1.5 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100/60 transition hover:bg-primary-100/60"
+                        className="group/tag inline-flex items-center gap-1 rounded-full bg-primary-50 py-1 pl-2.5 pr-1.5 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100/60 transition hover:bg-primary-100/60 dark:bg-primary-950/60 dark:text-primary-300 dark:ring-primary-800/60 dark:hover:bg-primary-900/60"
                       >
                         <SymptomEmoji symptom={symptom} className="h-4 w-4" />
                         <span>{SYMPTOM_BY_ID[symptom].label}</span>
@@ -125,7 +125,7 @@ export default function SymptomsPage() {
                               symptom,
                             })
                           }
-                          className="rounded-full p-0.5 text-primary-400 transition hover:bg-rose-100 hover:text-rose-600"
+                          className="rounded-full p-0.5 text-primary-400 transition hover:bg-rose-100 hover:text-rose-600 dark:text-primary-400 dark:hover:bg-rose-950 dark:hover:text-rose-400"
                           aria-label={`${formatDate(new Date(`${entry.logDate}T00:00:00`))} ${SYMPTOM_BY_ID[symptom].label} 증상 삭제`}
                           title={`${SYMPTOM_BY_ID[symptom].label} 삭제`}
                         >
@@ -145,7 +145,7 @@ export default function SymptomsPage() {
                         symptoms: entry.symptoms,
                       })
                     }
-                    className="group/btn inline-flex shrink-0 items-center gap-1 self-end rounded-full px-2.5 py-1 text-[11px] font-medium text-gray-400 transition hover:bg-rose-50 hover:text-rose-600 sm:self-auto"
+                    className="group/btn inline-flex shrink-0 items-center gap-1 self-end rounded-full px-2.5 py-1 text-[11px] font-medium text-gray-400 transition hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:bg-rose-950/60 dark:hover:text-rose-400 sm:self-auto"
                     aria-label={`${formatDate(new Date(`${entry.logDate}T00:00:00`))} 증상 기록 전체 삭제`}
                   >
                     <Trash2 size={12} className="transition group-hover/btn:scale-110" />
@@ -161,7 +161,7 @@ export default function SymptomsPage() {
           <button
             type="button"
             onClick={() => setShowAll((v) => !v)}
-            className="mt-3 flex w-full items-center justify-center gap-1 rounded-2xl border border-dashed border-primary-200 bg-primary-50/40 py-2 text-xs font-medium text-primary-700 transition hover:bg-primary-50"
+            className="mt-3 flex w-full items-center justify-center gap-1 rounded-2xl border border-dashed border-primary-200 bg-primary-50/40 py-2 text-xs font-medium text-primary-700 transition hover:bg-primary-50 dark:border-stone-800 dark:bg-stone-850/50 dark:text-primary-300 dark:hover:bg-stone-800"
           >
             {showAll ? (
               <>
