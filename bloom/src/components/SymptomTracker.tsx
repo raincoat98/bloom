@@ -42,7 +42,7 @@ export default function SymptomTracker() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {recordedSymptoms.size > 0 && (
-            <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100 dark:bg-primary-950/60 dark:text-primary-300 dark:ring-primary-800/60">
+            <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
               {recordedSymptoms.size}개 이미 기록됨
             </span>
           )}
@@ -51,7 +51,7 @@ export default function SymptomTracker() {
               {symptoms.length}개 추가 선택
             </span>
           ) : isAllRecorded ? (
-            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-800/60">
+            <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/60">
               모든 증상 기록 완료
             </span>
           ) : (
@@ -126,7 +126,7 @@ export default function SymptomTracker() {
                 {option.label}
               </span>
               {isRecorded ? (
-                <span className="mt-1 inline-flex items-center rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300">
+                <span className="mt-1 inline-flex items-center rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
                   ✓ 기록됨
                 </span>
               ) : selected ? (

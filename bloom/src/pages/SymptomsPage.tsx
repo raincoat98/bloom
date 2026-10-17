@@ -61,7 +61,7 @@ export default function SymptomsPage() {
               최근에 기록한 컨디션을 한눈에 확인해 보세요.
             </p>
           </div>
-          <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-600 dark:bg-primary-950/60 dark:text-primary-300">
+          <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
             {logs.length}건
           </span>
         </div>
@@ -100,7 +100,7 @@ export default function SymptomsPage() {
                       </time>
                     </button>
                     {isSelectedDate && (
-                      <span className="rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[10px] font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300">
+                      <span className="rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[10px] font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
                         선택 중
                       </span>
                     )}
@@ -110,7 +110,7 @@ export default function SymptomsPage() {
                     {(entry.symptoms ?? []).map((symptom) => (
                       <span
                         key={symptom}
-                        className="group/tag inline-flex items-center gap-1 rounded-full bg-primary-50 py-1 pl-2.5 pr-1.5 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100/60 transition hover:bg-primary-100/60 dark:bg-primary-950/60 dark:text-primary-300 dark:ring-primary-800/60 dark:hover:bg-primary-900/60"
+                        className="group/tag inline-flex items-center gap-1 rounded-full bg-primary-50 py-1 pl-2.5 pr-1.5 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100/60 transition hover:bg-primary-100/60 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-primary-800/60 dark:hover:bg-primary-900/80"
                       >
                         <SymptomEmoji symptom={symptom} className="h-4 w-4" />
                         <span>{SYMPTOM_BY_ID[symptom].label}</span>

@@ -29,7 +29,7 @@ export default function InputForm() {
         <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
           나의 리듬 입력
         </h2>
-        <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/60 dark:text-primary-300">
+        <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
           STEP 1
         </span>
       </div>
@@ -43,7 +43,7 @@ export default function InputForm() {
             <button
               type="button"
               onClick={() => setLastPeriodDate(new Date().toISOString().slice(0, 10))}
-              className="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100/80 active:scale-95 shadow-xs dark:bg-primary-950/80 dark:text-primary-300 dark:hover:bg-primary-900"
+              className="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100/80 active:scale-95 shadow-xs dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60 dark:hover:bg-primary-900"
             >
               오늘
             </button>
