@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { Link, Route, Routes, useLocation } from 'react-router-dom';
+import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { usePageMeta } from './hooks/usePageMeta';
 import AccountPanel from './components/AccountPanel';
+import AboutPage from './pages/AboutPage';
 import HistoryPage from './pages/HistoryPage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
@@ -56,6 +57,7 @@ function App() {
   const isSymptoms = location.pathname.startsWith('/symptoms');
   const isSettings = location.pathname.startsWith('/settings');
   const isLogin = location.pathname.startsWith('/login');
+  const isAbout = location.pathname.startsWith('/about');
   const refresh = useAuthStore((state) => state.refresh);
   const userId = useAuthStore((state) => state.user?.id);
   usePageMeta();
@@ -107,11 +109,11 @@ function App() {
               다음 일정과 컨디션 흐름을 살며시 짚어드릴게요.
             </span>
           </p>
-          <nav className="mt-5 inline-flex rounded-full bg-white/80 p-1 text-sm shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
+          <nav className="mt-5 inline-flex flex-wrap justify-center rounded-full bg-white/80 p-1 text-xs sm:text-sm shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
             <Link
               to="/"
-              className={`rounded-full px-4 py-1.5 font-medium transition ${
-                !isHistory && !isSymptoms && !isLogin && !isSettings
+              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
+                !isHistory && !isSymptoms && !isLogin && !isSettings && !isAbout
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
               }`}
@@ -120,7 +122,7 @@ function App() {
             </Link>
             <Link
               to="/symptoms"
-              className={`rounded-full px-4 py-1.5 font-medium transition ${
+              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
                 isSymptoms
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
@@ -130,13 +132,23 @@ function App() {
             </Link>
             <Link
               to="/history"
-              className={`rounded-full px-4 py-1.5 font-medium transition ${
+              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
                 isHistory
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
               }`}
             >
               이력 관리
+            </Link>
+            <Link
+              to="/about"
+              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
+                isAbout
+                  ? 'bg-primary-500 text-white shadow-sm'
+                  : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
+              }`}
+            >
+              서비스 개요
             </Link>
           </nav>
         </header>
@@ -145,16 +157,34 @@ function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/symptoms" element={<SymptomsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/overview" element={<Navigate to="/about" replace />} />
+          <Route path="/intro" element={<Navigate to="/about" replace />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/login" element={<LoginPage />} />
         </Routes>
 
-        <footer className="mt-14 flex flex-col items-center gap-1 text-center text-xs text-gray-400 dark:text-stone-500">
+        <footer className="mt-14 flex flex-col items-center gap-2 text-center text-xs text-gray-400 dark:text-stone-500">
           <div className="flex items-center gap-1.5">
             <BloomMark className="h-3.5 w-3.5 opacity-70" />
             <span className="font-medium text-gray-500 dark:text-stone-400">Bloom</span>
           </div>
           <p>나의 리듬을 부드럽게 따라가는 주기 다이어리</p>
+          <div className="mt-1 flex items-center gap-3 text-gray-500 dark:text-stone-400">
+            <Link
+              to="/about"
+              className="transition hover:text-primary-600 dark:hover:text-primary-400"
+            >
+              서비스 개요
+            </Link>
+            <span aria-hidden="true">·</span>
+            <Link
+              to="/settings"
+              className="transition hover:text-primary-600 dark:hover:text-primary-400"
+            >
+              환경 설정
+            </Link>
+          </div>
         </footer>
       </div>
     </div>
