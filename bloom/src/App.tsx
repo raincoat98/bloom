@@ -109,10 +109,10 @@ function App() {
               다음 일정과 컨디션 흐름을 살며시 짚어드릴게요.
             </span>
           </p>
-          <nav className="mt-5 inline-flex flex-wrap justify-center rounded-full bg-white/80 p-1 text-xs sm:text-sm shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
+          <nav className="mt-5 inline-flex rounded-full bg-white/80 p-1 text-sm shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
             <Link
               to="/"
-              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
+              className={`rounded-full px-4 py-1.5 font-medium transition ${
                 !isHistory && !isSymptoms && !isLogin && !isSettings && !isAbout
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
@@ -122,7 +122,7 @@ function App() {
             </Link>
             <Link
               to="/symptoms"
-              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
+              className={`rounded-full px-4 py-1.5 font-medium transition ${
                 isSymptoms
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
@@ -132,23 +132,13 @@ function App() {
             </Link>
             <Link
               to="/history"
-              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
+              className={`rounded-full px-4 py-1.5 font-medium transition ${
                 isHistory
                   ? 'bg-primary-500 text-white shadow-sm'
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
               }`}
             >
               이력 관리
-            </Link>
-            <Link
-              to="/about"
-              className={`rounded-full px-3 sm:px-4 py-1.5 font-medium transition ${
-                isAbout
-                  ? 'bg-primary-500 text-white shadow-sm'
-                  : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
-              }`}
-            >
-              서비스 개요
             </Link>
           </nav>
         </header>
