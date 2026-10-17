@@ -18,7 +18,7 @@ export function applyTheme(resolvedTheme: ResolvedTheme): void {
 
   const metaThemeColor = document.querySelector('meta[name="theme-color"]');
   if (metaThemeColor) {
-    metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#1c1917' : '#f43f5e');
+    metaThemeColor.setAttribute('content', resolvedTheme === 'dark' ? '#000000' : '#f43f5e');
   }
 }
 

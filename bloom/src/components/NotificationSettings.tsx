@@ -52,11 +52,11 @@ export default function NotificationSettings() {
   };
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-primary-100/70 bg-white/90 p-5 shadow-petal backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/90 sm:p-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+    <section className="overflow-hidden rounded-3xl border border-primary-100/70 bg-white/90 p-4 shadow-petal backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/90 sm:p-6">
+      <div className="flex items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <div
-            className={`flex h-11 w-11 items-center justify-center rounded-2xl ${
+            className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl ${
               isSubscribed
                 ? 'bg-primary-50 text-primary-600 ring-2 ring-primary-200 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-stone-700'
                 : 'bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400'
@@ -68,8 +68,8 @@ export default function NotificationSettings() {
               <Bell className="h-5 w-5" />
             )}
           </div>
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
                 주기 알림
               </h2>
@@ -89,7 +89,7 @@ export default function NotificationSettings() {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={handleToggleSubscribe}
@@ -112,11 +112,11 @@ export default function NotificationSettings() {
       </div>
 
       {!user && (
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-primary-50/80 p-3.5 text-xs text-primary-900 ring-1 ring-primary-100">
-          <span>알림을 켜고 관리하려면 먼저 로그인해 주세요 🌸</span>
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl bg-primary-50/80 p-3.5 text-xs text-primary-900 ring-1 ring-primary-100">
+          <span className="break-keep">알림을 켜고 관리하려면 먼저 로그인해 주세요 🌸</span>
           <Link
             to="/login"
-            className="shrink-0 rounded-xl bg-primary-500 px-3 py-1.5 font-semibold text-white shadow-sm transition hover:bg-primary-600"
+            className="shrink-0 self-start sm:self-auto rounded-xl bg-primary-500 px-3 py-1.5 font-semibold text-white shadow-sm transition hover:bg-primary-600"
           >
             로그인하기
           </Link>
@@ -169,12 +169,12 @@ export default function NotificationSettings() {
                 : 'border-stone-100 bg-stone-50/60 dark:border-stone-800 dark:bg-stone-850/60 opacity-80'
             }`}
           >
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-stone-100 text-sm">
-                <span>🌸</span>
-                <span>생리 시작 2일 전 알림</span>
+                <span className="shrink-0">🌸</span>
+                <span className="break-keep">생리 시작 2일 전 알림</span>
               </div>
-              <p className="mt-1 text-xs text-gray-600 dark:text-stone-400">
+              <p className="mt-1 text-xs text-gray-600 dark:text-stone-400 break-keep">
                 &ldquo;생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸&rdquo;
               </p>
             </div>
@@ -209,12 +209,12 @@ export default function NotificationSettings() {
                 : 'border-stone-100 bg-stone-50/60 dark:border-stone-800 dark:bg-stone-850/60 opacity-80'
             }`}
           >
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-stone-100 text-sm">
-                <span>🌱</span>
-                <span>가임기 시작 1일 전 알림</span>
+                <span className="shrink-0">🌱</span>
+                <span className="break-keep">가임기 시작 1일 전 알림</span>
               </div>
-              <p className="mt-1 text-xs text-gray-600 dark:text-stone-400">
+              <p className="mt-1 text-xs text-gray-600 dark:text-stone-400 break-keep">
                 &ldquo;내일부터 가임기가 시작돼요 🌱&rdquo;
               </p>
             </div>
@@ -249,12 +249,12 @@ export default function NotificationSettings() {
                 : 'border-stone-100 bg-stone-50/60 dark:border-stone-800 dark:bg-stone-850/60 opacity-80'
             }`}
           >
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-stone-100 text-sm">
-                <span>✨</span>
-                <span>컨디션 및 증상 기록 리마인더</span>
+                <span className="shrink-0">✨</span>
+                <span className="break-keep">컨디션 및 증상 기록 리마인더</span>
               </div>
-              <p className="mt-1 text-xs text-gray-600 dark:text-stone-400">
+              <p className="mt-1 text-xs text-gray-600 dark:text-stone-400 break-keep">
                 &ldquo;오늘 하루 컨디션은 어떠셨나요? 증상을 기록해 보세요 ✨&rdquo;
               </p>
             </div>
