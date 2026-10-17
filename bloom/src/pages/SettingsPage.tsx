@@ -166,7 +166,7 @@ export default function SettingsPage() {
       ) : (
         <section className="overflow-hidden rounded-3xl border border-primary-100/70 bg-gradient-to-br from-white via-primary-50/20 to-rose-50/30 p-4 shadow-petal backdrop-blur-sm dark:border-stone-800 dark:from-stone-900 dark:via-stone-900/90 dark:to-stone-850 sm:p-8">
           <div className="max-w-xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100/80 px-3 py-1 text-xs font-semibold text-primary-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100/80 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300">
               <ShieldCheck className="h-3.5 w-3.5" />
               로그인 전용 기능
             </span>

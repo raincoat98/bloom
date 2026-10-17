@@ -47,6 +47,7 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
           }
           setOpen((v) => !v);
         }}
+        className="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-left text-gray-800 transition hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-200 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:hover:border-primary-400 dark:focus:ring-primary-900/50"
       >
         <span className="font-medium">
           {selected

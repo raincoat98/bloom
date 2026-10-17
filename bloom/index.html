@@ -160,6 +160,15 @@
         padding: 0;
         background-color: #fff7ed;
       }
+      html.dark, html.dark body {
+        background-color: #000000 !important;
+      }
+      html.dark #root > div {
+        background-color: #000000 !important;
+      }
+      html.dark .bloom-splash-icon span:first-of-type {
+        color: #f5f5f4 !important;
+      }
       @keyframes bloom-splash-pulse {
         0% { transform: scale(0.96); opacity: 0.85; }
         100% { transform: scale(1.04); opacity: 1; }
