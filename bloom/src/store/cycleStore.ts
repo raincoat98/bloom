@@ -71,9 +71,14 @@ export async function syncAfterLogin(): Promise<void> {
   for (const entry of history) {
     if (!serverDates.has(entry.lastPeriodDate)) merged.push(entry);
   }
-  merged.sort((a, b) => (a.savedAt < b.savedAt ? 1 : -1));
-  useCycleStore.setState({ history: merged });
-
+  merged.sort((a, b) => (a.lastPeriodDate < b.lastPeriodDate ? 1 : -1));
+  const latest = merged[0];
+  useCycleStore.setState({
+    history: merged,
+    lastPeriodDate: latest?.lastPeriodDate ?? today(),
+    cycleLength: latest?.cycleLength ?? 28,
+    periodLength: latest?.periodLength ?? 5,
+  });
   const toUpload = history.filter((entry) => !serverDates.has(entry.lastPeriodDate));
   if (toUpload.length > 0) {
     useCycleStore.setState({ remoteStatus: 'syncing' });
@@ -106,12 +111,15 @@ export const useCycleStore = create<CycleState>()(
         void useNotificationStore.getState().syncCycle({ lastPeriodDate, cycleLength, periodLength: days });
       },
       setRemoteStatus: (status) => set({ remoteStatus: status }),
-      reset: () =>
+      reset: () => {
+        const { history } = get();
+        const latest = history[0];
         set({
-          lastPeriodDate: today(),
-          cycleLength: 28,
-          periodLength: 5,
-        }),
+          lastPeriodDate: latest?.lastPeriodDate ?? today(),
+          cycleLength: latest?.cycleLength ?? 28,
+          periodLength: latest?.periodLength ?? 5,
+        });
+      },
       addToHistory: () => {
         const { lastPeriodDate, cycleLength, periodLength, history } = get();
         const existing = history.find(
@@ -127,11 +135,24 @@ export const useCycleStore = create<CycleState>()(
         const others = existing
           ? history.filter((item) => item.id !== existing.id)
           : history;
-        set({ history: [entry, ...others] });
+        const newHistory = [entry, ...others].sort((a, b) =>
+          a.lastPeriodDate < b.lastPeriodDate ? 1 : -1,
+        );
+        set({
+          history: newHistory,
+          lastPeriodDate: newHistory[0].lastPeriodDate,
+        });
         pushToServer(entry);
       },
       removeFromHistory: (id) => {
-        set({ history: get().history.filter((entry) => entry.id !== id) });
+        const remaining = get().history.filter((entry) => entry.id !== id);
+        const latest = remaining[0];
+        set({
+          history: remaining,
+          lastPeriodDate: latest?.lastPeriodDate ?? today(),
+          cycleLength: latest?.cycleLength ?? 28,
+          periodLength: latest?.periodLength ?? 5,
+        });
         removeFromServer(id);
       },
       loadFromHistory: (id) => {
@@ -146,6 +167,22 @@ export const useCycleStore = create<CycleState>()(
     }),
     {
       name: 'cycle-storage',
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        if (state.history && state.history.length > 0) {
+          const sorted = [...state.history].sort((a, b) =>
+            a.lastPeriodDate < b.lastPeriodDate ? 1 : -1,
+          );
+          const latest = sorted[0];
+          if (latest) {
+            state.lastPeriodDate = latest.lastPeriodDate;
+            state.cycleLength = latest.cycleLength;
+            state.periodLength = latest.periodLength;
+          }
+        } else {
+          state.lastPeriodDate = today();
+        }
+      },
       partialize: (state) => ({
         lastPeriodDate: state.lastPeriodDate,
         cycleLength: state.cycleLength,

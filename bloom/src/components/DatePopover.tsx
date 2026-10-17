@@ -14,7 +14,13 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const selected = value ? parseLocalDate(value) : undefined;
+  const [viewMonth, setViewMonth] = useState<Date>(() => selected ?? new Date());
 
+  useEffect(() => {
+    if (open) {
+      setViewMonth(selected ?? new Date());
+    }
+  }, [open, value]);
   useEffect(() => {
     if (!open) return;
     function handleClick(e: MouseEvent) {
@@ -55,6 +61,8 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
         <div className="absolute left-0 top-full z-50 mt-2 max-w-[calc(100vw-2.5rem)] origin-top overflow-x-auto rounded-2xl bg-white p-3 shadow-bloom ring-1 ring-primary-100 sm:p-5">
           <DayPicker
             mode="single"
+            month={viewMonth}
+            onMonthChange={setViewMonth}
             selected={selected}
             onSelect={(date) => {
               if (date) {
@@ -66,6 +74,27 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
             showOutsideDays
             className="bloom-calendar"
           />
+          <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                const todayDate = new Date();
+                onChange(format(todayDate, 'yyyy-MM-dd'));
+                setViewMonth(todayDate);
+                setOpen(false);
+              }}
+              className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100 active:scale-95"
+            >
+              오늘로 선택
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-full px-2.5 py-1 text-xs font-medium text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            >
+              닫기
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -35,15 +35,24 @@ export default function InputForm() {
       </div>
 
       <div className="space-y-4">
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-gray-700">
-            마지막 생리 시작일
-          </span>
+        <div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">
+              마지막 생리 시작일
+            </span>
+            <button
+              type="button"
+              onClick={() => setLastPeriodDate(new Date().toISOString().slice(0, 10))}
+              className="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100/80 active:scale-95 shadow-xs"
+            >
+              오늘
+            </button>
+          </div>
           <DatePopover
             value={lastPeriodDate}
             onChange={setLastPeriodDate}
           />
-        </label>
+        </div>
 
         <button
           type="button"
