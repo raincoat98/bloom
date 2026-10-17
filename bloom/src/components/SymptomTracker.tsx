@@ -150,7 +150,7 @@ export default function SymptomTracker() {
 
       <div className="mt-4 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
         {savedFlash && (
-          <p className="flex items-center justify-center gap-1 text-center text-xs font-medium text-primary-600" role="status">
+          <p className="flex items-center justify-center gap-1 text-center text-xs font-medium text-primary-600 dark:text-primary-400" role="status">
             <Check size={14} />
             <span>증상을 기록했어요</span>
           </p>
@@ -159,7 +159,7 @@ export default function SymptomTracker() {
           type="button"
           onClick={handleSave}
           disabled={symptoms.length === 0}
-          className="rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none"
+          className="rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none dark:disabled:bg-stone-800 dark:disabled:text-stone-600"
         >
           증상 기록하기
         </button>

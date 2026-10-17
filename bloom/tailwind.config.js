@@ -30,6 +30,10 @@ export default {
           100: '#f9f1e6',
           200: '#efe0c8',
         },
+        stone: {
+          750: '#201d1b',
+          850: '#23201e',
+        },
       },
       fontFamily: {
         sans: [

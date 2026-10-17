@@ -112,7 +112,7 @@ export default function NotificationSettings() {
       </div>
 
       {!user && (
-        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl bg-primary-50/80 p-3.5 text-xs text-primary-900 ring-1 ring-primary-100">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl bg-primary-50/80 p-3.5 text-xs text-primary-900 ring-1 ring-primary-100 dark:bg-stone-800 dark:text-stone-200 dark:ring-stone-700">
           <span className="break-keep">알림을 켜고 관리하려면 먼저 로그인해 주세요 🌸</span>
           <Link
             to="/login"

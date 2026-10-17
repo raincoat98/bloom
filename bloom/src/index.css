@@ -357,6 +357,7 @@ html.dark body {
 }
 
 /* Dark mode overrides for sliders and calendars */
+html.dark .bloom-slider,
 .dark .bloom-slider {
   background: linear-gradient(
     to right,
@@ -367,6 +368,7 @@ html.dark body {
   );
 }
 
+html.dark .bloom-slider::-webkit-slider-thumb,
 .dark .bloom-slider::-webkit-slider-thumb {
   background: #1c1917;
   border: 3px solid #fb7a6b;
@@ -375,15 +377,18 @@ html.dark body {
     0 0 0 4px rgba(251, 122, 107, 0.15);
 }
 
+html.dark .bloom-slider::-moz-range-thumb,
 .dark .bloom-slider::-moz-range-thumb {
   background: #1c1917;
   border: 3px solid #fb7a6b;
 }
 
+html.dark .bloom-slider::-moz-range-track,
 .dark .bloom-slider::-moz-range-track {
   background: #292524;
 }
 
+html.dark .bloom-calendar,
 .dark .bloom-calendar {
   --rdp-accent-color: #fb7a6b;
   --rdp-accent-background-color: #292524;
@@ -391,86 +396,111 @@ html.dark body {
   --rdp-selected-border: 2px solid #fb7a6b;
 }
 
+html.dark .bloom-calendar .rdp-month_caption,
 .dark .bloom-calendar .rdp-month_caption {
   color: #f5f5f4;
 }
 
+html.dark .bloom-calendar .rdp-weekday,
 .dark .bloom-calendar .rdp-weekday {
   color: #a8a29e;
 }
 
+html.dark .bloom-calendar .rdp-day_button,
 .dark .bloom-calendar .rdp-day_button {
   color: #e7e5e4;
 }
 
+html.dark .bloom-calendar .rdp-day_button:hover:not([disabled]),
 .dark .bloom-calendar .rdp-day_button:hover:not([disabled]) {
   background: #292524;
   color: #fb7a6b;
 }
 
+html.dark .bloom-calendar .rdp-today:not(.rdp-selected) .rdp-day_button,
 .dark .bloom-calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
   color: #fb7a6b;
   background: rgba(244, 88, 74, 0.22);
 }
 
+html.dark .bloom-calendar .rdp-selected .rdp-day_button,
+html.dark .bloom-calendar .rdp-selected .rdp-day_button:hover:not([disabled]),
 .dark .bloom-calendar .rdp-selected .rdp-day_button,
 .dark .bloom-calendar .rdp-selected .rdp-day_button:hover:not([disabled]) {
   background: #f4584a;
   color: #ffffff;
 }
 
+html.dark .bloom-calendar .rdp-outside .rdp-day_button,
 .dark .bloom-calendar .rdp-outside .rdp-day_button {
   color: #57534e;
 }
 
+html.dark .bloom-calendar .rdp-chevron,
+.dark .bloom-calendar .rdp-chevron {
+  fill: #fb7a6b;
+}
+
+html.dark .bloom-calendar .rdp-button_previous:hover,
+html.dark .bloom-calendar .rdp-button_next:hover,
 .dark .bloom-calendar .rdp-button_previous:hover,
 .dark .bloom-calendar .rdp-button_next:hover {
   background: #292524;
 }
 
+html.dark .bloom-cycle-calendar .bloom-cycle-day,
 .dark .bloom-cycle-calendar .bloom-cycle-day {
   color: #e7e5e4;
 }
 
+html.dark .bloom-cycle-calendar .rdp-day:hover .bloom-cycle-day,
 .dark .bloom-cycle-calendar .rdp-day:hover .bloom-cycle-day {
   background: #292524;
   color: #fb7a6b;
 }
 
+html.dark .bloom-cycle-calendar .rdp-today:not(.rdp-selected) .bloom-cycle-day,
 .dark .bloom-cycle-calendar .rdp-today:not(.rdp-selected) .bloom-cycle-day {
   color: #fb7a6b;
   background: rgba(244, 88, 74, 0.25);
 }
 
+html.dark .bloom-cycle-calendar .rdp-outside .bloom-cycle-day,
 .dark .bloom-cycle-calendar .rdp-outside .bloom-cycle-day {
   color: #57534e;
 }
 
+html.dark .bloom-cycle-calendar .bloom-day-fertile .bloom-cycle-day,
 .dark .bloom-cycle-calendar .bloom-day-fertile .bloom-cycle-day {
   background: rgba(16, 185, 129, 0.2);
   color: #6ee7b7;
 }
 
+html.dark .bloom-cycle-calendar .bloom-day-fertile:hover .bloom-cycle-day,
 .dark .bloom-cycle-calendar .bloom-day-fertile:hover .bloom-cycle-day {
   background: rgba(16, 185, 129, 0.35);
   color: #a7f3d0;
 }
 
+html.dark .bloom-cycle-calendar .bloom-day-period .bloom-cycle-day,
 .dark .bloom-cycle-calendar .bloom-day-period .bloom-cycle-day {
   background: rgba(239, 68, 68, 0.25);
   color: #fca5a5;
 }
 
+html.dark .bloom-cycle-calendar .bloom-day-period:hover .bloom-cycle-day,
 .dark .bloom-cycle-calendar .bloom-day-period:hover .bloom-cycle-day {
   background: rgba(239, 68, 68, 0.4);
   color: #fecaca;
 }
 
+html.dark .bloom-cycle-calendar .bloom-day-ovulation .bloom-cycle-day,
 .dark .bloom-cycle-calendar .bloom-day-ovulation .bloom-cycle-day {
   background: rgba(139, 92, 246, 0.25);
   color: #c4b5fd;
 }
 
+html.dark .bloom-cycle-calendar .bloom-day-ovulation:hover .bloom-cycle-day,
 .dark .bloom-cycle-calendar .bloom-day-ovulation:hover .bloom-cycle-day {
   background: rgba(139, 92, 246, 0.4);
   color: #ddd6fe;
