@@ -5,7 +5,13 @@ import Blossom from '@fluentui-emoji/react/modern/blossom';
 import Seedling from '@fluentui-emoji/react/modern/seedling';
 import Shield from '@fluentui-emoji/react/modern/shield';
 import { useCycleStore } from '../store/cycleStore';
-import { calculateCycle, formatDate, formatShortDate } from '../utils/cycle';
+import {
+  calculateCycle,
+  calculateCycleStats,
+  formatDate,
+  formatShortDate,
+  parseLocalDate,
+} from '../utils/cycle';
 import PhaseEmoji from './PhaseEmoji';
 const phaseStyles: Record<string, string> = {
   '생리 중': 'bg-red-100 text-red-700 dark:bg-red-950/80 dark:text-red-300',
@@ -15,7 +21,8 @@ const phaseStyles: Record<string, string> = {
 };
 
 export default function ResultCard() {
-  const { lastPeriodDate, cycleLength, periodLength } = useCycleStore();
+  const { lastPeriodDate, cycleLength, periodLength, history } = useCycleStore();
+  const stats = useMemo(() => calculateCycleStats(history), [history]);
 
   const prediction = useMemo(
     () => calculateCycle(lastPeriodDate, cycleLength, periodLength),
@@ -25,7 +32,7 @@ export default function ResultCard() {
   const daysUntilUpcomingStart = useMemo(() => {
     const today = new Date();
     return differenceInCalendarDays(
-      new Date(lastPeriodDate),
+      parseLocalDate(lastPeriodDate),
       new Date(today.getFullYear(), today.getMonth(), today.getDate()),
     );
   }, [lastPeriodDate]);
@@ -50,14 +57,24 @@ export default function ResultCard() {
             <div>
               <p className="text-4xl font-bold">D-{daysUntilUpcomingStart}</p>
               <p className="mt-1 text-sm opacity-90">
-                {formatShortDate(new Date(lastPeriodDate))} 시작 예정
+                {formatShortDate(parseLocalDate(lastPeriodDate))} 시작 예정
               </p>
             </div>
           ) : (
             <div>
-              <p className="text-4xl font-bold">{prediction.cycleDay}일째</p>
+              <p className="text-4xl font-bold">
+                {prediction.cycleDay}일째
+                {prediction.cycleDay === 1 && (
+                  <span className="ml-2 text-lg font-medium opacity-90">(당일 시작)</span>
+                )}
+              </p>
               <p className="mt-1 text-sm opacity-90">
                 주기 {cycleLength}일 중
+                {stats.previousInterval !== null && (
+                  <span className="ml-1.5 opacity-85">
+                    (직전 주기 {stats.previousInterval}일{stats.averageInterval !== null ? ` · 평균 ${stats.averageInterval}일` : ''})
+                  </span>
+                )}
               </p>
             </div>
           )}
@@ -113,8 +130,7 @@ export default function ResultCard() {
         />
       </div>
       <p className="px-2 text-center text-xs text-gray-400 dark:text-stone-400">
-        Bloom의 예측은 평균 주기를 바탕으로 한 안내예요. 몸이 보내는 신호를
-        함께 살피고, 의료 상담은 전문가와 나누어 주세요.
+        생리 시작 당일(1일차)부터 주기가 시작되며, 28일 주기는 시작일로부터 28일간 유지되고 다음 생리 예정일은 29일째 날이에요.
       </p>
     </section>
   );

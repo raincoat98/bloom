@@ -1,18 +1,23 @@
-import { useState, type CSSProperties } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { useMemo, useState, type CSSProperties } from 'react';
+import { ChevronDown, Sparkles } from 'lucide-react';
 import { useCycleStore } from '../store/cycleStore';
+import { calculateCycleStats } from '../utils/cycle';
 import DatePopover from './DatePopover';
+
 export default function InputForm() {
   const {
     lastPeriodDate,
     cycleLength,
     periodLength,
+    history,
     setLastPeriodDate,
     setCycleLength,
     setPeriodLength,
     reset,
     addToHistory,
   } = useCycleStore();
+
+  const stats = useMemo(() => calculateCycleStats(history), [history]);
   const [savedFlash, setSavedFlash] = useState(false);
   const [showAverages, setShowAverages] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth >= 1024 : false,
@@ -52,6 +57,9 @@ export default function InputForm() {
             value={lastPeriodDate}
             onChange={setLastPeriodDate}
           />
+          <p className="mt-1.5 text-[11px] text-gray-400 dark:text-stone-500">
+            생리 시작 첫날(당일)을 선택해 주세요. 해당 날짜가 1일차로 계산됩니다.
+          </p>
         </div>
 
         <button
@@ -79,9 +87,21 @@ export default function InputForm() {
         {showAverages && (
           <div className="space-y-4 rounded-2xl border border-primary-100/60 bg-white/60 p-4 transition-all dark:border-stone-800 dark:bg-stone-800/40">
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-stone-200">
-                평균 주기 길이:{' '}
-                <span className="text-primary-600 dark:text-primary-400">{cycleLength}일</span>
+              <span className="mb-2 flex items-center justify-between text-sm font-medium text-gray-700 dark:text-stone-200">
+                <span>
+                  평균 주기 길이:{' '}
+                  <span className="text-primary-600 dark:text-primary-400">{cycleLength}일</span>
+                </span>
+                {stats.roundedAverageInterval !== null && (
+                  <button
+                    type="button"
+                    onClick={() => setCycleLength(Math.min(40, Math.max(21, stats.roundedAverageInterval!)))}
+                    className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-700 transition hover:bg-primary-100 dark:bg-primary-950/70 dark:text-primary-300 dark:hover:bg-primary-900"
+                  >
+                    <Sparkles size={11} />
+                    실제 기록 평균({stats.roundedAverageInterval}일) 적용
+                  </button>
+                )}
               </span>
               <input
                 type="range"
