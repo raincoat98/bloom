@@ -25,7 +25,11 @@ export interface CycleState {
   setPeriodLength: (days: number) => void;
   setRemoteStatus: (status: RemoteStatus) => void;
   reset: () => void;
-  addToHistory: () => void;
+  addToHistory: (entry?: Partial<Pick<CycleHistoryEntry, 'lastPeriodDate' | 'cycleLength' | 'periodLength'>>) => CycleHistoryEntry;
+  updateHistoryEntry: (
+    id: string,
+    entry: Pick<CycleHistoryEntry, 'lastPeriodDate' | 'cycleLength' | 'periodLength'>,
+  ) => void;
   removeFromHistory: (id: string) => void;
   loadFromHistory: (id: string) => void;
 }
@@ -120,21 +124,25 @@ export const useCycleStore = create<CycleState>()(
           periodLength: latest?.periodLength ?? 5,
         });
       },
-      addToHistory: () => {
-        const { lastPeriodDate, cycleLength, periodLength, history } = get();
-        const existing = history.find(
-          (item) => item.lastPeriodDate === lastPeriodDate,
+      addToHistory: (custom) => {
+        const current = get();
+        const targetDate = custom?.lastPeriodDate ?? current.lastPeriodDate;
+        const targetCycleLength = custom?.cycleLength ?? current.cycleLength;
+        const targetPeriodLength = custom?.periodLength ?? current.periodLength;
+
+        const existing = current.history.find(
+          (item) => item.lastPeriodDate === targetDate,
         );
         const entry: CycleHistoryEntry = {
           id: existing?.id ?? createId(),
-          lastPeriodDate,
-          cycleLength,
-          periodLength,
+          lastPeriodDate: targetDate,
+          cycleLength: targetCycleLength,
+          periodLength: targetPeriodLength,
           savedAt: new Date().toISOString(),
         };
         const others = existing
-          ? history.filter((item) => item.id !== existing.id)
-          : history;
+          ? current.history.filter((item) => item.id !== existing.id)
+          : current.history;
         const newHistory = [entry, ...others].sort((a, b) =>
           a.lastPeriodDate < b.lastPeriodDate ? 1 : -1,
         );
@@ -143,6 +151,44 @@ export const useCycleStore = create<CycleState>()(
           lastPeriodDate: newHistory[0].lastPeriodDate,
         });
         pushToServer(entry);
+        return entry;
+      },
+      updateHistoryEntry: (id, data) => {
+        const { history } = get();
+        const oldEntry = history.find((item) => item.id === id);
+        if (!oldEntry) return;
+
+        const dateChanged = oldEntry.lastPeriodDate !== data.lastPeriodDate;
+        const conflict = history.find(
+          (item) => item.id !== id && item.lastPeriodDate === data.lastPeriodDate,
+        );
+
+        const newId = conflict?.id ?? (dateChanged ? createId() : id);
+        const updatedEntry: CycleHistoryEntry = {
+          id: newId,
+          lastPeriodDate: data.lastPeriodDate,
+          cycleLength: data.cycleLength,
+          periodLength: data.periodLength,
+          savedAt: new Date().toISOString(),
+        };
+
+        const remaining = history.filter(
+          (item) => item.id !== id && item.id !== newId,
+        );
+        const newHistory = [updatedEntry, ...remaining].sort((a, b) =>
+          a.lastPeriodDate < b.lastPeriodDate ? 1 : -1,
+        );
+        const latest = newHistory[0];
+
+        set({
+          history: newHistory,
+          lastPeriodDate: latest?.lastPeriodDate ?? today(),
+        });
+
+        if (dateChanged) {
+          removeFromServer(id);
+        }
+        pushToServer(updatedEntry);
       },
       removeFromHistory: (id) => {
         const remaining = get().history.filter((entry) => entry.id !== id);

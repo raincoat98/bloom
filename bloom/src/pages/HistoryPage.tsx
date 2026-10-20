@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import { Activity, Check, Sparkles, Trash2 } from 'lucide-react';
+import { Activity, Check, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useCycleStore, type CycleHistoryEntry } from '../store/cycleStore';
 import { calculateCycleStats, formatDate, parseLocalDate } from '../utils/cycle';
+import ManualCycleModal from '../components/ManualCycleModal';
 
 export default function HistoryPage() {
   const history = useCycleStore((state) => state.history);
@@ -12,10 +13,15 @@ export default function HistoryPage() {
   const setCycleLength = useCycleStore((state) => state.setCycleLength);
   const loadFromHistory = useCycleStore((state) => state.loadFromHistory);
   const removeFromHistory = useCycleStore((state) => state.removeFromHistory);
+  const addToHistory = useCycleStore((state) => state.addToHistory);
+  const updateHistoryEntry = useCycleStore((state) => state.updateHistoryEntry);
+  const periodLength = useCycleStore((state) => state.periodLength);
   const isLoggedIn = useAuthStore((state) => Boolean(state.user));
   const navigate = useNavigate();
   const [deleteTarget, setDeleteTarget] = useState<CycleHistoryEntry | null>(null);
   const [appliedNotice, setAppliedNotice] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<CycleHistoryEntry | null>(null);
 
   const stats = useMemo(() => calculateCycleStats(history), [history]);
 
@@ -29,6 +35,31 @@ export default function HistoryPage() {
     loadFromHistory(id);
     navigate('/');
   };
+  const handleOpenCreate = () => {
+    setEditingEntry(null);
+    setModalOpen(true);
+  };
+
+  const handleOpenEdit = (entry: CycleHistoryEntry) => {
+    setEditingEntry(entry);
+    setModalOpen(true);
+  };
+
+  const handleSaveEntry = (data: {
+    lastPeriodDate: string;
+    cycleLength: number;
+    periodLength: number;
+  }) => {
+    if (editingEntry) {
+      updateHistoryEntry(editingEntry.id, data);
+      setAppliedNotice(`${formatDate(parseLocalDate(data.lastPeriodDate))} 기록이 수정되었어요.`);
+    } else {
+      addToHistory(data);
+      setAppliedNotice(`${formatDate(parseLocalDate(data.lastPeriodDate))} 기록이 추가되었어요.`);
+    }
+    window.setTimeout(() => setAppliedNotice(null), 3000);
+  };
+
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
@@ -50,13 +81,28 @@ export default function HistoryPage() {
   return (
     <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
-          저장된 주기 기록
-        </h2>
-        <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
-          {history.length}건
-        </span>
+        <div className="flex items-center gap-2">
+          <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
+            저장된 주기 기록
+          </h2>
+          <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
+            {history.length}건
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={handleOpenCreate}
+          className="inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
+        >
+          <Plus size={14} />
+          기록 직접 추가
+        </button>
       </div>
+      {appliedNotice && (
+        <div className="mb-4 rounded-xl bg-emerald-50 px-3.5 py-2 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-800/60">
+          {appliedNotice}
+        </div>
+      )}
       {isLoggedIn && (
         <p className="-mt-2 mb-3 text-[11px] text-gray-400 dark:text-stone-500">
           로그인 상태라서 이 기록들은 서버에도 저장돼요.
@@ -146,13 +192,6 @@ export default function HistoryPage() {
               )}
             </div>
           )}
-
-          {appliedNotice && (
-            <p className="mt-2 text-center text-xs font-medium text-emerald-600 dark:text-emerald-400">
-              {appliedNotice}
-            </p>
-          )}
-
           <p className="mt-2.5 text-[11px] text-gray-400 leading-tight dark:text-stone-500">
             💡 주기는 생리 시작 당일(1일차)부터 다음 생리 시작 전날까지의 일수(기록 간격)예요.
           </p>
@@ -161,11 +200,21 @@ export default function HistoryPage() {
 
       {history.length === 1 && (
         <div className="mb-5 rounded-2xl border border-dashed border-primary-200/80 bg-primary-50/30 p-4 text-xs text-primary-900 dark:border-stone-800 dark:bg-stone-850/40 dark:text-stone-300">
-          <div className="flex items-center gap-1.5 font-semibold text-primary-700 dark:text-primary-300">
-            <Activity className="h-4 w-4" />
-            <span>주기 통계 분석 안내</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 font-semibold text-primary-700 dark:text-primary-300">
+              <Activity className="h-4 w-4" />
+              <span>주기 통계 분석 안내</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleOpenCreate}
+              className="inline-flex items-center gap-1 rounded-lg bg-primary-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
+            >
+              <Plus size={12} />
+              이전 기록 추가
+            </button>
           </div>
-          <p className="mt-1 text-gray-600 dark:text-stone-400">
+          <p className="mt-1.5 text-gray-600 dark:text-stone-400">
             기록이 1건 있어요. 생리 시작일을 1건 더 추가하시면 실제 기록 간격과 이전 주기, 평균 주기를 자동으로 계산해 드려요.
           </p>
           <p className="mt-1 text-[11px] text-gray-400 dark:text-stone-500">
@@ -180,8 +229,16 @@ export default function HistoryPage() {
             아직 저장된 기록이 없어요
           </p>
           <p className="mt-1 text-xs text-gray-500 dark:text-stone-400">
-            메인 화면에서 입력값을 조정한 뒤 「계산하기」를 누르면 여기에 쌓입니다.
+            메인 화면에서 「계산하기」를 누르거나, 여기서 과거 기록을 직접 추가할 수 있어요.
           </p>
+          <button
+            type="button"
+            onClick={handleOpenCreate}
+            className="mt-3.5 inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
+          >
+            <Plus size={14} />
+            첫 기록 직접 추가하기
+          </button>
         </div>
       ) : (
         <ul className="space-y-3">
@@ -233,14 +290,24 @@ export default function HistoryPage() {
                     저장일 {formatDate(new Date(entry.savedAt))}
                   </p>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setDeleteTarget(entry)}
-                  className="shrink-0 rounded-full border border-transparent px-3 py-1.5 text-xs font-medium text-gray-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/60 dark:hover:text-rose-400"
-                  aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 삭제`}
-                >
-                  삭제
-                </button>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(entry)}
+                    className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-500 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:text-stone-400 dark:hover:border-primary-900/60 dark:hover:bg-primary-950/60 dark:hover:text-primary-300"
+                    aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 수정`}
+                  >
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteTarget(entry)}
+                    className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/60 dark:hover:text-rose-400"
+                    aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 삭제`}
+                  >
+                    삭제
+                  </button>
+                </div>
               </li>
             );
           })}
@@ -301,6 +368,18 @@ export default function HistoryPage() {
           </div>,
           document.body,
         )}
+      <ManualCycleModal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingEntry(null);
+        }}
+        initialEntry={editingEntry}
+        defaultCycleLength={cycleLength}
+        defaultPeriodLength={periodLength}
+        existingDates={history.map((h) => h.lastPeriodDate)}
+        onSubmit={handleSaveEntry}
+      />
     </section>
   );
 }
