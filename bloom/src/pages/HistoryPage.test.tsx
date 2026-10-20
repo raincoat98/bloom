@@ -25,6 +25,7 @@ vi.mock('../store/cycleStore', async () => {
       removeFromHistory: vi.fn(),
       reset: vi.fn(),
       addToHistory: vi.fn(),
+      updateHistoryEntry: vi.fn(),
       setLastPeriodDate: vi.fn(),
       setPeriodLength: vi.fn(),
       setRemoteStatus: vi.fn(),
@@ -56,6 +57,8 @@ describe('HistoryPage with cycle statistics', () => {
 
     expect(html).toContain('아직 저장된 기록이 없어요');
     expect(html).toContain('저장된 주기 기록');
+    expect(html).toContain('기록 직접 추가');
+    expect(html).toContain('첫 기록 직접 추가하기');
   });
 
   it('renders guide note when only 1 record exists', () => {
@@ -80,6 +83,7 @@ describe('HistoryPage with cycle statistics', () => {
     expect(html).toContain('주기 통계 분석 안내');
     expect(html).toContain('생리 시작일을 1건 더 추가하시면 실제 기록 간격과 이전 주기, 평균 주기를 자동으로 계산해 드려요');
     expect(html).toContain('첫 기준 기록');
+    expect(html).toContain('이전 기록 추가');
   });
 
   it('renders rich cycle statistics (average, previous, intervals) when 2+ records exist', () => {
@@ -120,5 +124,7 @@ describe('HistoryPage with cycle statistics', () => {
     expect(html).toContain('이전 주기와');
     expect(html).toContain('28');
     expect(html).toContain('첫 기준 기록');
+    expect(html).toContain('수정');
+    expect(html).toContain('삭제');
   });
 });
