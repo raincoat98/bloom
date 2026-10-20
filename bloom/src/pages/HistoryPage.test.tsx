@@ -126,5 +126,6 @@ describe('HistoryPage with cycle statistics', () => {
     expect(html).toContain('첫 기준 기록');
     expect(html).toContain('수정');
     expect(html).toContain('삭제');
+    expect(html).toContain('관리 옵션');
   });
 });

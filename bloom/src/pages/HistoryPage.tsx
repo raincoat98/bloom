@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import { Activity, Check, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { Activity, Check, MoreHorizontal, Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useCycleStore, type CycleHistoryEntry } from '../store/cycleStore';
 import { calculateCycleStats, formatDate, parseLocalDate } from '../utils/cycle';
@@ -22,6 +22,7 @@ export default function HistoryPage() {
   const [appliedNotice, setAppliedNotice] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<CycleHistoryEntry | null>(null);
+  const [actionTarget, setActionTarget] = useState<CycleHistoryEntry | null>(null);
 
   const stats = useMemo(() => calculateCycleStats(history), [history]);
 
@@ -68,15 +69,16 @@ export default function HistoryPage() {
   };
 
   useEffect(() => {
-    if (!deleteTarget) return;
+    if (!deleteTarget && !actionTarget) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setDeleteTarget(null);
+        setActionTarget(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [deleteTarget]);
+  }, [deleteTarget, actionTarget]);
 
   return (
     <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
@@ -293,20 +295,30 @@ export default function HistoryPage() {
                 <div className="flex shrink-0 items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => handleOpenEdit(entry)}
-                    className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-500 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:text-stone-400 dark:hover:border-primary-900/60 dark:hover:bg-primary-950/60 dark:hover:text-primary-300"
-                    aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 수정`}
+                    onClick={() => setActionTarget(entry)}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 active:scale-95 sm:hidden dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+                    aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 관리 옵션`}
                   >
-                    수정
+                    <MoreHorizontal size={18} />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(entry)}
-                    className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/60 dark:hover:text-rose-400"
-                    aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 삭제`}
-                  >
-                    삭제
-                  </button>
+                  <div className="hidden items-center gap-1 sm:flex">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEdit(entry)}
+                      className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-500 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:text-stone-400 dark:hover:border-primary-900/60 dark:hover:bg-primary-950/60 dark:hover:text-primary-300"
+                      aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 수정`}
+                    >
+                      수정
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(entry)}
+                      className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/60 dark:hover:text-rose-400"
+                      aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 삭제`}
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </div>
               </li>
             );
@@ -318,7 +330,7 @@ export default function HistoryPage() {
           <div
             role="presentation"
             onClick={() => setDeleteTarget(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 backdrop-blur-xs transition-opacity sm:items-center sm:p-4"
           >
             <div
               role="alertdialog"
@@ -326,8 +338,9 @@ export default function HistoryPage() {
               aria-labelledby="delete-dialog-title"
               aria-describedby="delete-dialog-desc"
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-bloom ring-1 ring-primary-100/70 dark:bg-stone-900 dark:ring-stone-800 dark:shadow-2xl"
+              className="w-full max-w-sm rounded-t-3xl bg-white p-6 shadow-bloom ring-1 ring-primary-100/70 dark:bg-stone-900 dark:ring-stone-800 sm:rounded-3xl dark:shadow-2xl"
             >
+              <div className="mx-auto -mt-1 mb-4 h-1.5 w-12 rounded-full bg-gray-300 dark:bg-stone-700 sm:hidden" />
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-500 ring-1 ring-rose-100 dark:bg-rose-950/60 dark:text-rose-400 dark:ring-rose-900/60">
                 <Trash2 size={22} strokeWidth={2.25} />
               </div>
@@ -362,6 +375,104 @@ export default function HistoryPage() {
                   className="flex-1 rounded-xl bg-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-600 active:scale-[0.98]"
                 >
                   삭제하기
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+      {actionTarget &&
+        createPortal(
+          <div
+            role="presentation"
+            onClick={() => setActionTarget(null)}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 backdrop-blur-xs transition-opacity sm:items-center sm:p-4"
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="action-sheet-title"
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-t-3xl bg-white p-5 shadow-bloom ring-1 ring-primary-100/70 dark:bg-stone-900 dark:ring-stone-800 sm:rounded-3xl dark:shadow-2xl"
+            >
+              <div className="mx-auto -mt-1 mb-4 h-1.5 w-12 rounded-full bg-gray-300 dark:bg-stone-700 sm:hidden" />
+              <div className="border-b border-gray-100 pb-3 dark:border-stone-800">
+                <h3
+                  id="action-sheet-title"
+                  className="font-display text-sm font-bold text-gray-900 dark:text-white"
+                >
+                  {formatDate(parseLocalDate(actionTarget.lastPeriodDate))} 시작 기록
+                </h3>
+                <p className="mt-0.5 text-xs text-gray-500 dark:text-stone-400">
+                  주기 {actionTarget.cycleLength}일 · 생리 기간 {actionTarget.periodLength}일
+                </p>
+              </div>
+              <div className="mt-3 space-y-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = actionTarget;
+                    setActionTarget(null);
+                    handleOpenEdit(target);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-semibold text-gray-800 transition hover:bg-primary-50/70 active:scale-[0.99] dark:text-stone-200 dark:hover:bg-stone-800"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-primary-800/60">
+                    <Pencil size={16} />
+                  </div>
+                  <div>
+                    <p className="font-semibold">기록 수정하기</p>
+                    <p className="text-[11px] font-normal text-gray-400 dark:text-stone-500">
+                      시작일, 주기 길이, 생리 기간을 변경해요
+                    </p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const id = actionTarget.id;
+                    setActionTarget(null);
+                    handleLoad(id);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-semibold text-gray-800 transition hover:bg-primary-50/70 active:scale-[0.99] dark:text-stone-200 dark:hover:bg-stone-800"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sand-100 text-sand-700 ring-1 ring-sand-200 dark:bg-stone-800 dark:text-stone-300 dark:ring-stone-700">
+                    <Sparkles size={16} />
+                  </div>
+                  <div>
+                    <p className="font-semibold">메인 화면에 불러오기</p>
+                    <p className="text-[11px] font-normal text-gray-400 dark:text-stone-500">
+                      이 기록의 날짜와 주기를 메인 계산기에 적용해요
+                    </p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = actionTarget;
+                    setActionTarget(null);
+                    setDeleteTarget(target);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left text-sm font-semibold text-rose-600 transition hover:bg-rose-50 active:scale-[0.99] dark:text-rose-400 dark:hover:bg-rose-950/50"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50 text-rose-500 ring-1 ring-rose-100 dark:bg-rose-950/70 dark:text-rose-400 dark:ring-rose-900/60">
+                    <Trash2 size={16} />
+                  </div>
+                  <div>
+                    <p className="font-semibold">기록 삭제하기</p>
+                    <p className="text-[11px] font-normal text-rose-400/90 dark:text-rose-500">
+                      이 주기 기록을 목록에서 완전히 삭제해요
+                    </p>
+                  </div>
+                </button>
+              </div>
+              <div className="mt-4 pt-2 border-t border-gray-100 dark:border-stone-800">
+                <button
+                  type="button"
+                  onClick={() => setActionTarget(null)}
+                  className="w-full rounded-xl bg-gray-100 py-2.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-200 active:scale-[0.98] dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
+                >
+                  닫기
                 </button>
               </div>
             </div>
