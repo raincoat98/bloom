@@ -1,5 +1,6 @@
-import { useMemo, useState, type CSSProperties } from 'react';
-import { ChevronDown, Sparkles } from 'lucide-react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
+import { ChevronDown, RotateCcw, Sparkles } from 'lucide-react';
 import { useCycleStore } from '../store/cycleStore';
 import { calculateCycleStats } from '../utils/cycle';
 import DatePopover from './DatePopover';
@@ -23,7 +24,62 @@ export default function InputForm() {
     typeof window !== 'undefined' ? window.innerWidth >= 1024 : false,
   );
 
+  const [tempCycleLength, setTempCycleLength] = useState(cycleLength);
+  const [tempPeriodLength, setTempPeriodLength] = useState(periodLength);
+  const [averageSavedFlash, setAverageSavedFlash] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  useEffect(() => {
+    setTempCycleLength(cycleLength);
+  }, [cycleLength]);
+
+  useEffect(() => {
+    setTempPeriodLength(periodLength);
+  }, [periodLength]);
+
+  const hasAverageChanges =
+    tempCycleLength !== cycleLength || tempPeriodLength !== periodLength;
+
+  const handleSaveAverages = () => {
+    setCycleLength(tempCycleLength);
+    setPeriodLength(tempPeriodLength);
+    setAverageSavedFlash(true);
+    window.setTimeout(() => setAverageSavedFlash(false), 2000);
+  };
+
+  const handleConfirmReset = () => {
+    reset();
+    setTempCycleLength(28);
+    setTempPeriodLength(5);
+    setShowResetConfirm(false);
+    setAverageSavedFlash(true);
+    window.setTimeout(() => setAverageSavedFlash(false), 2000);
+  };
+
+  useEffect(() => {
+    if (!showResetConfirm) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowResetConfirm(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showResetConfirm]);
+
+  const handleToggleAverages = () => {
+    setShowAverages((prev) => {
+      if (prev) {
+        setTempCycleLength(cycleLength);
+        setTempPeriodLength(periodLength);
+      }
+      return !prev;
+    });
+  };
+
   const handleSave = () => {
+    if (hasAverageChanges) {
+      setCycleLength(tempCycleLength);
+      setPeriodLength(tempPeriodLength);
+    }
     addToHistory();
     setSavedFlash(true);
     window.setTimeout(() => setSavedFlash(false), 1800);
@@ -64,7 +120,7 @@ export default function InputForm() {
 
         <button
           type="button"
-          onClick={() => setShowAverages((v) => !v)}
+          onClick={handleToggleAverages}
           className="flex w-full items-center justify-between rounded-2xl bg-sand-50/70 px-4 py-2.5 text-left text-xs font-medium text-gray-600 transition hover:bg-sand-100/70 ring-1 ring-sand-200/60 dark:bg-stone-800/70 dark:text-stone-300 dark:ring-stone-700/60 dark:hover:bg-stone-800"
           aria-expanded={showAverages}
         >
@@ -73,6 +129,11 @@ export default function InputForm() {
             <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-primary-600 shadow-xs dark:bg-stone-700 dark:text-primary-300">
               {cycleLength}일 · {periodLength}일간
             </span>
+            {hasAverageChanges && showAverages && (
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/70 dark:text-amber-300">
+                수정 중
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1 text-gray-400 dark:text-stone-400">
             <span>{showAverages ? '접기' : '설정 변경'}</span>
@@ -90,12 +151,12 @@ export default function InputForm() {
               <span className="mb-2 flex items-center justify-between text-sm font-medium text-gray-700 dark:text-stone-200">
                 <span>
                   평균 주기 길이:{' '}
-                  <span className="text-primary-600 dark:text-primary-400">{cycleLength}일</span>
+                  <span className="text-primary-600 dark:text-primary-400">{tempCycleLength}일</span>
                 </span>
                 {stats.roundedAverageInterval !== null && (
                   <button
                     type="button"
-                    onClick={() => setCycleLength(Math.min(40, Math.max(21, stats.roundedAverageInterval!)))}
+                    onClick={() => setTempCycleLength(Math.min(40, Math.max(21, stats.roundedAverageInterval!)))}
                     className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-700 transition hover:bg-primary-100 dark:bg-primary-950/70 dark:text-primary-300 dark:hover:bg-primary-900"
                   >
                     <Sparkles size={11} />
@@ -107,12 +168,12 @@ export default function InputForm() {
                 type="range"
                 min={21}
                 max={40}
-                value={cycleLength}
-                onChange={(e) => setCycleLength(Number(e.target.value))}
+                value={tempCycleLength}
+                onChange={(e) => setTempCycleLength(Number(e.target.value))}
                 className="bloom-slider"
                 style={
                   {
-                    '--fill': `${((cycleLength - 21) / (40 - 21)) * 100}%`,
+                    '--fill': `${((tempCycleLength - 21) / (40 - 21)) * 100}%`,
                   } as CSSProperties
                 }
               />
@@ -125,18 +186,18 @@ export default function InputForm() {
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-stone-200">
                 평균 생리 기간:{' '}
-                <span className="text-primary-600 dark:text-primary-400">{periodLength}일</span>
+                <span className="text-primary-600 dark:text-primary-400">{tempPeriodLength}일</span>
               </span>
               <input
                 type="range"
                 min={2}
                 max={10}
-                value={periodLength}
-                onChange={(e) => setPeriodLength(Number(e.target.value))}
+                value={tempPeriodLength}
+                onChange={(e) => setTempPeriodLength(Number(e.target.value))}
                 className="bloom-slider"
                 style={
                   {
-                    '--fill': `${((periodLength - 2) / (10 - 2)) * 100}%`,
+                    '--fill': `${((tempPeriodLength - 2) / (10 - 2)) * 100}%`,
                   } as CSSProperties
                 }
               />
@@ -146,13 +207,30 @@ export default function InputForm() {
               </div>
             </label>
 
-            <button
-              type="button"
-              onClick={reset}
-              className="w-full rounded-xl border border-primary-200/80 bg-white px-3 py-2 text-xs font-medium text-primary-700 transition hover:bg-primary-50 dark:border-stone-700 dark:bg-stone-800 dark:text-primary-300 dark:hover:bg-stone-700 active:scale-[0.99]"
-            >
-              기본값으로 다시 시작
-            </button>
+            <div className="space-y-2 pt-1">
+              <button
+                type="button"
+                onClick={handleSaveAverages}
+                disabled={!hasAverageChanges}
+                className="w-full rounded-xl bg-primary-600 py-2.5 text-xs font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none dark:bg-primary-500 dark:hover:bg-primary-600 dark:disabled:bg-stone-700 dark:disabled:text-stone-500"
+              >
+                {hasAverageChanges ? '평균 설정 저장' : '저장 완료 (변경사항 없음)'}
+              </button>
+
+              {averageSavedFlash && (
+                <p className="text-center text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                  평균 주기 설정이 저장되었어요
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setShowResetConfirm(true)}
+                className="w-full rounded-xl border border-primary-200/80 bg-white py-2 text-xs font-medium text-primary-700 transition hover:bg-primary-50 dark:border-stone-700 dark:bg-stone-800 dark:text-primary-300 dark:hover:bg-stone-700 active:scale-[0.99]"
+              >
+                기본값으로 다시 시작
+              </button>
+            </div>
           </div>
         )}
 
@@ -171,6 +249,63 @@ export default function InputForm() {
           )}
         </div>
       </div>
+
+      {showResetConfirm &&
+        createPortal(
+          <div
+            role="presentation"
+            onClick={() => setShowResetConfirm(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs transition-opacity"
+          >
+            <div
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="reset-dialog-title"
+              aria-describedby="reset-dialog-desc"
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-bloom ring-1 ring-primary-100/70 dark:bg-stone-850 dark:ring-stone-750"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 ring-1 ring-amber-100 dark:bg-amber-950/70 dark:text-amber-400 dark:ring-amber-900/60">
+                <RotateCcw size={22} strokeWidth={2.25} />
+              </div>
+
+              <h3
+                id="reset-dialog-title"
+                className="mt-4 font-display text-lg font-bold text-gray-900 dark:text-white"
+              >
+                기본값으로 초기화할까요?
+              </h3>
+
+              <p
+                id="reset-dialog-desc"
+                className="mt-2 text-sm text-gray-600 leading-relaxed dark:text-stone-300"
+              >
+                평균 주기 길이 <strong className="font-semibold text-gray-900 dark:text-white">28일</strong>, 생리 기간 <strong className="font-semibold text-gray-900 dark:text-white">5일</strong>로 다시 설정됩니다.
+              </p>
+              <p className="mt-1 text-xs text-gray-400 dark:text-stone-500">
+                기존에 저장된 주기 이력은 삭제되지 않아요.
+              </p>
+
+              <div className="mt-6 flex gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowResetConfirm(false)}
+                  className="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 active:scale-[0.98] dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
+                >
+                  취소
+                 </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmReset}
+                  className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700 active:scale-[0.98] dark:bg-primary-500 dark:hover:bg-primary-600"
+                >
+                  초기화하기
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }
