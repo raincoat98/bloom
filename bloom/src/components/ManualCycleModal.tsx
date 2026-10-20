@@ -71,9 +71,18 @@ export default function ManualCycleModal({
     existingDates.includes(date) &&
     (!initialEntry || initialEntry.lastPeriodDate !== date);
 
+  const isUnchanged = Boolean(
+    isEdit &&
+      initialEntry &&
+      date === initialEntry.lastPeriodDate &&
+      cycleLength === initialEntry.cycleLength &&
+      periodLength === initialEntry.periodLength,
+  );
+
+  const isSubmitDisabled = !date || isUnchanged;
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date) return;
+    if (isSubmitDisabled) return;
     const clampedCycle = Math.min(120, Math.max(1, cycleLength));
     const clampedPeriod = Math.min(30, Math.max(1, periodLength));
     onSubmit({
@@ -265,7 +274,8 @@ export default function ManualCycleModal({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-xs font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.98]"
+              disabled={isSubmitDisabled}
+              className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-xs font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none disabled:active:scale-100 dark:disabled:bg-stone-800 dark:disabled:text-stone-600"
             >
               {isEdit ? '수정 완료' : isDuplicateDate ? '기록 갱신' : '기록 추가'}
             </button>
