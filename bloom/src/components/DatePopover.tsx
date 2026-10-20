@@ -3,6 +3,7 @@ import { DayPicker } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
+import { parseLocalDate } from '../utils/cycle';
 
 interface DatePopoverProps {
   value: string;
@@ -101,7 +102,3 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
   );
 }
 
-function parseLocalDate(value: string): Date {
-  const [y, m, d] = value.split('-').map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
-}

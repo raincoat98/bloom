@@ -4,6 +4,7 @@ import type { DayProps } from 'react-day-picker';
 import { ko } from 'date-fns/locale';
 import { differenceInCalendarDays } from 'date-fns';
 import { useCycleStore } from '../store/cycleStore';
+import { parseLocalDate } from '../utils/cycle';
 const flowBadgeByModifier = {
   period: {
     text: '생리',
@@ -160,9 +161,4 @@ function LegendItem({ className, label }: { className: string; label: string }) 
       <span>{label}</span>
     </li>
   );
-}
-
-function parseLocalDate(value: string): Date {
-  const [y, m, d] = value.split('-').map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
 }
