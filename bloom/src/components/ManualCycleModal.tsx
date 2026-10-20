@@ -71,9 +71,18 @@ export default function ManualCycleModal({
     existingDates.includes(date) &&
     (!initialEntry || initialEntry.lastPeriodDate !== date);
 
+  const isUnchanged = Boolean(
+    isEdit &&
+      initialEntry &&
+      date === initialEntry.lastPeriodDate &&
+      cycleLength === initialEntry.cycleLength &&
+      periodLength === initialEntry.periodLength,
+  );
+
+  const isSubmitDisabled = !date || isUnchanged;
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date) return;
+    if (isSubmitDisabled) return;
     const clampedCycle = Math.min(120, Math.max(1, cycleLength));
     const clampedPeriod = Math.min(30, Math.max(1, periodLength));
     onSubmit({
@@ -89,15 +98,16 @@ export default function ManualCycleModal({
     <div
       role="presentation"
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs transition-opacity"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 backdrop-blur-xs transition-opacity sm:items-center sm:p-4"
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="manual-cycle-modal-title"
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-3xl bg-white p-6 shadow-bloom ring-1 ring-primary-100/70 dark:bg-stone-900 dark:ring-stone-800 dark:shadow-2xl"
+        className="w-full max-h-[92vh] overflow-y-auto rounded-t-3xl bg-white p-6 shadow-bloom ring-1 ring-primary-100/70 dark:bg-stone-900 dark:ring-stone-800 sm:max-w-md sm:rounded-3xl dark:shadow-2xl"
       >
+        <div className="mx-auto -mt-1 mb-3.5 h-1.5 w-12 rounded-full bg-gray-300 dark:bg-stone-700 sm:hidden" />
         <div className="flex items-center justify-between pb-3 border-b border-primary-100/60 dark:border-stone-800">
           <div className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-primary-800/60">
@@ -265,7 +275,8 @@ export default function ManualCycleModal({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-xs font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.98]"
+              disabled={isSubmitDisabled}
+              className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-xs font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none disabled:active:scale-100 dark:disabled:bg-stone-800 dark:disabled:text-stone-600"
             >
               {isEdit ? '수정 완료' : isDuplicateDate ? '기록 갱신' : '기록 추가'}
             </button>

@@ -33,6 +33,7 @@ describe('ManualCycleModal', () => {
     expect(html).toContain('28일');
     expect(html).toContain('5일');
     expect(html).toContain('기록 추가');
+    expect(html).not.toContain('disabled=""');
     expect(html).toContain('취소');
   });
 
@@ -57,6 +58,8 @@ describe('ManualCycleModal', () => {
     expect(html).toContain('30일');
     expect(html).toContain('6일');
     expect(html).toContain('수정 완료');
+    // Disabled when values are unchanged from initialEntry
+    expect(html).toContain('disabled=""');
   });
 
   it('displays duplicate notice when current date exists in existingDates', () => {
