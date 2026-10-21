@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useI18n } from '../i18n';
 
 export interface RouteMeta {
   title: string;
@@ -44,28 +45,29 @@ export const BASE_URL = 'https://bloom.cloudrainit.com';
 
 export function usePageMeta() {
   const location = useLocation();
+  const { t, language } = useI18n();
 
   useEffect(() => {
     const meta = ROUTE_METAS[location.pathname] ?? ROUTE_METAS['/'];
 
     // Update document title
-    document.title = meta.title;
+    document.title = t(meta.title);
 
     // Update meta description
     const descEl = document.querySelector('meta[name="description"]');
     if (descEl) {
-      descEl.setAttribute('content', meta.description);
+      descEl.setAttribute('content', t(meta.description));
     }
 
     // Update Open Graph tags
     const ogTitleEl = document.querySelector('meta[property="og:title"]');
     if (ogTitleEl) {
-      ogTitleEl.setAttribute('content', meta.title);
+      ogTitleEl.setAttribute('content', t(meta.title));
     }
 
     const ogDescEl = document.querySelector('meta[property="og:description"]');
     if (ogDescEl) {
-      ogDescEl.setAttribute('content', meta.description);
+      ogDescEl.setAttribute('content', t(meta.description));
     }
 
     const ogUrlEl = document.querySelector('meta[property="og:url"]');
@@ -76,12 +78,12 @@ export function usePageMeta() {
     // Update Twitter tags
     const twitterTitleEl = document.querySelector('meta[name="twitter:title"]');
     if (twitterTitleEl) {
-      twitterTitleEl.setAttribute('content', meta.title);
+      twitterTitleEl.setAttribute('content', t(meta.title));
     }
 
     const twitterDescEl = document.querySelector('meta[name="twitter:description"]');
     if (twitterDescEl) {
-      twitterDescEl.setAttribute('content', meta.description);
+      twitterDescEl.setAttribute('content', t(meta.description));
     }
 
     // Update canonical link
@@ -89,5 +91,5 @@ export function usePageMeta() {
     if (canonicalEl) {
       canonicalEl.setAttribute('href', `${BASE_URL}${meta.canonicalPath}`);
     }
-  }, [location.pathname]);
+  }, [location.pathname, language, t]);
 }

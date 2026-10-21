@@ -8,8 +8,10 @@ import {
 import { useAuthStore } from '../store/authStore';
 import { useCycleStore } from '../store/cycleStore';
 import { useNotificationStore } from '../store/notificationStore';
+import { useI18n } from '../i18n';
 
 export default function NotificationSettings() {
+  const { t } = useI18n();
   const {
     isSupported,
     permission,
@@ -71,21 +73,21 @@ export default function NotificationSettings() {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-                주기 알림
+                {t('주기 알림')}
               </h2>
               {isSubscribed ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/80 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/60">
                   <Check className="h-3 w-3" />
-                  켜짐
+                  {t('켜짐')}
                 </span>
               ) : (
                 <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-600 dark:bg-stone-800 dark:text-stone-300 dark:ring-1 dark:ring-stone-700/60">
-                  꺼짐
+                  {t('꺼짐')}
                 </span>
               )}
             </div>
             <p className="mt-0.5 text-xs text-gray-600 dark:text-stone-400 sm:text-sm">
-              주요 시점에 부드러운 알림으로 소중한 주기를 챙겨드려요 🌸
+              {t('주요 시점에 부드러운 알림으로 소중한 주기를 챙겨드려요 🌸')}
             </p>
           </div>
         </div>
@@ -99,7 +101,7 @@ export default function NotificationSettings() {
             }`}
             role="switch"
             aria-checked={isSubscribed}
-            aria-label="푸시 알림 켜기/끄기"
+            aria-label={t('푸시 알림 켜기/끄기')}
           >
             <span
               aria-hidden="true"
@@ -113,12 +115,12 @@ export default function NotificationSettings() {
 
       {!user && (
         <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl bg-primary-50/80 p-3.5 text-xs text-primary-900 ring-1 ring-primary-100 dark:bg-stone-800 dark:text-stone-200 dark:ring-stone-700">
-          <span className="break-keep">알림을 켜고 관리하려면 먼저 로그인해 주세요 🌸</span>
+          <span className="break-keep">{t('알림을 켜고 관리하려면 먼저 로그인해 주세요 🌸')}</span>
           <Link
             to="/login"
             className="shrink-0 self-start sm:self-auto rounded-xl bg-primary-500 px-3 py-1.5 font-semibold text-white shadow-sm transition hover:bg-primary-600"
           >
-            로그인하기
+            {t('로그인하기')}
           </Link>
         </div>
       )}
@@ -140,20 +142,18 @@ export default function NotificationSettings() {
 
       {permission === 'denied' && (
         <div className="mt-4 rounded-2xl bg-amber-50 p-3.5 text-xs text-amber-800 ring-1 ring-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:ring-amber-800">
-          <p className="font-semibold">⚠️ 브라우저 알림 권한이 차단되어 있어요</p>
+          <p className="font-semibold">{t('⚠️ 브라우저 알림 권한이 차단되어 있어요')}</p>
           <p className="mt-1">
-            주소창 좌측의 자물쇠/설정 아이콘을 눌러 [알림]을 &apos;허용&apos;으로 변경한 뒤
-            다시 시도해 주세요.
+            {t('주소창 좌측의 자물쇠/설정 아이콘을 눌러 [알림]을 허용으로 변경한 뒤 다시 시도해 주세요.')}
           </p>
         </div>
       )}
 
       {!isSupported && (
         <div className="mt-4 rounded-2xl bg-stone-100 p-3.5 text-xs text-stone-700 dark:bg-stone-800 dark:text-stone-300">
-          <p className="font-semibold">📱 모바일 Safari(iOS) 이용 팁</p>
+          <p className="font-semibold">{t('📱 모바일 Safari(iOS) 이용 팁')}</p>
           <p className="mt-1">
-            iOS 16.4 이상에서는 Safari 하단 [공유] &gt; [홈 화면에 추가]로 앱을 설치한 후
-            실행하시면 알림을 받을 수 있어요.
+            {t('iOS 16.4 이상에서는 Safari 하단 [공유] > [홈 화면에 추가]로 앱을 설치한 후 실행하시면 알림을 받을 수 있어요.')}
           </p>
         </div>
       )}
@@ -172,10 +172,10 @@ export default function NotificationSettings() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-stone-100 text-sm">
                 <span className="shrink-0">🌸</span>
-                <span className="break-keep">생리 시작 2일 전 알림</span>
+                <span className="break-keep">{t('생리 시작 2일 전 알림')}</span>
               </div>
               <p className="mt-1 text-xs text-gray-600 dark:text-stone-400 break-keep">
-                &ldquo;생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸&rdquo;
+                &ldquo;{t('생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸')}&rdquo;
               </p>
             </div>
             <button
@@ -189,7 +189,7 @@ export default function NotificationSettings() {
               }`}
               role="switch"
               aria-checked={preferences.periodBefore}
-              aria-label="생리 시작 2일 전 알림 켜기/끄기"
+              aria-label={t('생리 시작 2일 전 알림 켜기/끄기')}
             >
               <span
                 className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
@@ -212,10 +212,10 @@ export default function NotificationSettings() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-stone-100 text-sm">
                 <span className="shrink-0">🌱</span>
-                <span className="break-keep">가임기 시작 1일 전 알림</span>
+                <span className="break-keep">{t('가임기 시작 1일 전 알림')}</span>
               </div>
               <p className="mt-1 text-xs text-gray-600 dark:text-stone-400 break-keep">
-                &ldquo;내일부터 가임기가 시작돼요 🌱&rdquo;
+                &ldquo;{t('내일부터 가임기가 시작돼요 🌱')}&rdquo;
               </p>
             </div>
             <button
@@ -229,7 +229,7 @@ export default function NotificationSettings() {
               }`}
               role="switch"
               aria-checked={preferences.fertileBefore}
-              aria-label="가임기 시작 1일 전 알림 켜기/끄기"
+              aria-label={t('가임기 시작 1일 전 알림 켜기/끄기')}
             >
               <span
                 className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
@@ -252,10 +252,10 @@ export default function NotificationSettings() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-stone-100 text-sm">
                 <span className="shrink-0">✨</span>
-                <span className="break-keep">컨디션 및 증상 기록 리마인더</span>
+                <span className="break-keep">{t('컨디션 및 증상 기록 리마인더')}</span>
               </div>
               <p className="mt-1 text-xs text-gray-600 dark:text-stone-400 break-keep">
-                &ldquo;오늘 하루 컨디션은 어떠셨나요? 증상을 기록해 보세요 ✨&rdquo;
+                &ldquo;{t('오늘 하루 컨디션은 어떠셨나요? 증상을 기록해 보세요 ✨')}&rdquo;
               </p>
             </div>
             <button
@@ -269,7 +269,7 @@ export default function NotificationSettings() {
               }`}
               role="switch"
               aria-checked={preferences.symptomReminder}
-              aria-label="컨디션 및 증상 기록 리마인더 켜기/끄기"
+              aria-label={t('컨디션 및 증상 기록 리마인더 켜기/끄기')}
             >
               <span
                 className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${

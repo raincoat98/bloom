@@ -5,6 +5,7 @@ import Blossom from '@fluentui-emoji/react/modern/blossom';
 import Seedling from '@fluentui-emoji/react/modern/seedling';
 import Shield from '@fluentui-emoji/react/modern/shield';
 import { useCycleStore } from '../store/cycleStore';
+import { useI18n } from '../i18n';
 import {
   calculateCycle,
   calculateCycleStats,
@@ -21,6 +22,16 @@ const phaseStyles: Record<string, string> = {
 };
 
 export default function ResultCard() {
+  const { t, language } = useI18n();
+  const locale = language === 'zh' ? 'zh-CN' : language;
+  const fullFormatter = useMemo(() => new Intl.DateTimeFormat(locale, {
+    year: 'numeric', month: 'long', day: 'numeric', weekday: 'short',
+  }), [locale]);
+  const shortFormatter = useMemo(() => new Intl.DateTimeFormat(locale, {
+    month: 'short', day: 'numeric',
+  }), [locale]);
+  const fullDate = (date: Date) => language === 'ko' ? formatDate(date) : fullFormatter.format(date);
+  const shortDate = (date: Date) => language === 'ko' ? formatShortDate(date) : shortFormatter.format(date);
   const { lastPeriodDate, cycleLength, periodLength, history } = useCycleStore();
   const stats = useMemo(() => calculateCycleStats(history), [history]);
 
@@ -38,7 +49,7 @@ export default function ResultCard() {
   }, [lastPeriodDate]);
 
   const daysLabel = (n: number) => {
-    if (n === 0) return '오늘';
+    if (n === 0) return t('오늘');
     if (n > 0) return `D-${n}`;
     return `D+${Math.abs(n)}`;
   };
@@ -47,7 +58,7 @@ export default function ResultCard() {
     <section className="space-y-4">
       <div className="rounded-3xl bg-gradient-to-br from-primary-400 via-primary-500 to-rose-500 p-6 text-white shadow-bloom">
         <div className="flex items-center justify-between text-sm opacity-90">
-          <h2 className="text-sm font-semibold tracking-wide opacity-90">오늘의 리듬</h2>
+          <h2 className="text-sm font-semibold tracking-wide opacity-90">{t('오늘의 리듬')}</h2>
           <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-medium tracking-wide">
             BLOOM
           </span>
@@ -57,22 +68,22 @@ export default function ResultCard() {
             <div>
               <p className="text-4xl font-bold">D-{daysUntilUpcomingStart}</p>
               <p className="mt-1 text-sm opacity-90">
-                {formatShortDate(parseLocalDate(lastPeriodDate))} 시작 예정
+                {t('{date} 시작 예정', { date: shortDate(parseLocalDate(lastPeriodDate)) })}
               </p>
             </div>
           ) : (
             <div>
               <p className="text-4xl font-bold">
-                {prediction.cycleDay}일째
+                {t('{count}일째', { count: prediction.cycleDay })}
                 {prediction.cycleDay === 1 && (
-                  <span className="ml-2 text-lg font-medium opacity-90">(당일 시작)</span>
+                  <span className="ml-2 text-lg font-medium opacity-90">{t('(당일 시작)')}</span>
                 )}
               </p>
               <p className="mt-1 text-sm opacity-90">
-                주기 {cycleLength}일 중
+                {t('주기 {count}일 중', { count: cycleLength })}
                 {stats.previousInterval !== null && (
                   <span className="ml-1.5 opacity-85">
-                    (직전 주기 {stats.previousInterval}일{stats.averageInterval !== null ? ` · 평균 ${stats.averageInterval}일` : ''})
+                    {t('(직전 주기 {count}일)', { count: stats.previousInterval })}{stats.averageInterval !== null ? ` · ${t('평균 {count}일', { count: stats.averageInterval })}` : ''}
                   </span>
                 )}
               </p>
@@ -88,49 +99,49 @@ export default function ResultCard() {
             {!prediction.notStartedYet && (
               <PhaseEmoji phase={prediction.currentPhase} className="h-4 w-4 shrink-0" />
             )}
-            {prediction.notStartedYet ? '시작 전' : prediction.currentPhase}
+            {prediction.notStartedYet ? t('시작 전') : t(prediction.currentPhase)}
           </span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <InfoCard
-          label="다음 생리 예정일"
+          label={t('다음 생리 예정일')}
           accent="text-red-600 dark:text-red-400"
-          headline={formatDate(prediction.nextPeriodStart)}
-          sub={`${daysLabel(prediction.daysUntilNextPeriod)}, ~${formatShortDate(
+          headline={fullDate(prediction.nextPeriodStart)}
+          sub={`${daysLabel(prediction.daysUntilNextPeriod)}, ~${shortDate(
             prediction.nextPeriodEnd,
           )}`}
           icon={<DropOfBlood className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
-          label="배란 예정일"
+          label={t('배란 예정일')}
           accent="text-purple-600 dark:text-purple-400"
-          headline={formatDate(prediction.ovulationDate)}
+          headline={fullDate(prediction.ovulationDate)}
           sub={daysLabel(prediction.daysUntilOvulation)}
           icon={<Blossom className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
-          label="가임기"
+          label={t('가임기')}
           accent="text-emerald-600 dark:text-emerald-400"
-          headline={`${formatShortDate(
+          headline={`${shortDate(
             prediction.fertileWindowStart,
-          )} ~ ${formatShortDate(prediction.fertileWindowEnd)}`}
-          sub="배란일 전 5일 + 다음날"
+          )} ~ ${shortDate(prediction.fertileWindowEnd)}`}
+          sub={t('배란일 전 5일 + 다음날')}
           icon={<Seedling className="h-5 w-5" focusable="false" />}
         />
         <InfoCard
-          label="안전기 (대략)"
+          label={t('안전기 (대략)')}
           accent="text-blue-600 dark:text-blue-400"
-          headline={`${formatShortDate(
+          headline={`${shortDate(
             prediction.nextPeriodStart,
-          )} 이후`}
-          sub="개인차 있음, 참고용"
+          )} ${t('이후')}`}
+          sub={t('개인차 있음, 참고용')}
           icon={<Shield className="h-5 w-5" focusable="false" />}
         />
       </div>
       <p className="px-2 text-center text-xs text-gray-400 dark:text-stone-400">
-        생리 시작 당일(1일차)부터 주기가 시작되며, 28일 주기는 시작일로부터 28일간 유지되고 다음 생리 예정일은 29일째 날이에요.
+        {t('생리 시작 당일(1일차)부터 주기가 시작되며, 28일 주기는 시작일로부터 28일간 유지되고 다음 생리 예정일은 29일째 날이에요.')}
       </p>
     </section>
   );

@@ -6,8 +6,10 @@ import { useAuthStore } from '../store/authStore';
 import { useCycleStore, type CycleHistoryEntry } from '../store/cycleStore';
 import { calculateCycleStats, formatDate, parseLocalDate } from '../utils/cycle';
 import ManualCycleModal from '../components/ManualCycleModal';
+import { useI18n } from '../i18n';
 
 export default function HistoryPage() {
+  const { t } = useI18n();
   const history = useCycleStore((state) => state.history);
   const cycleLength = useCycleStore((state) => state.cycleLength);
   const setCycleLength = useCycleStore((state) => state.setCycleLength);
@@ -28,7 +30,7 @@ export default function HistoryPage() {
 
   const handleApplyAverage = (avg: number) => {
     setCycleLength(avg);
-    setAppliedNotice(`현재 주기가 평균 주기인 ${avg}일로 설정되었어요.`);
+    setAppliedNotice(t('현재 주기가 평균 주기인 {days}일로 설정되었어요.', { days: avg }));
     window.setTimeout(() => setAppliedNotice(null), 3000);
   };
 
@@ -53,10 +55,10 @@ export default function HistoryPage() {
   }) => {
     if (editingEntry) {
       updateHistoryEntry(editingEntry.id, data);
-      setAppliedNotice(`${formatDate(parseLocalDate(data.lastPeriodDate))} 기록이 수정되었어요.`);
+      setAppliedNotice(t('{date} 기록이 수정되었어요.', { date: formatDate(parseLocalDate(data.lastPeriodDate)) }));
     } else {
       addToHistory(data);
-      setAppliedNotice(`${formatDate(parseLocalDate(data.lastPeriodDate))} 기록이 추가되었어요.`);
+      setAppliedNotice(t('{date} 기록이 추가되었어요.', { date: formatDate(parseLocalDate(data.lastPeriodDate)) }));
     }
     window.setTimeout(() => setAppliedNotice(null), 3000);
   };
@@ -85,10 +87,10 @@ export default function HistoryPage() {
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
-            저장된 주기 기록
+            {t('저장된 주기 기록')}
           </h2>
           <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
-            {history.length}건
+            {t('{count}건', { count: history.length })}
           </span>
         </div>
         <button
@@ -97,7 +99,7 @@ export default function HistoryPage() {
           className="inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
         >
           <Plus size={14} />
-          기록 직접 추가
+          {t('기록 직접 추가')}
         </button>
       </div>
       {appliedNotice && (
@@ -107,18 +109,18 @@ export default function HistoryPage() {
       )}
       {isLoggedIn && (
         <p className="-mt-2 mb-3 text-[11px] text-gray-400 dark:text-stone-500">
-          로그인 상태라서 이 기록들은 서버에도 저장돼요.
+          {t('로그인 상태라서 이 기록들은 서버에도 저장돼요.')}
         </p>
       )}
       {!isLoggedIn && history.length > 0 && (
         <div className="-mt-2 mb-4 flex items-center justify-between rounded-2xl bg-primary-50/70 px-3.5 py-2.5 text-xs text-primary-900 dark:bg-stone-800/80 dark:text-stone-200">
-          <span>기록을 잃어버리지 않게 서버에 동기화할 수 있어요.</span>
+          <span>{t('기록을 잃어버리지 않게 서버에 동기화할 수 있어요.')}</span>
           <Link
             to="/login"
             state={{ from: '/history' }}
             className="font-semibold text-primary-700 underline underline-offset-2 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
           >
-            로그인하기
+            {t('로그인하기')}
           </Link>
         </div>
       )}
@@ -129,45 +131,45 @@ export default function HistoryPage() {
             <div className="flex items-center gap-1.5">
               <Activity className="h-4 w-4 text-primary-600 dark:text-primary-400" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-primary-900 dark:text-primary-300">
-                나의 주기 통계 분석
+                {t('나의 주기 통계 분석')}
               </h3>
             </div>
             <span className="text-[11px] font-medium text-gray-500 dark:text-stone-400">
-              {stats.intervalCount}회 간격 분석
+              {t('{count}회 간격 분석', { count: stats.intervalCount })}
             </span>
           </div>
 
           <div className="mt-3 grid grid-cols-3 gap-2 text-center sm:gap-3">
             <div className="rounded-xl bg-white/90 p-2.5 shadow-2xs ring-1 ring-primary-100/60 dark:bg-stone-800/80 dark:ring-stone-750">
-              <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">평균 주기</p>
+              <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">{t('평균 주기')}</p>
               <p className="mt-1 font-display text-lg font-bold text-primary-700 sm:text-xl dark:text-primary-300">
                 {stats.averageInterval}
-                <span className="text-xs font-normal">일</span>
+                <span className="text-xs font-normal">{t('일')}</span>
               </p>
               <p className="text-[10px] text-gray-400 dark:text-stone-500">
-                약 {stats.roundedAverageInterval}일
+                {t('약 {days}일', { days: stats.roundedAverageInterval ?? 0 })}
               </p>
             </div>
 
             <div className="rounded-xl bg-white/90 p-2.5 shadow-2xs ring-1 ring-primary-100/60 dark:bg-stone-800/80 dark:ring-stone-750">
-              <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">이전 주기</p>
+              <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">{t('이전 주기')}</p>
               <p className="mt-1 font-display text-lg font-bold text-rose-600 sm:text-xl dark:text-rose-400">
                 {stats.previousInterval}
-                <span className="text-xs font-normal">일</span>
+                <span className="text-xs font-normal">{t('일')}</span>
               </p>
               <p className="text-[10px] text-gray-400 dark:text-stone-500">
-                직전 기록 간격
+                {t('직전 기록 간격')}
               </p>
             </div>
 
             <div className="rounded-xl bg-white/90 p-2.5 shadow-2xs ring-1 ring-primary-100/60 dark:bg-stone-800/80 dark:ring-stone-750">
-              <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">주기 변동</p>
+              <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">{t('주기 변동')}</p>
               <p className="mt-1 font-display text-lg font-bold text-gray-800 sm:text-xl dark:text-stone-200">
                 {stats.minInterval}~{stats.maxInterval}
-                <span className="text-xs font-normal">일</span>
+                <span className="text-xs font-normal">{t('일')}</span>
               </p>
               <p className="text-[10px] text-gray-400 dark:text-stone-500">
-                최소 ~ 최대
+                {t('최소 ~ 최대')}
               </p>
             </div>
           </div>
@@ -175,7 +177,7 @@ export default function HistoryPage() {
           {stats.roundedAverageInterval !== null && (
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-white/70 px-3 py-2 text-xs ring-1 ring-primary-100/50 dark:bg-stone-800/50 dark:ring-stone-800">
               <span className="text-gray-600 dark:text-stone-300">
-                현재 설정 주기: <strong className="font-semibold text-primary-700 dark:text-primary-400">{cycleLength}일</strong>
+                {t('현재 설정 주기:')} <strong className="font-semibold text-primary-700 dark:text-primary-400">{t('{days}일', { days: cycleLength })}</strong>
               </span>
               {cycleLength !== stats.roundedAverageInterval ? (
                 <button
@@ -184,18 +186,18 @@ export default function HistoryPage() {
                   className="inline-flex items-center gap-1 rounded-lg bg-primary-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
                 >
                   <Sparkles size={13} />
-                  평균({stats.roundedAverageInterval}일)으로 맞추기
+                  {t('평균({days}일)으로 맞추기', { days: stats.roundedAverageInterval })}
                 </button>
               ) : (
                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                   <Check size={13} />
-                  평균 주기와 일치해요
+                  {t('평균 주기와 일치해요')}
                 </span>
               )}
             </div>
           )}
           <p className="mt-2.5 text-[11px] text-gray-400 leading-tight dark:text-stone-500">
-            💡 주기는 생리 시작 당일(1일차)부터 다음 생리 시작 전날까지의 일수(기록 간격)예요.
+            {t('💡 주기는 생리 시작 당일(1일차)부터 다음 생리 시작 전날까지의 일수(기록 간격)예요.')}
           </p>
         </div>
       )}
@@ -205,7 +207,7 @@ export default function HistoryPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 font-semibold text-primary-700 dark:text-primary-300">
               <Activity className="h-4 w-4" />
-              <span>주기 통계 분석 안내</span>
+              <span>{t('주기 통계 분석 안내')}</span>
             </div>
             <button
               type="button"
@@ -213,14 +215,14 @@ export default function HistoryPage() {
               className="inline-flex items-center gap-1 rounded-lg bg-primary-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
             >
               <Plus size={12} />
-              이전 기록 추가
+              {t('이전 기록 추가')}
             </button>
           </div>
           <p className="mt-1.5 text-gray-600 dark:text-stone-400">
-            기록이 1건 있어요. 생리 시작일을 1건 더 추가하시면 실제 기록 간격과 이전 주기, 평균 주기를 자동으로 계산해 드려요.
+            {t('기록이 1건 있어요. 생리 시작일을 1건 더 추가하시면 실제 기록 간격과 이전 주기, 평균 주기를 자동으로 계산해 드려요.')}
           </p>
           <p className="mt-1 text-[11px] text-gray-400 dark:text-stone-500">
-            현재 설정 주기: {cycleLength}일 (생리 시작 당일부터 1일차로 카운트됩니다)
+            {t('현재 설정 주기: {days}일 (생리 시작 당일부터 1일차로 카운트됩니다)', { days: cycleLength })}
           </p>
         </div>
       )}
@@ -228,10 +230,10 @@ export default function HistoryPage() {
       {history.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-primary-200/70 bg-primary-50/40 p-8 text-center dark:border-stone-800 dark:bg-stone-850/50">
           <p className="text-sm font-medium text-primary-700 dark:text-primary-400">
-            아직 저장된 기록이 없어요
+            {t('아직 저장된 기록이 없어요')}
           </p>
           <p className="mt-1 text-xs text-gray-500 dark:text-stone-400">
-            메인 화면에서 「계산하기」를 누르거나, 여기서 과거 기록을 직접 추가할 수 있어요.
+            {t('메인 화면에서 「계산하기」를 누르거나, 여기서 과거 기록을 직접 추가할 수 있어요.')}
           </p>
           <button
             type="button"
@@ -239,7 +241,7 @@ export default function HistoryPage() {
             className="mt-3.5 inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
           >
             <Plus size={14} />
-            첫 기록 직접 추가하기
+            {t('첫 기록 직접 추가하기')}
           </button>
         </div>
       ) : (
@@ -260,36 +262,36 @@ export default function HistoryPage() {
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {formatDate(parseLocalDate(entry.lastPeriodDate))} 시작
+                      {t('{date} 시작', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
                     </p>
                     {interval !== null && interval !== undefined ? (
                       <span className="inline-flex items-center rounded-full bg-primary-100/90 px-2 py-0.5 text-[11px] font-semibold text-primary-800 dark:bg-primary-950/80 dark:text-primary-300">
-                        이전 주기와 {interval}일 간격
+                        {t('이전 주기와 {days}일 간격', { days: interval })}
                       </span>
                     ) : (
                       <span className="inline-flex items-center rounded-full bg-sand-100/80 px-2 py-0.5 text-[11px] font-medium text-sand-800 dark:bg-stone-800 dark:text-stone-400">
-                        첫 기준 기록
+                        {t('첫 기준 기록')}
                       </span>
                     )}
                   </div>
 
                   <div className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-gray-500 dark:text-stone-300">
                     <span>
-                      주기 {entry.cycleLength}일 · 생리 기간 {entry.periodLength}일
+                      {t('주기 {cycle}일 · 생리 기간 {period}일', { cycle: entry.cycleLength, period: entry.periodLength })}
                     </span>
                     {diff !== null && diff !== undefined && (
                       <span className="text-[11px] text-gray-400 dark:text-stone-400">
                         {diff === 0
-                          ? '(설정 주기와 일치)'
+                          ? t('(설정 주기와 일치)')
                           : diff > 0
-                            ? `(설정보다 +${diff}일)`
-                            : `(설정보다 ${diff}일)`}
+                            ? t('(설정보다 +{days}일)', { days: diff })
+                            : t('(설정보다 {days}일)', { days: diff })}
                       </span>
                     )}
                   </div>
 
                   <p className="mt-1 text-[11px] text-gray-400 dark:text-stone-500">
-                    저장일 {formatDate(new Date(entry.savedAt))}
+                    {t('저장일 {date}', { date: formatDate(new Date(entry.savedAt)) })}
                   </p>
                 </button>
                 <div className="flex shrink-0 items-center gap-1">
@@ -297,7 +299,7 @@ export default function HistoryPage() {
                     type="button"
                     onClick={() => setActionTarget(entry)}
                     className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 active:scale-95 sm:hidden dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                    aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 관리 옵션`}
+                    aria-label={t('{date} 관리 옵션', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
                   >
                     <MoreHorizontal size={18} />
                   </button>
@@ -306,17 +308,17 @@ export default function HistoryPage() {
                       type="button"
                       onClick={() => handleOpenEdit(entry)}
                       className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-500 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:text-stone-400 dark:hover:border-primary-900/60 dark:hover:bg-primary-950/60 dark:hover:text-primary-300"
-                      aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 수정`}
+                      aria-label={t('{date} 주기 기록 수정', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
                     >
-                      수정
+                      {t('수정')}
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(entry)}
                       className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/60 dark:hover:text-rose-400"
-                      aria-label={`${formatDate(parseLocalDate(entry.lastPeriodDate))} 주기 기록 삭제`}
+                      aria-label={t('{date} 주기 기록 삭제', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
                     >
-                      삭제
+                      {t('삭제')}
                     </button>
                   </div>
                 </div>
@@ -349,17 +351,17 @@ export default function HistoryPage() {
                 id="delete-dialog-title"
                 className="mt-4 font-display text-lg font-bold text-gray-900 dark:text-white"
               >
-                주기 기록을 삭제할까요?
+                {t('주기 기록을 삭제할까요?')}
               </h3>
 
               <p id="delete-dialog-desc" className="mt-2 text-sm text-gray-600 leading-relaxed dark:text-stone-300">
                 <strong className="font-semibold text-gray-900 dark:text-white">
                   {formatDate(parseLocalDate(deleteTarget.lastPeriodDate))}
                 </strong>{' '}
-                시작 기록(주기 {deleteTarget.cycleLength}일, 기간 {deleteTarget.periodLength}일)이 목록에서 완전히 삭제됩니다.
+                {t('시작 기록(주기 {cycle}일, 기간 {period}일)이 목록에서 완전히 삭제됩니다.', { cycle: deleteTarget.cycleLength, period: deleteTarget.periodLength })}
               </p>
               <p className="mt-1 text-xs text-rose-500 dark:text-rose-400">
-                삭제한 기록은 다시 복구할 수 없어요.
+                {t('삭제한 기록은 다시 복구할 수 없어요.')}
               </p>
               <div className="mt-6 flex gap-2.5">
                 <button
@@ -367,14 +369,14 @@ export default function HistoryPage() {
                   onClick={() => setDeleteTarget(null)}
                   className="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 active:scale-[0.98] dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
                 >
-                  취소
+                  {t('취소')}
                 </button>
                 <button
                   type="button"
                   onClick={confirmDelete}
                   className="flex-1 rounded-xl bg-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-rose-600 active:scale-[0.98]"
                 >
-                  삭제하기
+                  {t('삭제하기')}
                 </button>
               </div>
             </div>
@@ -401,10 +403,10 @@ export default function HistoryPage() {
                   id="action-sheet-title"
                   className="font-display text-sm font-bold text-gray-900 dark:text-white"
                 >
-                  {formatDate(parseLocalDate(actionTarget.lastPeriodDate))} 시작 기록
+                  {t('{date} 시작 기록', { date: formatDate(parseLocalDate(actionTarget.lastPeriodDate)) })}
                 </h3>
                 <p className="mt-0.5 text-xs text-gray-500 dark:text-stone-400">
-                  주기 {actionTarget.cycleLength}일 · 생리 기간 {actionTarget.periodLength}일
+                  {t('주기 {cycle}일 · 생리 기간 {period}일', { cycle: actionTarget.cycleLength, period: actionTarget.periodLength })}
                 </p>
               </div>
               <div className="mt-3 space-y-1.5">
@@ -421,9 +423,9 @@ export default function HistoryPage() {
                     <Pencil size={16} />
                   </div>
                   <div>
-                    <p className="font-semibold">기록 수정하기</p>
+                    <p className="font-semibold">{t('기록 수정하기')}</p>
                     <p className="text-[11px] font-normal text-gray-400 dark:text-stone-500">
-                      시작일, 주기 길이, 생리 기간을 변경해요
+                      {t('시작일, 주기 길이, 생리 기간을 변경해요')}
                     </p>
                   </div>
                 </button>
@@ -440,9 +442,9 @@ export default function HistoryPage() {
                     <Sparkles size={16} />
                   </div>
                   <div>
-                    <p className="font-semibold">메인 화면에 불러오기</p>
+                    <p className="font-semibold">{t('메인 화면에 불러오기')}</p>
                     <p className="text-[11px] font-normal text-gray-400 dark:text-stone-500">
-                      이 기록의 날짜와 주기를 메인 계산기에 적용해요
+                      {t('이 기록의 날짜와 주기를 메인 계산기에 적용해요')}
                     </p>
                   </div>
                 </button>
@@ -459,9 +461,9 @@ export default function HistoryPage() {
                     <Trash2 size={16} />
                   </div>
                   <div>
-                    <p className="font-semibold">기록 삭제하기</p>
+                    <p className="font-semibold">{t('기록 삭제하기')}</p>
                     <p className="text-[11px] font-normal text-rose-400/90 dark:text-rose-500">
-                      이 주기 기록을 목록에서 완전히 삭제해요
+                      {t('이 주기 기록을 목록에서 완전히 삭제해요')}
                     </p>
                   </div>
                 </button>
@@ -472,7 +474,7 @@ export default function HistoryPage() {
                   onClick={() => setActionTarget(null)}
                   className="w-full rounded-xl bg-gray-100 py-2.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-200 active:scale-[0.98] dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700"
                 >
-                  닫기
+                  {t('닫기')}
                 </button>
               </div>
             </div>

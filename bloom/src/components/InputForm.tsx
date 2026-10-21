@@ -3,9 +3,11 @@ import { createPortal } from 'react-dom';
 import { ChevronDown, RotateCcw, Sparkles } from 'lucide-react';
 import { useCycleStore } from '../store/cycleStore';
 import { calculateCycleStats } from '../utils/cycle';
+import { useI18n } from '../i18n';
 import DatePopover from './DatePopover';
 
 export default function InputForm() {
+  const { t } = useI18n();
   const {
     lastPeriodDate,
     cycleLength,
@@ -88,7 +90,7 @@ export default function InputForm() {
     <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
       <div className="mb-5 flex items-center justify-between">
         <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
-          나의 리듬 입력
+          {t('나의 리듬 입력')}
         </h2>
         <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
           STEP 1
@@ -99,14 +101,14 @@ export default function InputForm() {
         <div>
           <div className="mb-1.5 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700 dark:text-stone-200">
-              마지막 생리 시작일
+              {t('마지막 생리 시작일')}
             </span>
             <button
               type="button"
               onClick={() => setLastPeriodDate(new Date().toISOString().slice(0, 10))}
               className="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100/80 active:scale-95 shadow-xs dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60 dark:hover:bg-primary-900"
             >
-              오늘
+              {t('오늘')}
             </button>
           </div>
           <DatePopover
@@ -114,7 +116,7 @@ export default function InputForm() {
             onChange={setLastPeriodDate}
           />
           <p className="mt-1.5 text-[11px] text-gray-400 dark:text-stone-500">
-            생리 시작 첫날(당일)을 선택해 주세요. 해당 날짜가 1일차로 계산됩니다.
+            {t('생리 시작 첫날(당일)을 선택해 주세요. 해당 날짜가 1일차로 계산됩니다.')}
           </p>
         </div>
 
@@ -125,18 +127,18 @@ export default function InputForm() {
           aria-expanded={showAverages}
         >
           <div className="flex items-center gap-2">
-            <span className="text-gray-500 dark:text-stone-400">평균 주기 설정</span>
+            <span className="text-gray-500 dark:text-stone-400">{t('평균 주기 설정')}</span>
             <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-primary-600 shadow-xs dark:bg-stone-700 dark:text-primary-300">
-              {cycleLength}일 · {periodLength}일간
+              {t('{cycle}일 · {period}일간', { cycle: cycleLength, period: periodLength })}
             </span>
             {hasAverageChanges && showAverages && (
               <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/70 dark:text-amber-300">
-                수정 중
+                {t('수정 중')}
               </span>
             )}
           </div>
           <div className="flex items-center gap-1 text-gray-400 dark:text-stone-400">
-            <span>{showAverages ? '접기' : '설정 변경'}</span>
+            <span>{showAverages ? t('접기') : t('설정 변경')}</span>
             <ChevronDown
               size={15}
               strokeWidth={2.25}
@@ -150,8 +152,8 @@ export default function InputForm() {
             <label className="block">
               <span className="mb-2 flex items-center justify-between text-sm font-medium text-gray-700 dark:text-stone-200">
                 <span>
-                  평균 주기 길이:{' '}
-                  <span className="text-primary-600 dark:text-primary-400">{tempCycleLength}일</span>
+                  {t('평균 주기 길이:')}{' '}
+                  <span className="text-primary-600 dark:text-primary-400">{t('{count}일', { count: tempCycleLength })}</span>
                 </span>
                 {stats.roundedAverageInterval !== null && (
                   <button
@@ -160,7 +162,7 @@ export default function InputForm() {
                     className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-700 transition hover:bg-primary-100 dark:bg-primary-950/70 dark:text-primary-300 dark:hover:bg-primary-900"
                   >
                     <Sparkles size={11} />
-                    실제 기록 평균({stats.roundedAverageInterval}일) 적용
+                    {t('실제 기록 평균({count}일) 적용', { count: stats.roundedAverageInterval })}
                   </button>
                 )}
               </span>
@@ -178,15 +180,15 @@ export default function InputForm() {
                 }
               />
               <div className="mt-2 flex justify-between text-xs text-gray-400 dark:text-stone-400">
-                <span>21일</span>
-                <span>40일</span>
+                <span>{t('{count}일', { count: 21 })}</span>
+                <span>{t('{count}일', { count: 40 })}</span>
               </div>
             </label>
 
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-stone-200">
-                평균 생리 기간:{' '}
-                <span className="text-primary-600 dark:text-primary-400">{tempPeriodLength}일</span>
+                {t('평균 생리 기간:')}{' '}
+                <span className="text-primary-600 dark:text-primary-400">{t('{count}일', { count: tempPeriodLength })}</span>
               </span>
               <input
                 type="range"
@@ -202,8 +204,8 @@ export default function InputForm() {
                 }
               />
               <div className="mt-2 flex justify-between text-xs text-gray-400 dark:text-stone-400">
-                <span>2일</span>
-                <span>10일</span>
+                <span>{t('{count}일', { count: 2 })}</span>
+                <span>{t('{count}일', { count: 10 })}</span>
               </div>
             </label>
 
@@ -214,12 +216,12 @@ export default function InputForm() {
                 disabled={!hasAverageChanges}
                 className="w-full rounded-xl bg-primary-600 py-2.5 text-xs font-semibold text-white shadow-petal transition hover:bg-primary-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none dark:bg-primary-500 dark:hover:bg-primary-600 dark:disabled:bg-stone-700 dark:disabled:text-stone-500"
               >
-                {hasAverageChanges ? '평균 설정 저장' : '저장 완료 (변경사항 없음)'}
+                {hasAverageChanges ? t('평균 설정 저장') : t('저장 완료 (변경사항 없음)')}
               </button>
 
               {averageSavedFlash && (
                 <p className="text-center text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                  평균 주기 설정이 저장되었어요
+                  {t('평균 주기 설정이 저장되었어요')}
                 </p>
               )}
 
@@ -228,7 +230,7 @@ export default function InputForm() {
                 onClick={() => setShowResetConfirm(true)}
                 className="w-full rounded-xl border border-primary-200/80 bg-white py-2 text-xs font-medium text-primary-700 transition hover:bg-primary-50 dark:border-stone-700 dark:bg-stone-800 dark:text-primary-300 dark:hover:bg-stone-700 active:scale-[0.99]"
               >
-                기본값으로 다시 시작
+                {t('기본값으로 다시 시작')}
               </button>
             </div>
           </div>
@@ -240,11 +242,11 @@ export default function InputForm() {
             onClick={handleSave}
             className="w-full rounded-xl bg-gradient-to-br from-primary-500 to-rose-500 px-4 py-2.5 text-sm font-semibold text-white shadow-petal transition hover:brightness-105 active:scale-[0.99]"
           >
-            계산하기
+            {t('계산하기')}
           </button>
           {savedFlash && (
             <p className="text-center text-xs text-primary-600 dark:text-primary-400">
-              이력에 저장되었어요
+              {t('이력에 저장되었어요')}
             </p>
           )}
         </div>
@@ -273,17 +275,17 @@ export default function InputForm() {
                 id="reset-dialog-title"
                 className="mt-4 font-display text-lg font-bold text-gray-900 dark:text-white"
               >
-                기본값으로 초기화할까요?
+                {t('기본값으로 초기화할까요?')}
               </h3>
 
               <p
                 id="reset-dialog-desc"
                 className="mt-2 text-sm text-gray-600 leading-relaxed dark:text-stone-300"
               >
-                평균 주기 길이 <strong className="font-semibold text-gray-900 dark:text-white">28일</strong>, 생리 기간 <strong className="font-semibold text-gray-900 dark:text-white">5일</strong>로 다시 설정됩니다.
+                {t('평균 주기 길이 {cycle}, 생리 기간 {period}로 다시 설정됩니다.', { cycle: t('{count}일', { count: 28 }), period: t('{count}일', { count: 5 }) })}
               </p>
               <p className="mt-1 text-xs text-gray-400 dark:text-stone-500">
-                기존에 저장된 주기 이력은 삭제되지 않아요.
+                {t('기존에 저장된 주기 이력은 삭제되지 않아요.')}
               </p>
 
               <div className="mt-6 flex gap-2.5">
@@ -292,14 +294,14 @@ export default function InputForm() {
                   onClick={() => setShowResetConfirm(false)}
                   className="flex-1 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-200 active:scale-[0.98] dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
                 >
-                  취소
+                  {t('취소')}
                  </button>
                 <button
                   type="button"
                   onClick={handleConfirmReset}
                   className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700 active:scale-[0.98] dark:bg-primary-500 dark:hover:bg-primary-600"
                 >
-                  초기화하기
+                  {t('초기화하기')}
                 </button>
               </div>
             </div>
