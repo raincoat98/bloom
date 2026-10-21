@@ -12,6 +12,7 @@ import {
 import NotificationSettings from '../components/NotificationSettings';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore, type ThemeMode } from '../store/themeStore';
+import { useI18n, type Language } from '../i18n';
 
 interface ThemeOption {
   id: ThemeMode;
@@ -43,6 +44,7 @@ const THEME_OPTIONS: readonly ThemeOption[] = [
 export default function SettingsPage() {
   const { user, logout } = useAuthStore();
   const { mode, resolvedTheme, setMode } = useThemeStore();
+  const { t, language, setLanguage } = useI18n();
   return (
     <div className="space-y-6">
       {/* 1. 계정 정보 영역 */}
@@ -54,12 +56,12 @@ export default function SettingsPage() {
             </div>
             <div>
               <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-                {user ? '내 계정' : '계정 로그인'}
+                {user ? t('내 계정') : t('계정 로그인')}
               </h2>
               <p className="mt-0.5 text-xs text-gray-600 dark:text-stone-400 sm:text-sm truncate">
                 {user
                   ? user.email
-                  : '로그인하시면 주기 기록이 보관되고 맞춤 알림을 받을 수 있어요.'}
+                  : t('로그인하시면 주기 기록이 보관되고 맞춤 알림을 받을 수 있어요.')}
               </p>
             </div>
           </div>
@@ -72,7 +74,7 @@ export default function SettingsPage() {
                 className="inline-flex items-center gap-1.5 rounded-xl border border-primary-100 bg-white px-3.5 py-2 text-xs font-semibold text-primary-700 shadow-sm transition hover:bg-primary-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700 active:scale-[0.98]"
               >
                 <LogOut className="h-3.5 w-3.5" />
-                <span>로그아웃</span>
+                <span>{t('로그아웃')}</span>
               </button>
             ) : (
               <Link
@@ -80,7 +82,7 @@ export default function SettingsPage() {
                 className="inline-flex items-center gap-1.5 rounded-xl bg-primary-500 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-primary-600 active:scale-[0.98]"
               >
                 <LogIn className="h-3.5 w-3.5" />
-                <span>로그인 / 회원가입</span>
+                <span>{t('로그인 / 회원가입')}</span>
               </Link>
             )}
           </div>
@@ -96,18 +98,16 @@ export default function SettingsPage() {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
-                화면 모드
+                {t('화면 모드')}
               </h2>
               <span className="rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-700 ring-1 ring-primary-100 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
                 {mode === 'system'
-                  ? `시스템 설정 (${resolvedTheme === 'dark' ? '다크' : '라이트'})`
-                  : mode === 'dark'
-                    ? '다크 모드'
-                    : '라이트 모드'}
+                  ? t('시스템 설정 ({mode})', { mode: t(resolvedTheme === 'dark' ? '다크' : '라이트') })
+                  : t(mode === 'dark' ? '다크 모드' : '라이트 모드')}
               </span>
             </div>
             <p className="mt-0.5 text-xs text-gray-600 dark:text-stone-400 sm:text-sm">
-              기기 환경에 맞추거나 눈이 편안한 테마를 직접 선택해 보세요.
+              {t('기기 환경에 맞추거나 눈이 편안한 테마를 직접 선택해 보세요.')}
             </p>
           </div>
         </div>
@@ -146,8 +146,8 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{option.label}</p>
-                  <p className="mt-0.5 text-xs text-gray-500 dark:text-stone-400 break-keep">{option.desc}</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{t(option.label)}</p>
+                  <p className="mt-0.5 text-xs text-gray-500 dark:text-stone-400 break-keep">{t(option.desc)}</p>
                 </div>
                 {isSelected && (
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-500 text-white sm:hidden">
@@ -160,6 +160,16 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      <section className="rounded-3xl border border-primary-100/70 bg-white/90 p-4 shadow-petal dark:border-stone-800 dark:bg-stone-900/90 sm:p-6">
+        <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">{t('언어')}</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-stone-400">{t('표시 언어를 선택하세요.')}</p>
+        <select aria-label={t('언어')} value={language} onChange={(event) => setLanguage(event.target.value as Language)} className="mt-4 rounded-xl border border-primary-200 bg-white px-4 py-2 text-sm text-gray-900 dark:border-stone-700 dark:bg-stone-800 dark:text-white">
+          <option value="ko">한국어</option>
+          <option value="en">English</option>
+          <option value="ja">日本語</option>
+          <option value="zh">简体中文</option>
+        </select>
+      </section>
       {/* 2. 웹 푸시 알림 설정 영역 */}
       {user ? (
         <NotificationSettings />
@@ -168,35 +178,34 @@ export default function SettingsPage() {
           <div className="max-w-xl">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-100/80 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
               <ShieldCheck className="h-3.5 w-3.5" />
-              로그인 전용 기능
+              {t('로그인 전용 기능')}
             </span>
             <h3 className="mt-3 font-display text-lg font-bold text-gray-900 dark:text-white sm:text-xl">
-              주요 시점 알림을 받으시려면 로그인이 필요해요 🌸
+              {t('주요 시점 알림을 받으시려면 로그인이 필요해요 🌸')}
             </h3>
             <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-stone-300 sm:text-sm">
-              소중한 일정을 놓치지 않도록, 회원님의 계정에 등록된 주기 정보를 바탕으로
-              정확하고 부드러운 알림을 기기로 보내드립니다.
+              {t('소중한 일정을 놓치지 않도록, 회원님의 계정에 등록된 주기 정보를 바탕으로 정확하고 부드러운 알림을 기기로 보내드립니다.')}
             </p>
 
             <div className="mt-4 space-y-2 rounded-2xl bg-white/80 p-4 ring-1 ring-primary-100/70 dark:bg-stone-800/80 dark:ring-stone-700">
-              <p className="text-xs font-semibold text-gray-800 dark:text-stone-200">제공되는 부드러운 알림:</p>
+              <p className="text-xs font-semibold text-gray-800 dark:text-stone-200">{t('제공되는 부드러운 알림:')}</p>
               <ul className="space-y-1.5 text-xs text-gray-600 dark:text-stone-300">
                 <li className="flex items-start gap-2">
                   <span className="shrink-0 mt-0.5">🌸</span>
                   <span className="break-keep">
-                    <strong>생리 시작 2일 전</strong>: &ldquo;생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸&rdquo;
+                    <strong>{t('생리 시작 2일 전')}</strong>: &ldquo;{t('생리 시작 2일 전이에요. 따뜻한 차 한 잔 어떠세요? 🌸')}&rdquo;
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="shrink-0 mt-0.5">🌱</span>
                   <span className="break-keep">
-                    <strong>가임기 시작 1일 전</strong>: &ldquo;내일부터 가임기가 시작돼요 🌱&rdquo;
+                    <strong>{t('가임기 시작 1일 전')}</strong>: &ldquo;{t('내일부터 가임기가 시작돼요 🌱')}&rdquo;
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="shrink-0 mt-0.5">✨</span>
                   <span className="break-keep">
-                    <strong>컨디션 기록 리마인더</strong>: &ldquo;오늘 하루 컨디션은 어떠셨나요? 증상을 기록해 보세요 ✨&rdquo;
+                    <strong>{t('컨디션 기록 리마인더')}</strong>: &ldquo;{t('오늘 하루 컨디션은 어떠셨나요? 증상을 기록해 보세요 ✨')}&rdquo;
                   </span>
                 </li>
               </ul>
@@ -208,7 +217,7 @@ export default function SettingsPage() {
                 className="inline-flex items-center gap-2 rounded-2xl bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-600 active:scale-[0.98]"
               >
                 <LogIn className="h-4 w-4" />
-                <span>로그인하고 알림 받기</span>
+                <span>{t('로그인하고 알림 받기')}</span>
               </Link>
             </div>
           </div>
@@ -217,12 +226,12 @@ export default function SettingsPage() {
 
       {/* 3. 앱 정보 및 안내 */}
       <section className="rounded-3xl border border-stone-100 bg-white/70 p-4 text-xs text-gray-500 shadow-petal dark:border-stone-800 dark:bg-stone-900/70 dark:text-stone-400 sm:p-5">
-        <h3 className="font-semibold text-gray-700 dark:text-stone-200">Bloom 주기 다이어리</h3>
+        <h3 className="font-semibold text-gray-700 dark:text-stone-200">{t('Bloom 주기 다이어리')}</h3>
         <p className="mt-1">
-          나의 리듬을 부드럽게 따라가는 주기 다이어리 웹 앱입니다.
+          {t('나의 리듬을 부드럽게 따라가는 주기 다이어리 웹 앱입니다.')}
         </p>
         <p className="mt-2 text-[11px] text-gray-400 dark:text-stone-500">
-          모든 계산은 사용자의 마지막 시작일과 평균 주기를 기준으로 하며, 의학적 진단을 대신하지 않습니다.
+          {t('모든 계산은 사용자의 마지막 시작일과 평균 주기를 기준으로 하며, 의학적 진단을 대신하지 않습니다.')}
         </p>
       </section>
     </div>

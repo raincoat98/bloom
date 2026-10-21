@@ -10,6 +10,7 @@ import SparklingHeart from '@fluentui-emoji/react/modern/sparkling-heart';
 import Sparkles from '@fluentui-emoji/react/modern/sparkles';
 import { ChevronDown } from 'lucide-react';
 import { useCycleStore } from '../store/cycleStore';
+import { useI18n } from '../i18n';
 import { calculateCycle } from '../utils/cycle';
 import {
   phaseGuides,
@@ -67,6 +68,7 @@ const phaseAccent: Record<Phase, PhaseAccent> = {
 };
 
 export default function PhaseGuide() {
+  const { t } = useI18n();
   const { lastPeriodDate, cycleLength, periodLength } = useCycleStore();
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -95,15 +97,15 @@ export default function PhaseGuide() {
           <div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-primary-500 dark:text-primary-400">
-                오늘의 케어
+                {t('오늘의 케어')}
               </span>
               <span className="text-xs font-medium text-gray-400 transition-colors group-hover:text-primary-600 dark:text-stone-400 dark:group-hover:text-primary-400">
-                {isExpanded ? '접기' : '더보기'}
+                {isExpanded ? t('접기') : t('더보기')}
               </span>
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-2">
               <h2 className="font-display text-xl font-bold tracking-tight text-gray-900 dark:text-white break-keep">
-                {guide.title}
+                {t(guide.title)}
               </h2>
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${accent.badge}`}
@@ -112,27 +114,27 @@ export default function PhaseGuide() {
                   className={`h-1.5 w-1.5 rounded-full ${accent.dot}`}
                   aria-hidden="true"
                 />
-                {phase}
+                {t(phase)}
               </span>
             </div>
           </div>
           <div className="space-y-0.5 text-sm leading-relaxed text-gray-600 dark:text-stone-300 break-keep">
             {guide.summary.map((line) => (
-              <p key={line}>{line}</p>
+              <p key={line}>{t(line)}</p>
             ))}
           </div>
 
           {!isExpanded && (
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
               <span className="text-[11px] font-medium text-gray-400 dark:text-stone-400 break-keep">
-                추천:
+                {t('추천:')}
               </span>
               {guide.foods.slice(0, 3).map((food) => (
                 <span
                   key={food}
                   className="inline-flex items-center rounded-md bg-sand-100/80 px-2 py-0.5 text-[11px] font-medium text-gray-600 ring-1 ring-inset ring-sand-200/60 dark:bg-stone-800 dark:text-stone-300 dark:ring-stone-700/60 break-keep"
                 >
-                  {food}
+                  {t(food)}
                 </span>
               ))}
               {guide.foods.length > 3 && (
@@ -159,7 +161,7 @@ export default function PhaseGuide() {
         <div className="mt-5 space-y-4 border-t border-sand-200/60 dark:border-stone-800 pt-5">
           <GuideBlock
             icon={<ForkAndKnifeWithPlate className="h-3.5 w-3.5" focusable="false" />}
-            title="추천 음식"
+            title={t('추천 음식')}
           >
             <div className="flex flex-wrap gap-1.5">
               {guide.foods.map((food) => (
@@ -167,7 +169,7 @@ export default function PhaseGuide() {
                   key={food}
                   className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ring-1 ring-inset break-keep transition-colors ${accent.chip}`}
                 >
-                  {food}
+                  {t(food)}
                 </span>
               ))}
             </div>
@@ -175,7 +177,7 @@ export default function PhaseGuide() {
 
           <GuideBlock
             icon={<Pill className="h-3.5 w-3.5" focusable="false" />}
-            title="추천 영양제"
+            title={t('추천 영양제')}
           >
             <div className="grid gap-2 sm:grid-cols-2">
               {guide.supplements.map((s) => (
@@ -184,10 +186,10 @@ export default function PhaseGuide() {
                   className="flex items-start gap-2.5 rounded-xl bg-sand-50/70 p-2.5 ring-1 ring-sand-200/60 dark:bg-stone-800/60 dark:ring-stone-700/60"
                 >
                   <span className="shrink-0 rounded-md bg-white px-2 py-0.5 text-xs font-semibold text-gray-800 shadow-2xs ring-1 ring-gray-200/70 dark:bg-stone-700 dark:text-stone-200 dark:ring-stone-600 break-keep">
-                    {s.name}
+                    {t(s.name)}
                   </span>
                   <span className="text-xs leading-relaxed text-gray-600 dark:text-stone-300 break-keep">
-                    {s.desc}
+                    {t(s.desc)}
                   </span>
                 </div>
               ))}
@@ -197,27 +199,27 @@ export default function PhaseGuide() {
           {guide.libido && (
             <GuideBlock
               icon={<SparklingHeart className="h-3.5 w-3.5" focusable="false" />}
-              title="몸과 마음의 변화"
+              title={t('몸과 마음의 변화')}
             >
               <p className="rounded-xl bg-rose-50/70 p-3 text-xs leading-relaxed text-gray-700 ring-1 ring-rose-100 dark:bg-rose-950/40 dark:text-rose-200 dark:ring-rose-900/50 break-keep">
-                {guide.libido}
+                {t(guide.libido)}
               </p>
             </GuideBlock>
           )}
 
           <GuideBlock
             icon={<Handshake className="h-3.5 w-3.5" focusable="false" />}
-            title="파트너 케어 팁"
+            title={t('파트너 케어 팁')}
           >
             <p className="rounded-xl bg-primary-50/60 p-3 text-xs leading-relaxed text-gray-700 ring-1 ring-primary-100/60 dark:bg-primary-950/40 dark:text-primary-200 dark:ring-primary-900/50 break-keep">
-              {guide.partnerTip}
+              {t(guide.partnerTip)}
             </p>
           </GuideBlock>
 
           {showSupplies && (
             <GuideBlock
               icon={<Sparkles className="h-3.5 w-3.5" focusable="false" />}
-              title="주기 케어 준비물"
+              title={t('주기 케어 준비물')}
             >
               <div className="space-y-2.5">
                 <ul className="flex flex-wrap gap-2">
@@ -229,7 +231,7 @@ export default function PhaseGuide() {
                         className="inline-flex items-center gap-2 rounded-xl bg-sand-50/90 px-3 py-2 text-xs font-medium text-gray-700 ring-1 ring-sand-200/70 shadow-2xs dark:bg-stone-800/80 dark:text-stone-300 dark:ring-stone-700 break-keep"
                       >
                         <Icon className="h-4 w-4 shrink-0" focusable="false" />
-                        <span>{item.label}</span>
+                        <span>{t(item.label)}</span>
                       </li>
                     );
                   })}
@@ -238,7 +240,7 @@ export default function PhaseGuide() {
                   <span aria-hidden="true" className="shrink-0">
                     💡
                   </span>
-                  <span>{suppliesTip}</span>
+                  <span>{t(suppliesTip)}</span>
                 </p>
               </div>
             </GuideBlock>

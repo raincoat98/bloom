@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import type { DayProps } from 'react-day-picker';
-import { ko } from 'date-fns/locale';
+import { enUS, ja, ko, zhCN } from 'date-fns/locale';
 import { differenceInCalendarDays } from 'date-fns';
 import { useCycleStore } from '../store/cycleStore';
 import { parseLocalDate } from '../utils/cycle';
+import { useI18n } from '../i18n';
 const flowBadgeByModifier = {
   period: {
     text: '생리',
@@ -30,6 +31,7 @@ function getFlowBadge(modifiers: DayProps['modifiers']) {
   return null;
 }
 export default function CycleCalendar() {
+  const { t, language } = useI18n();
   const { lastPeriodDate, cycleLength, periodLength } = useCycleStore();
   const [month, setMonth] = useState<Date>(() => new Date());
 
@@ -65,11 +67,11 @@ export default function CycleCalendar() {
       <header className="mb-4 flex items-end justify-between gap-3">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-stone-400">
-            나의 리듬 캘린더
+            {t('나의 리듬 캘린더')}
           </p>
           <div className="flex items-center gap-2">
             <h2 className="font-display text-xl font-bold text-gray-900 dark:text-white">
-              한 달 흐름 보기
+              {t('한 달 흐름 보기')}
             </h2>
             <button
               type="button"
@@ -80,9 +82,9 @@ export default function CycleCalendar() {
                   ? 'border border-gray-200/80 bg-gray-50/50 text-gray-400 cursor-default dark:border-stone-800 dark:bg-stone-800/50 dark:text-stone-500'
                   : 'bg-primary-50 text-primary-700 hover:bg-primary-100 ring-1 ring-primary-200/70 shadow-xs dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60 dark:hover:bg-primary-900'
               }`}
-              title="오늘이 속한 달로 이동"
+              title={t('오늘이 속한 달로 이동')}
             >
-              오늘
+              {t('오늘')}
             </button>
           </div>
         </div>
@@ -94,7 +96,7 @@ export default function CycleCalendar() {
           month={month}
           onMonthChange={setMonth}
           showOutsideDays
-          locale={ko}
+          locale={language === 'en' ? enUS : language === 'ja' ? ja : language === 'zh' ? zhCN : ko}
           className="bloom-calendar bloom-cycle-calendar"
           components={{ Day: CycleDay }}
           modifiers={{
@@ -121,10 +123,11 @@ function CycleDay({
   ...dayProps
 }: DayProps) {
   void day;
+  const { t } = useI18n();
   const badge = getFlowBadge(modifiers);
   const ariaLabel =
     badge && dayProps['aria-label']
-      ? `${dayProps['aria-label']}, ${badge.label}`
+      ? `${dayProps['aria-label']}, ${t(badge.label)}`
       : dayProps['aria-label'];
 
   return (
@@ -136,7 +139,7 @@ function CycleDay({
             aria-hidden="true"
             className={`bloom-flow-badge ${badge.className}`}
           >
-            {badge.text}
+            {t(badge.text)}
           </span>
         ) : null}
       </span>
@@ -145,11 +148,12 @@ function CycleDay({
 }
 
 function Legend() {
+  const { t } = useI18n();
   return (
     <ul className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-gray-500 dark:text-stone-400">
-      <LegendItem className="bg-red-300" label="생리" />
-      <LegendItem className="bg-emerald-200" label="가임기" />
-      <LegendItem className="bg-violet-500" label="배란" />
+      <LegendItem className="bg-red-300" label={t('생리')} />
+      <LegendItem className="bg-emerald-200" label={t('가임기')} />
+      <LegendItem className="bg-violet-500" label={t('배란')} />
     </ul>
   );
 }

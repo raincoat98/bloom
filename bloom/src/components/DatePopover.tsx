@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
-import { ko } from 'date-fns/locale';
+import { enUS, ja, ko, zhCN } from 'date-fns/locale';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { parseLocalDate } from '../utils/cycle';
+import { useI18n } from '../i18n';
 
 interface DatePopoverProps {
   value: string;
@@ -11,6 +12,8 @@ interface DatePopoverProps {
 }
 
 export default function DatePopover({ value, onChange }: DatePopoverProps) {
+  const { t, language } = useI18n();
+  const locale = language === 'en' ? enUS : language === 'ja' ? ja : language === 'zh' ? zhCN : ko;
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -52,8 +55,8 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
       >
         <span className="font-medium">
           {selected
-            ? format(selected, 'yyyy년 M월 d일 (EEE)', { locale: ko })
-            : '날짜 선택'}
+            ? format(selected, language === 'ko' ? 'yyyy년 M월 d일 (EEE)' : 'PPP (EEE)', { locale })
+            : t('날짜 선택')}
         </span>
         <CalendarIcon size={18} className="text-primary-400" />
       </button>
@@ -71,7 +74,7 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
                 setOpen(false);
               }
             }}
-            locale={ko}
+            locale={locale}
             showOutsideDays
             className="bloom-calendar"
           />
@@ -86,14 +89,14 @@ export default function DatePopover({ value, onChange }: DatePopoverProps) {
               }}
               className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100 active:scale-95 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60 dark:hover:bg-primary-900"
             >
-              오늘로 선택
+              {t('오늘로 선택')}
             </button>
             <button
               type="button"
               onClick={() => setOpen(false)}
               className="rounded-full px-2.5 py-1 text-xs font-medium text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
             >
-              닫기
+              {t('닫기')}
             </button>
           </div>
         </div>

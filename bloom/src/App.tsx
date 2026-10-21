@@ -17,6 +17,7 @@ import {
 } from './store/symptomStore';
 import { useNotificationStore } from './store/notificationStore';
 import { useThemeStore } from './store/themeStore';
+import { initLanguage, useI18n } from './i18n';
 function BloomMark({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -53,6 +54,7 @@ function BloomMark({ className = '' }: { className?: string }) {
 
 function App() {
   const location = useLocation();
+  const { t } = useI18n();
   const isHistory = location.pathname.startsWith('/history');
   const isSymptoms = location.pathname.startsWith('/symptoms');
   const isSettings = location.pathname.startsWith('/settings');
@@ -65,6 +67,7 @@ function App() {
 
   useEffect(() => {
     const cleanupTheme = useThemeStore.getState().initTheme();
+    initLanguage();
     migrateLegacyLocalSymptoms();
     void refresh();
     void useNotificationStore.getState().init();
@@ -92,21 +95,21 @@ function App() {
         <header className="mb-10 text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 text-xs font-medium text-primary-700 ring-1 ring-primary-100 backdrop-blur dark:bg-stone-900/80 dark:text-primary-300 dark:ring-stone-800">
             <BloomMark className="h-4 w-4" />
-            <span>나의 리듬을 부드럽게</span>
+            <span>{t('나의 리듬을 부드럽게')}</span>
           </div>
           <Link to="/" className="flex items-center justify-center gap-3">
             <BloomMark className="h-10 w-10 drop-shadow-sm" />
             <h1 className="font-display text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
               Bloom
-              <span className="sr-only">: 생리 주기, 배란일, 가임기 계산기</span>
+              <span className="sr-only">{t(': 생리 주기, 배란일, 가임기 계산기')}</span>
             </h1>
           </Link>
           <p className="mt-3 text-sm text-gray-600 sm:text-base dark:text-stone-300">
-            마지막 생리 시작일과 평균 주기만 알려주세요.
+            {t('마지막 생리 시작일과 평균 주기만 알려주세요.')}
             <br className="sm:hidden" />
             <span className="text-gray-500 dark:text-stone-400">
               {' '}
-              다음 일정과 컨디션 흐름을 살며시 짚어드릴게요.
+              {t('다음 일정과 컨디션 흐름을 살며시 짚어드릴게요.')}
             </span>
           </p>
           <nav className="mt-5 inline-flex rounded-full bg-white/80 p-1 text-sm shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
@@ -118,7 +121,7 @@ function App() {
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
               }`}
             >
-              오늘의 리듬
+              {t('오늘의 리듬')}
             </Link>
             <Link
               to="/symptoms"
@@ -128,7 +131,7 @@ function App() {
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
               }`}
             >
-              증상 관리
+              {t('증상 관리')}
             </Link>
             <Link
               to="/history"
@@ -138,7 +141,7 @@ function App() {
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
               }`}
             >
-              이력 관리
+              {t('이력 관리')}
             </Link>
           </nav>
         </header>
@@ -159,20 +162,20 @@ function App() {
             <BloomMark className="h-3.5 w-3.5 opacity-70" />
             <span className="font-medium text-gray-500 dark:text-stone-400">Bloom</span>
           </div>
-          <p>나의 리듬을 부드럽게 따라가는 주기 다이어리</p>
+          <p>{t('나의 리듬을 부드럽게 따라가는 주기 다이어리')}</p>
           <div className="mt-1 flex items-center gap-3 text-gray-500 dark:text-stone-400">
             <Link
               to="/about"
               className="transition hover:text-primary-600 dark:hover:text-primary-400"
             >
-              서비스 개요
+              {t('서비스 개요')}
             </Link>
             <span aria-hidden="true">·</span>
             <Link
               to="/settings"
               className="transition hover:text-primary-600 dark:hover:text-primary-400"
             >
-              환경 설정
+              {t('환경 설정')}
             </Link>
           </div>
         </footer>

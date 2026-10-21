@@ -2,8 +2,10 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertCircle, ArrowLeft, LogIn, UserPlus } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useI18n } from '../i18n';
 
 export default function LoginPage() {
+  const { t } = useI18n();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ export default function LoginPage() {
       }
       navigate(from, { replace: true });
     } catch (err) {
-      setLocalError(err instanceof Error ? err.message : '요청 처리에 실패했어요.');
+      setLocalError(err instanceof Error ? err.message : t('요청 처리에 실패했어요.'));
     }
   };
 
@@ -57,7 +59,7 @@ export default function LoginPage() {
                 : 'text-primary-700 hover:bg-primary-100/60 dark:text-stone-300 dark:hover:bg-stone-700'
             }`}
           >
-            로그인
+            {t('로그인')}
           </button>
           <button
             type="button"
@@ -68,25 +70,25 @@ export default function LoginPage() {
                 : 'text-primary-700 hover:bg-primary-100/60 dark:text-stone-300 dark:hover:bg-stone-700'
             }`}
           >
-            회원가입
+            {t('회원가입')}
           </button>
         </div>
 
         <div className="mb-6 text-center">
           <h2 className="font-display text-xl font-bold text-gray-900 dark:text-white">
-            {mode === 'login' ? '다시 오신 것을 환영해요' : '새 계정 만들기'}
+            {mode === 'login' ? t('다시 오신 것을 환영해요') : t('새 계정 만들기')}
           </h2>
           <p className="mt-1 text-xs text-gray-500 dark:text-stone-400">
             {mode === 'login'
-              ? '로그인하고 동기화된 주기 기록을 확인하세요'
-              : '간단히 가입하고 소중한 기록을 안전하게 보관하세요'}
+              ? t('로그인하고 동기화된 주기 기록을 확인하세요')
+              : t('간단히 가입하고 소중한 기록을 안전하게 보관하세요')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <label className="block">
             <span className="mb-1.5 block text-xs font-medium text-gray-600 dark:text-stone-300">
-              이메일
+              {t('이메일')}
             </span>
             <input
               type="email"
@@ -106,9 +108,9 @@ export default function LoginPage() {
           <label className="block">
             <div className="mb-1.5 flex items-center justify-between">
               <span className="block text-xs font-medium text-gray-600 dark:text-stone-300">
-                비밀번호
+                {t('비밀번호')}
               </span>
-              <span className="text-[11px] text-gray-400 dark:text-stone-500">6자 이상</span>
+              <span className="text-[11px] text-gray-400 dark:text-stone-500">{t('6자 이상')}</span>
             </div>
             <input
               type="password"
@@ -121,7 +123,7 @@ export default function LoginPage() {
                 if (localError) setLocalError(null);
               }}
               className="w-full rounded-2xl border border-primary-100 bg-white px-4 py-3 text-base text-gray-900 outline-none transition placeholder:text-gray-300 focus:border-primary-400 focus:ring-4 focus:ring-primary-100/50 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500 dark:focus:ring-primary-900/40 sm:text-sm"
-              placeholder="비밀번호를 입력해 주세요"
+              placeholder={t('비밀번호를 입력해 주세요')}
             />
           </label>
 
@@ -143,16 +145,16 @@ export default function LoginPage() {
               <UserPlus className="h-4 w-4" />
             )}
             <span>
-              {busy ? '처리 중…' : mode === 'login' ? '로그인하기' : '가입하기'}
+              {busy ? t('처리 중…') : mode === 'login' ? t('로그인하기') : t('가입하기')}
             </span>
           </button>
 
           <div className="rounded-2xl bg-primary-50/50 p-4 text-center text-xs leading-relaxed text-gray-600 dark:bg-stone-800/60 dark:text-stone-300">
             <p className="font-medium text-primary-800 dark:text-primary-300">
-              계정 없이도 사용할 수 있어요.
+              {t('계정 없이도 사용할 수 있어요.')}
             </p>
             <p className="mt-0.5 text-[11px] text-gray-400 dark:text-stone-500">
-              로그인하면 입력한 기록이 서버에 안전하게 보관돼요.
+              {t('로그인하면 입력한 기록이 서버에 안전하게 보관돼요.')}
             </p>
           </div>
 
@@ -162,7 +164,7 @@ export default function LoginPage() {
               className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-primary-700 dark:text-stone-400 dark:hover:text-primary-300"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>돌아가기</span>
+              <span>{t('돌아가기')}</span>
             </Link>
           </div>
         </form>

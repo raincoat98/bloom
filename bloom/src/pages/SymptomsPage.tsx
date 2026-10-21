@@ -8,6 +8,7 @@ import { SYMPTOM_BY_ID } from '../data/symptoms';
 import type { SymptomLog } from '../store/symptomStore';
 import { useSymptomStore } from '../store/symptomStore';
 import { formatDate } from '../utils/cycle';
+import { useI18n } from '../i18n';
 
 interface ModalTarget {
   type: 'entry' | 'single';
@@ -18,6 +19,7 @@ interface ModalTarget {
 }
 
 export default function SymptomsPage() {
+  const { t } = useI18n();
   const logs = useSymptomStore((state) => state.logs);
   const logDate = useSymptomStore((state) => state.logDate);
   const setLogDate = useSymptomStore((state) => state.setLogDate);
@@ -39,11 +41,11 @@ export default function SymptomsPage() {
     if (!modalTarget) return;
     if (modalTarget.type === 'entry') {
       removeLog(modalTarget.id);
-      triggerToast('증상 기록을 삭제했어요.');
+      triggerToast(t('증상 기록을 삭제했어요.'));
     } else if (modalTarget.type === 'single' && modalTarget.symptom) {
       removeSymptomFromLog(modalTarget.id, modalTarget.symptom);
-      const label = SYMPTOM_BY_ID[modalTarget.symptom]?.label ?? '증상';
-      triggerToast(`'${label}' 증상을 삭제했어요.`);
+      const label = t(SYMPTOM_BY_ID[modalTarget.symptom]?.label ?? '증상');
+      triggerToast(t("'{name}' 증상을 삭제했어요.", { name: label }));
     }
     setModalTarget(null);
   };
@@ -55,24 +57,24 @@ export default function SymptomsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
-              최근 증상
+              {t('최근 증상')}
             </h2>
             <p className="mt-1 text-xs text-gray-400 dark:text-stone-500">
-              최근에 기록한 컨디션을 한눈에 확인해 보세요.
+              {t('최근에 기록한 컨디션을 한눈에 확인해 보세요.')}
             </p>
           </div>
           <span className="rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
-            {logs.length}건
+            {t('{count}건', { count: logs.length })}
           </span>
         </div>
 
         {recentSymptoms.length === 0 ? (
           <div className="mt-4 rounded-2xl border border-dashed border-primary-200/70 bg-primary-50/40 px-4 py-8 text-center dark:border-stone-800 dark:bg-stone-850/50">
             <p className="text-sm font-medium text-primary-700 dark:text-primary-400">
-              아직 기록한 증상이 없어요
+              {t('아직 기록한 증상이 없어요')}
             </p>
             <p className="mt-1 text-xs text-gray-500 dark:text-stone-400">
-              위에서 오늘의 증상을 선택하면 여기에 차곡차곡 보여드려요.
+              {t('위에서 오늘의 증상을 선택하면 여기에 차곡차곡 보여드려요.')}
             </p>
           </div>
         ) : (
@@ -92,7 +94,7 @@ export default function SymptomsPage() {
                     <button
                       type="button"
                       onClick={() => setLogDate(entry.logDate)}
-                      title="기록 날짜로 선택하기"
+                      title={t('기록 날짜로 선택하기')}
                       className="text-left text-xs font-medium text-gray-700 transition hover:text-primary-600 hover:underline dark:text-stone-200 dark:hover:text-primary-400"
                     >
                       <time dateTime={entry.logDate}>
@@ -101,7 +103,7 @@ export default function SymptomsPage() {
                     </button>
                     {isSelectedDate && (
                       <span className="rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[10px] font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
-                        선택 중
+                        {t('선택 중')}
                       </span>
                     )}
                   </div>
@@ -113,7 +115,7 @@ export default function SymptomsPage() {
                         className="group/tag inline-flex items-center gap-1 rounded-full bg-primary-50 py-1 pl-2.5 pr-1.5 text-[11px] font-medium text-primary-700 ring-1 ring-primary-100/60 transition hover:bg-primary-100/60 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-primary-800/60 dark:hover:bg-primary-900/80"
                       >
                         <SymptomEmoji symptom={symptom} className="h-4 w-4" />
-                        <span>{SYMPTOM_BY_ID[symptom].label}</span>
+                        <span>{t(SYMPTOM_BY_ID[symptom].label)}</span>
                         <button
                           type="button"
                           onClick={() =>
@@ -126,8 +128,8 @@ export default function SymptomsPage() {
                             })
                           }
                           className="rounded-full p-0.5 text-primary-400 transition hover:bg-rose-100 hover:text-rose-600 dark:text-primary-400 dark:hover:bg-rose-950 dark:hover:text-rose-400"
-                          aria-label={`${formatDate(new Date(`${entry.logDate}T00:00:00`))} ${SYMPTOM_BY_ID[symptom].label} 증상 삭제`}
-                          title={`${SYMPTOM_BY_ID[symptom].label} 삭제`}
+                          aria-label={t('{date} {name} 증상 삭제', { date: formatDate(new Date(`${entry.logDate}T00:00:00`)), name: t(SYMPTOM_BY_ID[symptom].label) })}
+                          title={t('{name} 삭제', { name: t(SYMPTOM_BY_ID[symptom].label) })}
                         >
                           <X size={11} />
                         </button>
@@ -146,10 +148,10 @@ export default function SymptomsPage() {
                       })
                     }
                     className="group/btn inline-flex shrink-0 items-center gap-1 self-end rounded-full px-2.5 py-1 text-[11px] font-medium text-gray-400 transition hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:bg-rose-950/60 dark:hover:text-rose-400 sm:self-auto"
-                    aria-label={`${formatDate(new Date(`${entry.logDate}T00:00:00`))} 증상 기록 전체 삭제`}
+                    aria-label={t('{date} 증상 기록 전체 삭제', { date: formatDate(new Date(`${entry.logDate}T00:00:00`)) })}
                   >
                     <Trash2 size={12} className="transition group-hover/btn:scale-110" />
-                    <span>삭제</span>
+                    <span>{t('삭제')}</span>
                   </button>
                 </li>
               );
@@ -165,12 +167,12 @@ export default function SymptomsPage() {
           >
             {showAll ? (
               <>
-                <span>최근 5건만 보기</span>
+                <span>{t('최근 5건만 보기')}</span>
                 <ChevronUp size={14} />
               </>
             ) : (
               <>
-                <span>더보기 ({logs.length - 5}건 더)</span>
+                <span>{t('더보기 ({count}건 더)', { count: logs.length - 5 })}</span>
                 <ChevronDown size={14} />
               </>
             )}
