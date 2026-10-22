@@ -96,11 +96,11 @@ export default function SettingsPage() {
             <Moon className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <div className="flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
               <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
                 {t('화면 모드')}
               </h2>
-              <span className="rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-700 ring-1 ring-primary-100 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
+              <span className="max-w-full rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-700 ring-1 ring-primary-100 dark:bg-primary-950/80 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
                 {mode === 'system'
                   ? t('시스템 설정 ({mode})', { mode: t(resolvedTheme === 'dark' ? '다크' : '라이트') })
                   : t(mode === 'dark' ? '다크 모드' : '라이트 모드')}
