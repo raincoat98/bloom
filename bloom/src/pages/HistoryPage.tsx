@@ -9,7 +9,7 @@ import ManualCycleModal from '../components/ManualCycleModal';
 import { useI18n } from '../i18n';
 
 export default function HistoryPage() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const history = useCycleStore((state) => state.history);
   const cycleLength = useCycleStore((state) => state.cycleLength);
   const setCycleLength = useCycleStore((state) => state.setCycleLength);
@@ -27,6 +27,10 @@ export default function HistoryPage() {
   const [actionTarget, setActionTarget] = useState<CycleHistoryEntry | null>(null);
 
   const stats = useMemo(() => calculateCycleStats(history), [history]);
+  const dateFormatter = useMemo(() => new Intl.DateTimeFormat(language === 'zh' ? 'zh-CN' : language, {
+    year: 'numeric', month: 'long', day: 'numeric',
+  }), [language]);
+  const displayDate = (date: Date) => language === 'ko' ? formatDate(date) : dateFormatter.format(date);
 
   const handleApplyAverage = (avg: number) => {
     setCycleLength(avg);
@@ -55,10 +59,10 @@ export default function HistoryPage() {
   }) => {
     if (editingEntry) {
       updateHistoryEntry(editingEntry.id, data);
-      setAppliedNotice(t('{date} 기록이 수정되었어요.', { date: formatDate(parseLocalDate(data.lastPeriodDate)) }));
+      setAppliedNotice(t('{date} 기록이 수정되었어요.', { date: displayDate(parseLocalDate(data.lastPeriodDate)) }));
     } else {
       addToHistory(data);
-      setAppliedNotice(t('{date} 기록이 추가되었어요.', { date: formatDate(parseLocalDate(data.lastPeriodDate)) }));
+      setAppliedNotice(t('{date} 기록이 추가되었어요.', { date: displayDate(parseLocalDate(data.lastPeriodDate)) }));
     }
     window.setTimeout(() => setAppliedNotice(null), 3000);
   };
@@ -84,19 +88,19 @@ export default function HistoryPage() {
 
   return (
     <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
-      <div className="mb-5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center justify-between gap-2 sm:justify-start">
           <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
             {t('저장된 주기 기록')}
           </h2>
           <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
-            {t('{count}건', { count: history.length })}
+            {t(language === 'en' && history.length === 1 ? '{count}건 (단수)' : '{count}건', { count: history.length })}
           </span>
         </div>
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
+          className="inline-flex min-h-10 items-center justify-center gap-1.5 self-start rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
         >
           <Plus size={14} />
           {t('기록 직접 추가')}
@@ -113,12 +117,12 @@ export default function HistoryPage() {
         </p>
       )}
       {!isLoggedIn && history.length > 0 && (
-        <div className="-mt-2 mb-4 flex items-center justify-between rounded-2xl bg-primary-50/70 px-3.5 py-2.5 text-xs text-primary-900 dark:bg-stone-800/80 dark:text-stone-200">
-          <span>{t('기록을 잃어버리지 않게 서버에 동기화할 수 있어요.')}</span>
+        <div className="-mt-2 mb-4 flex items-center justify-between gap-3 rounded-2xl bg-primary-50/70 px-3.5 py-2.5 text-xs text-primary-900 dark:bg-stone-800/80 dark:text-stone-200">
+          <span className="min-w-0">{t('기록을 잃어버리지 않게 서버에 동기화할 수 있어요.')}</span>
           <Link
             to="/login"
             state={{ from: '/history' }}
-            className="font-semibold text-primary-700 underline underline-offset-2 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
+            className="shrink-0 whitespace-nowrap font-semibold text-primary-700 underline underline-offset-2 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300"
           >
             {t('로그인하기')}
           </Link>
@@ -127,7 +131,7 @@ export default function HistoryPage() {
 
       {history.length >= 2 && stats.intervalCount >= 1 && (
         <div className="mb-6 overflow-hidden rounded-2xl border border-primary-150/80 bg-gradient-to-br from-primary-50/60 via-white to-sand-50/50 p-4 shadow-xs dark:border-stone-800 dark:from-stone-850 dark:via-stone-900 dark:to-stone-900">
-          <div className="flex items-center justify-between border-b border-primary-100/60 pb-2.5 dark:border-stone-800">
+          <div className="flex flex-col gap-1 border-b border-primary-100/60 pb-2.5 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800">
             <div className="flex items-center gap-1.5">
               <Activity className="h-4 w-4 text-primary-600 dark:text-primary-400" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-primary-900 dark:text-primary-300">
@@ -135,11 +139,11 @@ export default function HistoryPage() {
               </h3>
             </div>
             <span className="text-[11px] font-medium text-gray-500 dark:text-stone-400">
-              {t('{count}회 간격 분석', { count: stats.intervalCount })}
+              {t(language === 'en' && stats.intervalCount === 1 ? '{count}회 간격 분석 (단수)' : '{count}회 간격 분석', { count: stats.intervalCount })}
             </span>
           </div>
 
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center sm:gap-3">
+          <div className="mt-3 grid grid-cols-2 gap-2 text-center sm:grid-cols-3 sm:gap-3">
             <div className="rounded-xl bg-white/90 p-2.5 shadow-2xs ring-1 ring-primary-100/60 dark:bg-stone-800/80 dark:ring-stone-750">
               <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">{t('평균 주기')}</p>
               <p className="mt-1 font-display text-lg font-bold text-primary-700 sm:text-xl dark:text-primary-300">
@@ -162,7 +166,7 @@ export default function HistoryPage() {
               </p>
             </div>
 
-            <div className="rounded-xl bg-white/90 p-2.5 shadow-2xs ring-1 ring-primary-100/60 dark:bg-stone-800/80 dark:ring-stone-750">
+            <div className="col-span-2 rounded-xl bg-white/90 p-2.5 shadow-2xs ring-1 ring-primary-100/60 sm:col-span-1 dark:bg-stone-800/80 dark:ring-stone-750">
               <p className="text-[11px] font-medium text-gray-500 dark:text-stone-400">{t('주기 변동')}</p>
               <p className="mt-1 font-display text-lg font-bold text-gray-800 sm:text-xl dark:text-stone-200">
                 {stats.minInterval}~{stats.maxInterval}
@@ -204,7 +208,7 @@ export default function HistoryPage() {
 
       {history.length === 1 && (
         <div className="mb-5 rounded-2xl border border-dashed border-primary-200/80 bg-primary-50/30 p-4 text-xs text-primary-900 dark:border-stone-800 dark:bg-stone-850/40 dark:text-stone-300">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-1.5 font-semibold text-primary-700 dark:text-primary-300">
               <Activity className="h-4 w-4" />
               <span>{t('주기 통계 분석 안내')}</span>
@@ -212,7 +216,7 @@ export default function HistoryPage() {
             <button
               type="button"
               onClick={handleOpenCreate}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
+              className="inline-flex min-h-9 items-center gap-1 rounded-lg bg-primary-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
             >
               <Plus size={12} />
               {t('이전 기록 추가')}
@@ -262,7 +266,7 @@ export default function HistoryPage() {
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {t('{date} 시작', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
+                      {t('{date} 시작', { date: displayDate(parseLocalDate(entry.lastPeriodDate)) })}
                     </p>
                     {interval !== null && interval !== undefined ? (
                       <span className="inline-flex items-center rounded-full bg-primary-100/90 px-2 py-0.5 text-[11px] font-semibold text-primary-800 dark:bg-primary-950/80 dark:text-primary-300">
@@ -291,7 +295,7 @@ export default function HistoryPage() {
                   </div>
 
                   <p className="mt-1 text-[11px] text-gray-400 dark:text-stone-500">
-                    {t('저장일 {date}', { date: formatDate(new Date(entry.savedAt)) })}
+                    {t('저장일 {date}', { date: displayDate(new Date(entry.savedAt)) })}
                   </p>
                 </button>
                 <div className="flex shrink-0 items-center gap-1">
@@ -299,7 +303,7 @@ export default function HistoryPage() {
                     type="button"
                     onClick={() => setActionTarget(entry)}
                     className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 active:scale-95 sm:hidden dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-                    aria-label={t('{date} 관리 옵션', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
+                    aria-label={t('{date} 관리 옵션', { date: displayDate(parseLocalDate(entry.lastPeriodDate)) })}
                   >
                     <MoreHorizontal size={18} />
                   </button>
@@ -308,7 +312,7 @@ export default function HistoryPage() {
                       type="button"
                       onClick={() => handleOpenEdit(entry)}
                       className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-500 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 dark:text-stone-400 dark:hover:border-primary-900/60 dark:hover:bg-primary-950/60 dark:hover:text-primary-300"
-                      aria-label={t('{date} 주기 기록 수정', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
+                      aria-label={t('{date} 주기 기록 수정', { date: displayDate(parseLocalDate(entry.lastPeriodDate)) })}
                     >
                       {t('수정')}
                     </button>
@@ -316,7 +320,7 @@ export default function HistoryPage() {
                       type="button"
                       onClick={() => setDeleteTarget(entry)}
                       className="rounded-full border border-transparent px-2.5 py-1.5 text-xs font-medium text-gray-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 dark:text-stone-400 dark:hover:border-rose-900/60 dark:hover:bg-rose-950/60 dark:hover:text-rose-400"
-                      aria-label={t('{date} 주기 기록 삭제', { date: formatDate(parseLocalDate(entry.lastPeriodDate)) })}
+                      aria-label={t('{date} 주기 기록 삭제', { date: displayDate(parseLocalDate(entry.lastPeriodDate)) })}
                     >
                       {t('삭제')}
                     </button>
@@ -356,7 +360,7 @@ export default function HistoryPage() {
 
               <p id="delete-dialog-desc" className="mt-2 text-sm text-gray-600 leading-relaxed dark:text-stone-300">
                 <strong className="font-semibold text-gray-900 dark:text-white">
-                  {formatDate(parseLocalDate(deleteTarget.lastPeriodDate))}
+                  {displayDate(parseLocalDate(deleteTarget.lastPeriodDate))}
                 </strong>{' '}
                 {t('시작 기록(주기 {cycle}일, 기간 {period}일)이 목록에서 완전히 삭제됩니다.', { cycle: deleteTarget.cycleLength, period: deleteTarget.periodLength })}
               </p>
@@ -403,7 +407,7 @@ export default function HistoryPage() {
                   id="action-sheet-title"
                   className="font-display text-sm font-bold text-gray-900 dark:text-white"
                 >
-                  {t('{date} 시작 기록', { date: formatDate(parseLocalDate(actionTarget.lastPeriodDate)) })}
+                  {t('{date} 시작 기록', { date: displayDate(parseLocalDate(actionTarget.lastPeriodDate)) })}
                 </h3>
                 <p className="mt-0.5 text-xs text-gray-500 dark:text-stone-400">
                   {t('주기 {cycle}일 · 생리 기간 {period}일', { cycle: actionTarget.cycleLength, period: actionTarget.periodLength })}

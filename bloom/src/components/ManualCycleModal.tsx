@@ -110,12 +110,12 @@ export default function ManualCycleModal({
         className="w-full max-h-[92vh] overflow-y-auto rounded-t-3xl bg-white p-6 shadow-bloom ring-1 ring-primary-100/70 dark:bg-stone-900 dark:ring-stone-800 sm:max-w-md sm:rounded-3xl dark:shadow-2xl"
       >
         <div className="mx-auto -mt-1 mb-3.5 h-1.5 w-12 rounded-full bg-gray-300 dark:bg-stone-700 sm:hidden" />
-        <div className="flex items-center justify-between pb-3 border-b border-primary-100/60 dark:border-stone-800">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-primary-800/60">
+        <div className="flex items-start justify-between gap-2 border-b border-primary-100/60 pb-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-primary-800/60">
               {isEdit ? <Pencil size={18} /> : <CalendarPlus size={18} />}
             </div>
-            <div>
+            <div className="min-w-0">
               <h3
                 id="manual-cycle-modal-title"
                 className="font-display text-base font-bold text-gray-900 dark:text-white"
@@ -132,7 +132,7 @@ export default function ManualCycleModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+            className="shrink-0 rounded-full p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
             aria-label={t('닫기')}
           >
             <X size={18} />

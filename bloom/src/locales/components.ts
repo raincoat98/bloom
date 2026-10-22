@@ -134,7 +134,7 @@ export const components: Record<string, [string, string, string]> = {
   '설정하기 →': ['Set up →', '設定する →', '去设置 →'],
   '로그아웃': ['Log out', 'ログアウト', '退出登录'],
   '주기 기록 수정': ['Edit cycle record', '周期記録を編集', '编辑周期记录'],
-  '주기 기록 직접 추가': ['Add cycle record manually', '周期記録を手動で追加', '手动添加周期记录'],
+  '주기 기록 직접 추가': ['Add past cycle', '周期記録を手動で追加', '手动添加周期记录'],
   '기존 기록의 시작일과 설정을 수정해요.': ['Edit the start date and settings of this record.', '記録の開始日と設定を変更します。', '修改现有记录的开始日期和设置。'],
   '과거 생리 시작일을 입력해 통계에 반영하세요.': ['Enter a past period start date to include it in your statistics.', '過去の生理開始日を入力して統計に反映しましょう。', '输入过去的月经开始日期，纳入统计。'],
   '생리 시작일 (1일차)': ['Period start date (day 1)', '生理開始日（1日目）', '月经开始日期（第1天）'],
