@@ -123,12 +123,12 @@ export default function InputForm() {
         <button
           type="button"
           onClick={handleToggleAverages}
-          className="flex w-full items-center justify-between rounded-2xl bg-sand-50/70 px-4 py-2.5 text-left text-xs font-medium text-gray-600 transition hover:bg-sand-100/70 ring-1 ring-sand-200/60 dark:bg-stone-800/70 dark:text-stone-300 dark:ring-stone-700/60 dark:hover:bg-stone-800"
+          className="flex w-full items-start justify-between gap-2 rounded-2xl bg-sand-50/70 px-4 py-2.5 text-left text-xs font-medium text-gray-600 transition hover:bg-sand-100/70 ring-1 ring-sand-200/60 dark:bg-stone-800/70 dark:text-stone-300 dark:ring-stone-700/60 dark:hover:bg-stone-800"
           aria-expanded={showAverages}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-col items-start gap-1">
             <span className="text-gray-500 dark:text-stone-400">{t('평균 주기 설정')}</span>
-            <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-primary-600 shadow-xs dark:bg-stone-700 dark:text-primary-300">
+            <span className="max-w-full rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-primary-600 shadow-xs dark:bg-stone-700 dark:text-primary-300">
               {t('{cycle}일 · {period}일간', { cycle: cycleLength, period: periodLength })}
             </span>
             {hasAverageChanges && showAverages && (
@@ -137,7 +137,7 @@ export default function InputForm() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1 text-gray-400 dark:text-stone-400">
+          <div className="flex shrink-0 items-center gap-1 text-gray-400 dark:text-stone-400">
             <span>{showAverages ? t('접기') : t('설정 변경')}</span>
             <ChevronDown
               size={15}

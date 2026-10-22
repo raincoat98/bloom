@@ -54,11 +54,11 @@ export default function SettingsPage() {
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-100/80 text-primary-700 ring-1 ring-primary-200 dark:bg-stone-800 dark:text-primary-300 dark:ring-stone-700 sm:h-12 sm:w-12">
               <UserRound className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h2 className="font-display text-base font-bold text-gray-900 dark:text-white sm:text-lg">
                 {user ? t('내 계정') : t('계정 로그인')}
               </h2>
-              <p className="mt-0.5 text-xs text-gray-600 dark:text-stone-400 sm:text-sm truncate">
+              <p className="mt-0.5 text-xs text-gray-600 dark:text-stone-400 sm:text-sm break-words">
                 {user
                   ? user.email
                   : t('로그인하시면 주기 기록이 보관되고 맞춤 알림을 받을 수 있어요.')}
