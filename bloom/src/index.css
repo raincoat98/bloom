@@ -505,3 +505,9 @@ html.dark .bloom-cycle-calendar .bloom-day-ovulation:hover .bloom-cycle-day,
   background: rgba(139, 92, 246, 0.4);
   color: #ddd6fe;
 }
+
+/* Korean phrase wrapping must not prevent Japanese/Chinese line breaks. */
+html:is([lang="ja"], [lang="zh-CN"]) .break-keep {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}

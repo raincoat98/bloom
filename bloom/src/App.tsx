@@ -121,7 +121,7 @@ function App() {
                   : 'text-primary-700 hover:bg-primary-50 dark:text-stone-300 dark:hover:bg-stone-800/80 dark:hover:text-primary-300'
               }`}
             >
-              {t('오늘의 리듬')}
+              {t('오늘')}
             </Link>
             <Link
               to="/symptoms"
