@@ -88,19 +88,17 @@ export default function HistoryPage() {
 
   return (
     <section className="relative z-30 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/70 backdrop-blur dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center justify-between gap-2 sm:justify-start">
-          <h2 className="font-display text-lg font-semibold text-primary-700 dark:text-primary-400">
-            {t('저장된 주기 기록')}
-          </h2>
-          <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
-            {t(language === 'en' && history.length === 1 ? '{count}건 (단수)' : '{count}건', { count: history.length })}
-          </span>
-        </div>
+      <div className="mb-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 sm:flex">
+        <h2 className="col-span-2 min-w-0 font-display text-lg font-semibold text-primary-700 sm:col-auto dark:text-primary-400">
+          {t('저장된 주기 기록')}
+        </h2>
+        <span className="justify-self-start whitespace-nowrap rounded-full bg-primary-50 px-2.5 py-0.5 text-[11px] font-medium text-primary-600 dark:bg-primary-950/70 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
+          {t(language === 'en' && history.length === 1 ? '{count}건 (단수)' : '{count}건', { count: history.length })}
+        </span>
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex min-h-10 items-center justify-center gap-1.5 self-start rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95"
+          className="inline-flex min-h-10 items-center justify-center gap-1.5 justify-self-end whitespace-nowrap rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-primary-700 active:scale-95 sm:ml-auto"
         >
           <Plus size={14} />
           {t('기록 직접 추가')}
