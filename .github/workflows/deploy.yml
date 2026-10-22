@@ -16,6 +16,8 @@ permissions:
 jobs:
   deploy:
     runs-on: self-hosted
+    environment: Production
+    if: github.repository == 'raincoat98/bloom' && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
     timeout-minutes: 30
     env:
       DEPLOY_PATH: ${{ vars.DEPLOY_PATH || vars.DEPLOY_DIR }}
