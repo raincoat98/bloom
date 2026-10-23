@@ -64,7 +64,7 @@ export default function CycleCalendar() {
 
   return (
     <section className="mt-6 rounded-3xl bg-white/90 p-6 shadow-petal ring-1 ring-primary-100/50 backdrop-blur sm:p-8 dark:bg-stone-900/90 dark:ring-stone-800 dark:shadow-none">
-      <header className="mb-4 flex items-end justify-between gap-3">
+      <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-stone-400">
             {t('나의 리듬 캘린더')}
@@ -123,7 +123,7 @@ function CycleDay({
   ...dayProps
 }: DayProps) {
   void day;
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const badge = getFlowBadge(modifiers);
   const ariaLabel =
     badge && dayProps['aria-label']
@@ -139,7 +139,7 @@ function CycleDay({
             aria-hidden="true"
             className={`bloom-flow-badge ${badge.className}`}
           >
-            {t(badge.text)}
+            {language === 'ko' ? badge.text : t(`${badge.text} (달력)`)}
           </span>
         ) : null}
       </span>
