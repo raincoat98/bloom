@@ -127,7 +127,7 @@ export default function ResultCard() {
           headline={`${shortDate(
             prediction.fertileWindowStart,
           )} ~ ${shortDate(prediction.fertileWindowEnd)}`}
-          sub={t('배란일 전 5일 + 다음날')}
+          sub={t('배란일 5일 전부터 2일 후까지')}
           icon={<Seedling className="h-5 w-5" focusable="false" />}
         />
         <InfoCard

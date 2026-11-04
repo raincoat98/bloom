@@ -36,6 +36,15 @@ describe('cycle calculations and date logic', () => {
       expect(pred.daysUntilNextPeriod).toBe(28);
     });
 
+    it('includes the two days after ovulation in the fertile window', () => {
+      const today = parseLocalDate('2026-10-01');
+      const pred = calculateCycle(lastPeriod, cycleLength, periodLength, today);
+
+      expect(formatShortDate(pred.ovulationDate)).toBe('10월 15일');
+      expect(formatShortDate(pred.fertileWindowStart)).toBe('10월 10일');
+      expect(formatShortDate(pred.fertileWindowEnd)).toBe('10월 17일');
+    });
+
     it('correctly tracks the middle and end of period phase', () => {
       // 10월 5일: 5일차 (생리 기간의 마지막 날)
       const day5 = parseLocalDate('2026-10-05');
