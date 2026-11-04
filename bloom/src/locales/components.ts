@@ -165,7 +165,7 @@ export const components: Record<string, [string, string, string]> = {
   '시작 전': ['Not started', '開始前', '尚未开始'],
   '다음 생리 예정일': ['Next period', '次の生理予定日', '下次月经预计日期'],
   '배란 예정일': ['Expected ovulation', '排卵予定日', '预计排卵日期'],
-  '배란일 전 5일 + 다음날': ['5 days before ovulation + the next day', '排卵日の5日前から翌日まで', '排卵前5天至次日'],
+  '배란일 5일 전부터 2일 후까지': ['From 5 days before to 2 days after ovulation', '排卵日の5日前から2日後まで', '排卵前5天至排卵后2天'],
   '안전기 (대략)': ['Lower-fertility days (estimate)', '妊娠しにくい時期（目安）', '低受孕概率期（估算）'],
   '이후': ['onward', '以降', '以后'],
   '개인차 있음, 참고용': ['Estimates vary; for reference only', '個人差があります。参考程度に', '因人而异，仅供参考'],

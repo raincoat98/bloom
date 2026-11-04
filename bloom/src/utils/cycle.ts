@@ -166,7 +166,7 @@ export function calculateCycle(
     const nextPeriodEnd = addDays(nextPeriodStart, periodLength - 1);
     const ovulationDate = addDays(nextPeriodStart, -14);
     const fertileWindowStart = addDays(ovulationDate, -5);
-    const fertileWindowEnd = addDays(ovulationDate, 1);
+    const fertileWindowEnd = addDays(ovulationDate, 2);
     const daysUntilNextPeriod = differenceInCalendarDays(nextPeriodStart, today);
     const daysUntilOvulation = differenceInCalendarDays(ovulationDate, today);
 
@@ -194,7 +194,7 @@ export function calculateCycle(
   const nextPeriodEnd = addDays(nextPeriodStart, periodLength - 1);
   const ovulationDate = addDays(nextPeriodStart, -14);
   const fertileWindowStart = addDays(ovulationDate, -5);
-  const fertileWindowEnd = addDays(ovulationDate, 1);
+  const fertileWindowEnd = addDays(ovulationDate, 2);
 
   const daysUntilNextPeriod = differenceInCalendarDays(nextPeriodStart, today);
   const daysUntilOvulation = differenceInCalendarDays(ovulationDate, today);

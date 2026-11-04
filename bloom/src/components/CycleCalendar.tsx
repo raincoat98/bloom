@@ -56,7 +56,7 @@ export default function CycleCalendar() {
       isPeriod: (date: Date) => cyclePosition(date) < periodLength,
       isFertile: (date: Date) => {
         const pos = cyclePosition(date);
-        return pos >= ovulationOffset - 5 && pos <= ovulationOffset + 1;
+        return pos >= ovulationOffset - 5 && pos <= ovulationOffset + 2;
       },
       isOvulation: (date: Date) => cyclePosition(date) === ovulationOffset,
     };
