@@ -7,6 +7,10 @@ import NauseatedFace from '@fluentui-emoji/react/modern/nauseated-face';
 import PerformingArts from '@fluentui-emoji/react/modern/performing-arts';
 import PersonInBedDefault from '@fluentui-emoji/react/modern/person-in-bed-default';
 import WearyFace from '@fluentui-emoji/react/modern/weary-face';
+import SmilingFaceWithSmilingEyes from '@fluentui-emoji/react/modern/smiling-face-with-smiling-eyes';
+import StarStruck from '@fluentui-emoji/react/modern/star-struck';
+import GrinningFaceWithSmilingEyes from '@fluentui-emoji/react/modern/grinning-face-with-smiling-eyes';
+import RelievedFace from '@fluentui-emoji/react/modern/relieved-face';
 import type { SymptomId } from '../data/symptoms';
 
 const ICON_BY_SYMPTOM: Record<SymptomId, FluentEmojiComponent> = {
@@ -18,6 +22,10 @@ const ICON_BY_SYMPTOM: Record<SymptomId, FluentEmojiComponent> = {
   backache: PersonInBedDefault,
   'skin-trouble': AdhesiveBandage,
   cravings: FaceSavoringFood,
+  good: SmilingFaceWithSmilingEyes,
+  energetic: StarStruck,
+  happy: GrinningFaceWithSmilingEyes,
+  calm: RelievedFace,
 };
 
 interface SymptomEmojiProps {

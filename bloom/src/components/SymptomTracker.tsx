@@ -16,6 +16,9 @@ export default function SymptomTracker() {
   const saveLog = useSymptomStore((state) => state.saveLog);
   const [savedFlash, setSavedFlash] = useState(false);
 
+  const symptomIds = SYMPTOM_IDS.filter((id) => SYMPTOM_BY_ID[id].kind === 'symptom');
+  const moodIds = SYMPTOM_IDS.filter((id) => SYMPTOM_BY_ID[id].kind === 'mood');
+
   const recordedSymptoms = useMemo(() => {
     const forDate = logs.filter((entry) => entry.logDate === logDate);
     return new Set(forDate.flatMap((entry) => entry.symptoms));
@@ -82,65 +85,141 @@ export default function SymptomTracker() {
         <DatePopover value={logDate} onChange={setLogDate} />
       </div>
 
-      <div className="mt-4 grid grid-cols-4 gap-2 lg:grid-cols-8">
-        {SYMPTOM_IDS.map((symptom) => {
-          const option = SYMPTOM_BY_ID[symptom];
-          const isRecorded = recordedSymptoms.has(symptom);
-          const selected = !isRecorded && symptoms.includes(symptom);
-          return (
-            <button
-              key={symptom}
-              type="button"
-              disabled={isRecorded}
-              aria-pressed={selected}
-              aria-disabled={isRecorded}
-              title={
-                isRecorded
-                  ? t('{name}은(는) 이미 이 날짜에 기록되어 있어요', { name: t(option.label) })
-                  : selected
-                    ? t('{name} 선택 해제', { name: t(option.label) })
-                    : t('{name} 선택', { name: t(option.label) })
-              }
-              onClick={() => toggleSymptom(symptom)}
-              className={`group flex min-h-[5.5rem] flex-col items-center justify-center rounded-2xl border px-1.5 py-2.5 text-center transition ${
-                isRecorded
-                  ? 'cursor-not-allowed border-dashed border-gray-200 bg-gray-50/70 text-gray-400 opacity-60 dark:border-stone-800 dark:bg-stone-800/40 dark:text-stone-500'
-                  : selected
-                    ? 'border-primary-400 bg-primary-50 text-primary-800 shadow-sm ring-1 ring-primary-200 dark:border-primary-500 dark:bg-primary-950/50 dark:text-primary-200 dark:ring-primary-800 active:scale-[0.98]'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-primary-200 hover:bg-primary-50/50 dark:border-stone-800 dark:bg-stone-850 dark:text-stone-300 dark:hover:border-stone-700 dark:hover:bg-stone-800 active:scale-[0.98]'
-              }`}
-            >
-              <SymptomEmoji
-                symptom={symptom}
-                className={`h-8 w-8 transition ${
-                  isRecorded ? 'opacity-40 grayscale' : 'group-hover:scale-105'
-                }`}
-              />
-              <span
-                className={`mt-1.5 text-[11px] leading-tight ${
+      {/* 증상 섹션 */}
+      <div className="mt-4">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-stone-400">
+          {t('증상')}
+        </h3>
+        <div className="grid grid-cols-4 gap-2 lg:grid-cols-8">
+          {symptomIds.map((symptom) => {
+            const option = SYMPTOM_BY_ID[symptom];
+            const isRecorded = recordedSymptoms.has(symptom);
+            const selected = !isRecorded && symptoms.includes(symptom);
+            return (
+              <button
+                key={symptom}
+                type="button"
+                disabled={isRecorded}
+                aria-pressed={selected}
+                aria-disabled={isRecorded}
+                title={
                   isRecorded
-                    ? 'font-normal text-gray-400'
+                    ? t('{name}은(는) 이미 이 날짜에 기록되어 있어요', { name: t(option.label) })
                     : selected
-                      ? 'font-semibold text-primary-800 dark:text-primary-200'
-                      : 'font-medium text-gray-700 dark:text-stone-300'
+                      ? t('{name} 선택 해제', { name: t(option.label) })
+                      : t('{name} 선택', { name: t(option.label) })
+                }
+                onClick={() => toggleSymptom(symptom)}
+                className={`group flex min-h-[5.5rem] flex-col items-center justify-center rounded-2xl border px-1.5 py-2.5 text-center transition ${
+                  isRecorded
+                    ? 'cursor-not-allowed border-dashed border-gray-200 bg-gray-50/70 text-gray-400 opacity-60 dark:border-stone-800 dark:bg-stone-800/40 dark:text-stone-500'
+                    : selected
+                      ? 'border-primary-400 bg-primary-50 text-primary-800 shadow-sm ring-1 ring-primary-200 dark:border-primary-500 dark:bg-primary-950/50 dark:text-primary-200 dark:ring-primary-800 active:scale-[0.98]'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-primary-200 hover:bg-primary-50/50 dark:border-stone-800 dark:bg-stone-850 dark:text-stone-300 dark:hover:border-stone-700 dark:hover:bg-stone-800 active:scale-[0.98]'
                 }`}
               >
-                {t(option.label)}
-              </span>
-              {isRecorded ? (
-                <span className="mt-1 inline-flex items-center rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
-                  ✓ {t('기록됨')}
+                <SymptomEmoji
+                  symptom={symptom}
+                  className={`h-8 w-8 transition ${
+                    isRecorded ? 'opacity-40 grayscale' : 'group-hover:scale-105'
+                  }`}
+                />
+                <span
+                  className={`mt-1.5 text-[11px] leading-tight ${
+                    isRecorded
+                      ? 'font-normal text-gray-400'
+                      : selected
+                        ? 'font-semibold text-primary-800 dark:text-primary-200'
+                        : 'font-medium text-gray-700 dark:text-stone-300'
+                  }`}
+                >
+                  {t(option.label)}
                 </span>
-              ) : selected ? (
-                <span className="mt-1 inline-flex items-center rounded-full bg-primary-500 px-1.5 py-0.5 text-[9px] font-semibold text-white">
-                  {t('선택됨')}
+                {isRecorded ? (
+                  <span className="mt-1 inline-flex items-center rounded-full bg-primary-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300 dark:ring-1 dark:ring-primary-800/60">
+                    ✓ {t('기록됨')}
+                  </span>
+                ) : selected ? (
+                  <span className="mt-1 inline-flex items-center rounded-full bg-primary-500 px-1.5 py-0.5 text-[9px] font-semibold text-white">
+                    {t('선택됨')}
+                  </span>
+                ) : (
+                  <span className="mt-1 invisible py-0.5 text-[9px]">{t('대기')}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 긍정 컨디션 섹션 */}
+      <div className="mt-5">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+          {t('긍정 컨디션')}
+        </h3>
+        <p className="mb-3 text-[11px] text-gray-500 dark:text-stone-400">
+          {t('오늘의 좋은 기분을 기록해 보세요.')}
+        </p>
+        <div className="grid grid-cols-4 gap-2 lg:grid-cols-8">
+          {moodIds.map((mood) => {
+            const option = SYMPTOM_BY_ID[mood];
+            const isRecorded = recordedSymptoms.has(mood);
+            const selected = !isRecorded && symptoms.includes(mood);
+            return (
+              <button
+                key={mood}
+                type="button"
+                disabled={isRecorded}
+                aria-pressed={selected}
+                aria-disabled={isRecorded}
+                title={
+                  isRecorded
+                    ? t('{name}은(는) 이미 이 날짜에 기록되어 있어요', { name: t(option.label) })
+                    : selected
+                      ? t('{name} 선택 해제', { name: t(option.label) })
+                      : t('{name} 선택', { name: t(option.label) })
+                }
+                onClick={() => toggleSymptom(mood)}
+                className={`group flex min-h-[5.5rem] flex-col items-center justify-center rounded-2xl border px-1.5 py-2.5 text-center transition ${
+                  isRecorded
+                    ? 'cursor-not-allowed border-dashed border-emerald-200 bg-emerald-50/50 text-emerald-400 opacity-60 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-600'
+                    : selected
+                      ? 'border-emerald-400 bg-emerald-50 text-emerald-800 shadow-sm ring-1 ring-emerald-200 dark:border-emerald-500 dark:bg-emerald-950/50 dark:text-emerald-200 dark:ring-emerald-800 active:scale-[0.98]'
+                      : 'border-emerald-200 bg-white text-emerald-700 hover:border-emerald-300 hover:bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-stone-850 dark:text-emerald-300 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/30 active:scale-[0.98]'
+                }`}
+              >
+                <SymptomEmoji
+                  symptom={mood}
+                  className={`h-8 w-8 transition ${
+                    isRecorded ? 'opacity-40 grayscale' : 'group-hover:scale-105'
+                  }`}
+                />
+                <span
+                  className={`mt-1.5 text-[11px] leading-tight ${
+                    isRecorded
+                      ? 'font-normal text-emerald-400'
+                      : selected
+                        ? 'font-semibold text-emerald-800 dark:text-emerald-200'
+                        : 'font-medium text-emerald-700 dark:text-emerald-300'
+                  }`}
+                >
+                  {t(option.label)}
                 </span>
-              ) : (
-                <span className="mt-1 invisible py-0.5 text-[9px]">{t('대기')}</span>
-              )}
-            </button>
-          );
-        })}
+                {isRecorded ? (
+                  <span className="mt-1 inline-flex items-center rounded-full bg-emerald-100/80 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-1 dark:ring-emerald-800/60">
+                    ✓ {t('기록됨')}
+                  </span>
+                ) : selected ? (
+                  <span className="mt-1 inline-flex items-center rounded-full bg-emerald-500 px-1.5 py-0.5 text-[9px] font-semibold text-white">
+                    {t('선택됨')}
+                  </span>
+                ) : (
+                  <span className="mt-1 invisible py-0.5 text-[9px]">{t('대기')}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {isAllRecorded && (
